@@ -5,12 +5,12 @@
     Apellido: Viviani, Valentino
     DNI: 46582790
     Usuario: Valentino-Viviani10
-    Entrega: S�
+    Entrega: Sí
 
     Apellido: Bestene, Valentin Ezequiel
     DNI: 42201972
     Usuario: valengap
-    Entrega: S�
+    Entrega: No
 */
 
 int main()
