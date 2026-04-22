@@ -10,7 +10,12 @@
     Apellido: Bestene, Valentin Ezequiel
     DNI: 42201972
     Usuario: valengap
-    Entrega: No
+    Entrega: Si
+
+    Apellido: Fernandez, Sergio Gabriel
+    DNI: 28007021
+    Usuario: sergiogfernandez-dev
+    Entrega: Si
 */
 
 int main()
