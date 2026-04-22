@@ -5,7 +5,7 @@
     Apellido: Viviani, Valentino
     DNI: 46582790
     Usuario: Valentino-Viviani10
-    Entrega: Sí
+    Entrega: Si
 
     Apellido: Bestene, Valentin Ezequiel
     DNI: 42201972
