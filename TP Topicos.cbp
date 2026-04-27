@@ -36,6 +36,10 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="colores.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="colores.h" />
 		<Unit filename="dibujar.c">
 			<Option compilerVar="CC" />
 		</Unit>
