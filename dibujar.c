@@ -1,6 +1,6 @@
 #include "dibujar.h"
 #include "colores.h"
-#include "string.h"
+#include <string.h>
 
 int calcular_x_centrada(const char *palabra, const int ancho) {
     return (ancho - strlen(palabra) * 8) / 2;
@@ -85,13 +85,13 @@ void dibujar_tetromino(tTetrominoFondo tetromino, const int pantalla, const int 
             if (piezas[tetromino.tipo][rot][pi][pj]) {
                 int px = tetromino.x + pj * escala;
                 int py = tetromino.y + pi * escala;
-                
+
                 // Dibujar bloque 3x3
                 for (int dy = 0; dy < escala; dy++) {
                     for (int dx = 0; dx < escala; dx++) {
                         int final_x = px + dx;
                         int final_y = py + dy;
-                        
+
                         // Verificar que está dentro de pantalla
                         if (final_x >= 0 && final_x < ancho && final_y >= 0 && final_y < alto) {
                             gbt_dibujar_pixel(final_x, final_y, tetromino.color);

@@ -27,3 +27,67 @@
 	<stdlib.h>
 	<stdint.h>
 
+1777404733 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\colores.c
+	"colores.h"
+
+1777404733 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\colores.h
+	"GBT/gbt.h"
+
+1776974650 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\lib\gbt_v2026.1c.01\include\\gbt\gbt.h
+	"gbt_entrada.h"
+	"gbt_graficos.h"
+	"gbt_logger.h"
+	"gbt_temporizador.h"
+	"gbt_vector.h"
+
+1776974650 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\lib\gbt_v2026.1c.01\include\\gbt\gbt_entrada.h
+	<stdint.h>
+
+1776974650 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\lib\gbt_v2026.1c.01\include\\gbt\gbt_graficos.h
+	<stdint.h>
+
+1776974650 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\lib\gbt_v2026.1c.01\include\\gbt\gbt_logger.h
+
+1776974650 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\lib\gbt_v2026.1c.01\include\\gbt\gbt_temporizador.h
+	<stdint.h>
+
+1776974650 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\lib\gbt_v2026.1c.01\include\\gbt\gbt_vector.h
+	<stdlib.h>
+	<stdint.h>
+
+1777404733 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\dibujar.c
+	"dibujar.h"
+	"colores.h"
+	"string.h"
+
+1777404733 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\dibujar.h
+	"font8x8_basic.h"
+	"GBT/gbt.h"
+	"tetrominos.h"
+
+1777404733 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\font8x8_basic.h
+
+1777404733 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tetrominos.h
+	"GBT/gbt.h"
+
+1777404733 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\font8x8_basic.c
+
+1777411890 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	"GBT/gbt.h"
+	"font8x8_basic.h"
+	"colores.h"
+	"dibujar.h"
+	"tablero.h"
+
+1777404733 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tetrominos.c
+	"tetrominos.h"
+	"colores.h"
+	<stdio.h>
+
+1777424484 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tablero.h
+	<stdlib.h>
+

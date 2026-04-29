@@ -6,6 +6,7 @@
 #include "font8x8_basic.h"
 #include "colores.h"
 #include "dibujar.h"
+#include "tablero.h"
 
 #define CGA_ANCHO 320
 #define CGA_ALTO 200
