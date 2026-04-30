@@ -1,6 +1,7 @@
 #include "dibujar.h"
 #include "colores.h"
 #include <string.h>
+#include "tablero.h"
 
 int calcular_x_centrada(const char *palabra, const int ancho) {
     return (ancho - strlen(palabra) * 8) / 2;
@@ -96,6 +97,38 @@ void dibujar_tetromino(tTetrominoFondo tetromino, const int pantalla, const int 
                         if (final_x >= 0 && final_x < ancho && final_y >= 0 && final_y < alto) {
                             gbt_dibujar_pixel(final_x, final_y, tetromino.color);
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void dibujar_juego(int ancho, int alto, int** tablero) {
+    int lado_bloque = 10; // Tamaño del bloque en píxeles
+
+    // Centrar el tablero
+    int ancho_tablero = COLUMNAS * lado_bloque;
+    int alto_tablero = FILAS * lado_bloque;
+    int inicio_x = (ancho - ancho_tablero) / 2;
+    int inicio_y = (alto - alto_tablero) / 2;
+
+    for (int y = 0; y < FILAS; y++) {
+        for (int x = 0; x < COLUMNAS; x++) {
+
+            int valor_celda = tablero[y][x];
+
+            for (int dy = 0; dy < lado_bloque - 1; dy++) {
+                for (int dx = 0; dx < lado_bloque - 1; dx++) {
+
+                    int pixel_x = inicio_x + (x * lado_bloque) + dx;
+                    int pixel_y = inicio_y + (y * lado_bloque) + dy;
+
+                    if (valor_celda == 0) {
+                        gbt_dibujar_pixel(pixel_x, pixel_y, COL_NEGRO);
+                    } else {
+                        // Celda ocupada por una pieza
+                        gbt_dibujar_pixel(pixel_x, pixel_y, valor_celda);
                     }
                 }
             }

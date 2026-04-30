@@ -22,7 +22,7 @@ int** crear_tablero(int filas, int columnas, size_t tamElem) {
     return tablero;
 }
 
-/*void eliminar_fila_y_bajar(int** tablero, int fila_a_borrar,int columnas) {
+void eliminar_fila_y_bajar(int** tablero, int fila_a_borrar,int columnas) {
     int* fila_reciclada = tablero[fila_a_borrar];
 
     for (int i = fila_a_borrar; i > 0; i--) {
@@ -34,7 +34,7 @@ int** crear_tablero(int filas, int columnas, size_t tamElem) {
     for (int j = 0; j < columnas; j++) {
         tablero[0][j] = 0;
     }
-}*/
+}
 
 void destruir_tablero(int** tablero,int filas) {
     int** ult = tablero + filas;

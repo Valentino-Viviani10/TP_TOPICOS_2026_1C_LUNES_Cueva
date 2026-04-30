@@ -31,9 +31,9 @@
 */
 
 // Stubs de funciones pendientes
-void dibujar_juego(int ancho, int alto) {
+//void dibujar_juego(int ancho, int alto,int** tablero) {
     // TODO: Implementar
-}
+//}
 
 void dibujar_inst(int ancho, int alto) {
     // TODO: Implementar
@@ -182,6 +182,18 @@ int main(int argc, char* argv[])
     // variable global o que le pases como parametro
     uint8_t colorSeleccionado = COL_AMARILLO;
 
+    //creacion de tablero de juego
+    int** tablero = crear_tablero(FILAS, COLUMNAS, sizeof(int));
+    if (!tablero) {
+        return -1;
+    }
+
+    //prueba
+    tablero[19][0] = COL_ROJO_BRILL;
+    tablero[19][9] = COL_ROJO_BRILL;
+    tablero[18][4] = COL_ROJO_BRILL;
+
+
     while(corriendo){
         gbt_procesar_entrada();
         eGBT_Tecla tecla = gbt_obtener_tecla_presionada();
@@ -232,7 +244,7 @@ int main(int argc, char* argv[])
                 }
             }
         } else if(pantalla == 1){
-            dibujar_juego(ancho, alto);
+            dibujar_juego(ancho, alto,tablero);
         } else if(pantalla == 2){
             dibujar_inst(ancho, alto);
         }
@@ -240,4 +252,5 @@ int main(int argc, char* argv[])
         gbt_volcar_backbuffer();
         gbt_esperar(16);
     }
+    destruir_tablero(tablero, FILAS);
 }

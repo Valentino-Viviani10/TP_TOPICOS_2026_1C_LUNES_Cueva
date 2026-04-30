@@ -19,7 +19,7 @@ void dibujar_borde(const int alto, const int ancho);
 
 void dibujar_tetromino(tTetrominoFondo tetromino, const int pantalla, const int rot, const int alto, const int ancho);
 
-void dibujar_juego(int ancho, int alto);
+void dibujar_juego(int ancho, int alto,int** tablero);
 
 void dibujar_inst(int ancho, int alto);
 #endif // DIBUJAR_H_INCLUDED

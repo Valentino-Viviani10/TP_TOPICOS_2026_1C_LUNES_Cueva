@@ -10,6 +10,6 @@ int** crear_tablero(int filas, int columnas, size_t tamElem);
 
 void destruir_tablero(int** tablero, int filas);
 
-//void eliminar_fila_y_bajar(int** tablero, int fila_a_borrar,int columnas);
+void eliminar_fila_y_bajar(int** tablero, int fila_a_borrar,int columnas);
 
 #endif
