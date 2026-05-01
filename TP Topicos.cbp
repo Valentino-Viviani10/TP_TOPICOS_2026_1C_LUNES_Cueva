@@ -49,6 +49,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="font8x8_basic.h" />
+		<Unit filename="instrucciones.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="instrucciones.h" />
 		<Unit filename="juego.c">
 			<Option compilerVar="CC" />
 		</Unit>
