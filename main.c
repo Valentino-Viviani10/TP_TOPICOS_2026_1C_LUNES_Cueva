@@ -31,10 +31,7 @@
     Entrega: Si
 */
 
-// Stubs de funciones pendientes
-void dibujar_juego(int ancho, int alto) {
-    // TODO: Implementar
-}
+
 
 void dibujar_inst(int ancho, int alto) {
     // TODO: Implementar
