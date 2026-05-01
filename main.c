@@ -184,33 +184,43 @@ int main(int argc, char* argv[])
     uint8_t colorSeleccionado = COL_AMARILLO;
 
     while(corriendo){
-        gbt_procesar_entrada();
-        eGBT_Tecla tecla = gbt_obtener_tecla_presionada();
+    gbt_procesar_entrada();
+    eGBT_Tecla tecla = gbt_obtener_tecla_presionada();
 
-        if(tecla == GBTK_ESCAPE){
-            corriendo = 0;
-            printf("Saliendo del juego.\n");
-        } else if (tecla != GBTK_DESCONOCIDA){
-            if(pantalla == 0){
-                if(tecla == GBTK_ABAJO){
-                    opcionSeleccionada = 1;
-                }
+    if(tecla == GBTK_ESCAPE){
+        corriendo = 0;
+        printf("Saliendo del juego.\n");
+    } else if (tecla != GBTK_DESCONOCIDA){
+        if(pantalla == 0){
+            if(tecla == GBTK_ABAJO){
+                opcionSeleccionada = 1;
+            }
 
-                if(tecla == GBTK_ARRIBA){
-                    opcionSeleccionada = 0;
-                }
+            if(tecla == GBTK_ARRIBA){
+                opcionSeleccionada = 0;
+            }
 
-                if(tecla == GBTK_ENTER){
-                    if(opcionSeleccionada == 0){
-                        pantalla = 1;
-                    } else if(opcionSeleccionada == 1){
-                        pantalla = 2;
-                    }
+            if(tecla == GBTK_ENTER){
+                if(opcionSeleccionada == 0){
+                    pantalla = 1;
+                } else if(opcionSeleccionada == 1){
+                    pantalla = 2;
                 }
             }
         }
 
-        // Dibujar fondo y bordes
+        if(pantalla == 1){
+            if(tecla == GBTK_IZQUIERDA){
+                juego_mover_izquierda();
+            }
+
+            if(tecla == GBTK_DERECHA){
+                juego_mover_derecha();
+            }
+        }
+    }
+
+    // Dibujar fondo y bordes
         dibujar_fondo(alto, ancho);
         dibujar_borde(alto, ancho);
 

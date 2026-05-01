@@ -1,4 +1,5 @@
 #include "dibujar.h"
+#include "juego.h"
 #include "colores.h"
 #include "string.h"
 
@@ -103,12 +104,12 @@ void dibujar_tetromino(tTetrominoFondo tetromino, const int pantalla, const int 
     }
 }
 
+
 void dibujar_juego(int ancho, int alto)
 {
     tTetrominoFondo tetromino;
-
-    tetromino.x = ancho / 2;
-    tetromino.y = 40;
+    tetromino.x = juego_obtener_x();
+    tetromino.y = juego_obtener_y();
     tetromino.tipo = 0;
     tetromino.rot = 0;
     tetromino.activo = 1;
