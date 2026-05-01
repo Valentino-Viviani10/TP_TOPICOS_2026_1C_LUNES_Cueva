@@ -104,9 +104,27 @@ void dibujar_tetromino(tTetrominoFondo tetromino, const int pantalla, const int 
     }
 }
 
+void dibujar_marco_juego()
+{
+    int x;
+    int y;
+
+    for(x = JUEGO_X; x <= JUEGO_X + JUEGO_ANCHO; x++){
+        gbt_dibujar_pixel(x, JUEGO_Y, COL_AZUL_BRILL);
+        gbt_dibujar_pixel(x, JUEGO_Y + JUEGO_ALTO, COL_AZUL_BRILL);
+    }
+
+    for(y = JUEGO_Y; y <= JUEGO_Y + JUEGO_ALTO; y++){
+        gbt_dibujar_pixel(JUEGO_X, y, COL_AZUL_BRILL);
+        gbt_dibujar_pixel(JUEGO_X + JUEGO_ANCHO, y, COL_AZUL_BRILL);
+    }
+}
+
+
 
 void dibujar_juego(int ancho, int alto)
 {
+    dibujar_marco_juego();
     tTetrominoFondo tetromino;
     tetromino.x = juego_obtener_x();
     tetromino.y = juego_obtener_y();

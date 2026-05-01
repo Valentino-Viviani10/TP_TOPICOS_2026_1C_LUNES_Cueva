@@ -249,6 +249,12 @@ int main(int argc, char* argv[])
         }
 
         gbt_volcar_backbuffer();
+
+        if(pantalla == 1){
+            juego_caer();
+        }
+
+
         gbt_esperar(16);
     }
 }

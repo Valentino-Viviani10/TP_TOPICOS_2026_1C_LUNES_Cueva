@@ -21,5 +21,7 @@ void dibujar_tetromino(tTetrominoFondo tetromino, const int pantalla, const int 
 
 void dibujar_juego(int ancho, int alto);
 
+void dibujar_marco_juego();
+
 void dibujar_inst(int ancho, int alto);
 #endif // DIBUJAR_H_INCLUDED
