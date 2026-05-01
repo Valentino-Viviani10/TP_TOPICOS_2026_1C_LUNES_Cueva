@@ -7,6 +7,7 @@
 #include "colores.h"
 #include "dibujar.h"
 #include "tablero.h"
+#include "juego.h"
 
 #define CGA_ANCHO 320
 #define CGA_ALTO 200
@@ -60,6 +61,7 @@ int main(int argc, char* argv[])
     srand((unsigned)time(NULL));
 
     tablero_inicializar();
+    juego_inicializar();
 
     int ancho = CGA_ANCHO;
     int alto = CGA_ALTO;
