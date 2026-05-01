@@ -5,3 +5,5 @@ obj/
 *.o
 
 *.depend
+TP Topicos.cbp
+TP Topicos.layout

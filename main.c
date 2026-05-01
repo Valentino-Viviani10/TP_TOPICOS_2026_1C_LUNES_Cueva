@@ -224,13 +224,12 @@ int main(int argc, char* argv[])
         dibujar_fondo(alto, ancho);
         dibujar_borde(alto, ancho);
 
-        // Cambiar color de fondo al presionar arriba/abajo
-        if(tecla == GBTK_ABAJO || tecla == GBTK_ARRIBA){
-            colorSeleccionado = elegir_color_permitido();
-        }
-
         // Lógica según pantalla
         if(pantalla == 0){
+            if(tecla == GBTK_ABAJO || tecla == GBTK_ARRIBA) {
+                colorSeleccionado = elegir_color_permitido();
+            }
+
             // Actualizar tetrominos decorativos
             actualizar_tetrominos_fondo(tetrominos_decorativos, alto, ancho, limiteIzquierdoTetrominos, limiteDerechoTetrominos, temp_caida_tetrominos, temp_activar_tetrominos);
 

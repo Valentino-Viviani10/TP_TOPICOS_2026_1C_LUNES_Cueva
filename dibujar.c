@@ -3,6 +3,8 @@
 #include "colores.h"
 #include "string.h"
 
+void dibujar_marco_juego();
+
 int calcular_x_centrada(const char *palabra, const int ancho) {
     return (ancho - strlen(palabra) * 8) / 2;
 }
