@@ -7,6 +7,12 @@ int calcular_x_centrada(const char *palabra, const int ancho) {
     return (ancho - strlen(palabra) * 8) / 2;
 }
 
+void dibujar_linea_horizontal(const int x_ini, const int x_fin, const int y) {
+    for(int x = x_ini; x <= x_fin; x++) {
+        gbt_dibujar_pixel(x, y, COL_MAG_BRILL);
+    }
+}
+
 
 void dibujar_texto_8x8(const char *texto, uint16_t x, uint16_t y, uint8_t color) {
     for (int i = 0; texto[i] != '\0'; i++) {

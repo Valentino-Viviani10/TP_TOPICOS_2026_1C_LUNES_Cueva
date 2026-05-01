@@ -8,6 +8,7 @@
 #include "dibujar.h"
 #include "tablero.h"
 #include "juego.h"
+#include "instrucciones.h"
 
 #define CGA_ANCHO 320
 #define CGA_ALTO 200
@@ -30,12 +31,6 @@
     Usuario: sergiogfernandez-dev
     Entrega: Si
 */
-
-
-
-void dibujar_inst(int ancho, int alto) {
-    // TODO: Implementar
-}
 
 static uint8_t elegir_color_permitido(void) {
     static const uint8_t coloresPermitidos[] = {
@@ -183,44 +178,47 @@ int main(int argc, char* argv[])
     // variable global o que le pases como parametro
     uint8_t colorSeleccionado = COL_AMARILLO;
 
-    while(corriendo){
-    gbt_procesar_entrada();
-    eGBT_Tecla tecla = gbt_obtener_tecla_presionada();
+    while(corriendo) {
+        gbt_procesar_entrada();
+        eGBT_Tecla tecla = gbt_obtener_tecla_presionada();
 
-    if(tecla == GBTK_ESCAPE){
-        corriendo = 0;
-        printf("Saliendo del juego.\n");
-    } else if (tecla != GBTK_DESCONOCIDA){
-        if(pantalla == 0){
-            if(tecla == GBTK_ABAJO){
-                opcionSeleccionada = 1;
+        if(tecla == GBTK_ESCAPE && (pantalla == 1 || pantalla == 0)) {
+            corriendo = 0;
+            printf("Saliendo del juego.\n");
+        } else if (tecla == GBTK_ESCAPE && pantalla == 2) {
+            pantalla = 0;
+            printf("Volviendo al menu principal.\n");
+        } else if (tecla != GBTK_DESCONOCIDA) {
+            if(pantalla == 0){
+                if(tecla == GBTK_ABAJO){
+                    opcionSeleccionada = 1;
+                }
+
+                if(tecla == GBTK_ARRIBA){
+                    opcionSeleccionada = 0;
+                }
+
+                if(tecla == GBTK_ENTER){
+                    if(opcionSeleccionada == 0){
+                        pantalla = 1;
+                    } else if(opcionSeleccionada == 1){
+                        pantalla = 2;
+                    }
+                }
             }
 
-            if(tecla == GBTK_ARRIBA){
-                opcionSeleccionada = 0;
-            }
+            if(pantalla == 1){
+                if(tecla == GBTK_IZQUIERDA){
+                    juego_mover_izquierda();
+                }
 
-            if(tecla == GBTK_ENTER){
-                if(opcionSeleccionada == 0){
-                    pantalla = 1;
-                } else if(opcionSeleccionada == 1){
-                    pantalla = 2;
+                if(tecla == GBTK_DERECHA){
+                    juego_mover_derecha();
                 }
             }
         }
 
-        if(pantalla == 1){
-            if(tecla == GBTK_IZQUIERDA){
-                juego_mover_izquierda();
-            }
-
-            if(tecla == GBTK_DERECHA){
-                juego_mover_derecha();
-            }
-        }
-    }
-
-    // Dibujar fondo y bordes
+        // Dibujar fondo y bordes
         dibujar_fondo(alto, ancho);
         dibujar_borde(alto, ancho);
 

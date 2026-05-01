@@ -49,9 +49,17 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="font8x8_basic.h" />
+		<Unit filename="juego.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="juego.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="tablero.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tablero.h" />
 		<Unit filename="tetrominos.c">
 			<Option compilerVar="CC" />
 		</Unit>
