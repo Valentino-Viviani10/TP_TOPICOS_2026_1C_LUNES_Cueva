@@ -12,14 +12,10 @@ void juego_inicializar_pieza(tPiezaActiva* pieza) {
     pieza->y = 0;
 }
 
-
 int posicion_valida(tPiezaActiva* pieza, int** tablero, int nueva_x, int nueva_y) {
-
     for (int fila = 0; fila < 4; fila++) {
         for (int col = 0; col < 4; col++) {
-
             if (piezas[pieza->tipo][pieza->rotacion][fila][col]) {
-
                 int pos_tablero_x = nueva_x + col;
                 int pos_tablero_y = nueva_y + fila;
 
@@ -39,19 +35,16 @@ int posicion_valida(tPiezaActiva* pieza, int** tablero, int nueva_x, int nueva_y
 }
 
 void juego_mover_izquierda(tPiezaActiva* pieza, int** tablero) {
-
     if(posicion_valida(pieza, tablero, pieza->x - 1, pieza->y))
         pieza->x--;
 }
 
 void juego_mover_derecha(tPiezaActiva* pieza, int** tablero) {
-
-        if(posicion_valida(pieza, tablero, pieza->x + 1, pieza->y))
+    if(posicion_valida(pieza, tablero, pieza->x + 1, pieza->y))
         pieza->x++;
 }
 
 void juego_rotar(tPiezaActiva* pieza, int** tablero) {
-
     int rotacion_vieja = pieza->rotacion;
 
     pieza->rotacion = (pieza->rotacion + 1) % 4;
@@ -80,21 +73,65 @@ void juego_rotar(tPiezaActiva* pieza, int** tablero) {
 }
 
 int juego_caer(tPiezaActiva* pieza, int** tablero) {
-
     if (posicion_valida(pieza, tablero, pieza->x, pieza->y + 1)){
         pieza->y++;
         return 1;
     }
     return 0;
-
 }
 
 void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero) {
     // TODO: Recorrer la matriz 4x4 de la pieza actual.
     // Si hay un bloque (1), copiar el pieza->color en esa
     // coordenada (y, x) de int** tablero.
-
-
-
-
 }
+
+/*
+static int marco_x;
+static int marco_y;
+
+static int pos_x;
+static int pos_y;
+
+void juego_inicializar(int ancho, int alto)
+{
+    marco_x = (ancho / 2) - (JUEGO_ANCHO / 2);
+    marco_y = (alto / 2) - (JUEGO_ALTO / 2);
+
+    pos_x = marco_x + 30;
+    pos_y = marco_y + 1;
+}
+
+void juego_mover_izquierda()
+{
+    if(pos_x > marco_x + 5){
+        pos_x = pos_x - 10;
+    }
+}
+
+void juego_mover_derecha()
+{
+    if(pos_x < marco_x + JUEGO_ANCHO - 15){
+        pos_x = pos_x + 10;
+    }
+}
+
+void juego_caer(int alto)
+{
+    pos_y = pos_y + 1;
+
+    if(pos_y > marco_y + JUEGO_ALTO - 4){
+    pos_y = marco_y + 1;
+    }
+}
+
+int juego_obtener_marco_x()
+{
+    return marco_x;
+}
+
+int juego_obtener_marco_y()
+{
+    return marco_y;
+}
+*/
