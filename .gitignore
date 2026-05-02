@@ -1,7 +1,27 @@
+# --- Archivos ejecutables y compilados (Code::Blocks/GCC) ---
+*.exe
+*.obj
+*.o
+*.a
+*.so
+*.out
+*.depend
+*.layout
+
+# --- Carpetas de compilación ---
 bin/
 obj/
+debug/
+release/
 
-*.exe
-*.o
+# --- Configuración de Code::Blocks ---
+*.cbp
+# Nota: Si el archivo .cbp (Code::Blocks Project) se comparte,
+# todos deben tener la misma versión de la IDE.
+# Si tienen problemas, añade *.cbp también.
 
-*.depend
+# --- Archivos de sistema/temporales ---
+.DS_Store
+Thumbs.db
+*~
+*.log
