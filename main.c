@@ -7,6 +7,11 @@
 #include "colores.h"
 #include "dibujar.h"
 #include "tablero.h"
+//<<<<<<< HEAD
+//=======
+#include "juego.h"
+#include "instrucciones.h"
+//>>>>>>> origin/master
 
 #define CGA_ANCHO 320
 #define CGA_ALTO 200
@@ -30,15 +35,18 @@
     Entrega: Si
 */
 
+//<<<<<<< HEAD
 // Stubs de funciones pendientes
 //void dibujar_juego(int ancho, int alto,int** tablero) {
     // TODO: Implementar
 //}
 
-void dibujar_inst(int ancho, int alto) {
+//void dibujar_inst(int ancho, int alto) {
     // TODO: Implementar
-}
+//}
 
+//=======
+//>>>>>>> origin/master
 static uint8_t elegir_color_permitido(void) {
     static const uint8_t coloresPermitidos[] = {
         COL_AZUL_BRILL,
@@ -58,6 +66,9 @@ int main(int argc, char* argv[])
     }
 
     srand((unsigned)time(NULL));
+
+    //tablero_inicializar();
+    //juego_inicializar();
 
     int ancho = CGA_ANCHO;
     int alto = CGA_ALTO;
@@ -182,6 +193,7 @@ int main(int argc, char* argv[])
     // variable global o que le pases como parametro
     uint8_t colorSeleccionado = COL_AMARILLO;
 
+//<<<<<<< HEAD
     //creacion de tablero de juego
     int** tablero = crear_tablero(FILAS, COLUMNAS, sizeof(int));
     if (!tablero) {
@@ -194,14 +206,20 @@ int main(int argc, char* argv[])
     tablero[18][4] = COL_ROJO_BRILL;
 
 
-    while(corriendo){
+    //while(corriendo){
+//=======
+    while(corriendo) {
+//>>>>>>> origin/master
         gbt_procesar_entrada();
         eGBT_Tecla tecla = gbt_obtener_tecla_presionada();
 
-        if(tecla == GBTK_ESCAPE){
+        if(tecla == GBTK_ESCAPE && (pantalla == 1 || pantalla == 0)) {
             corriendo = 0;
             printf("Saliendo del juego.\n");
-        } else if (tecla != GBTK_DESCONOCIDA){
+        } else if (tecla == GBTK_ESCAPE && pantalla == 2) {
+            pantalla = 0;
+            printf("Volviendo al menu principal.\n");
+        } else if (tecla != GBTK_DESCONOCIDA) {
             if(pantalla == 0){
                 if(tecla == GBTK_ABAJO){
                     opcionSeleccionada = 1;
@@ -217,6 +235,16 @@ int main(int argc, char* argv[])
                     } else if(opcionSeleccionada == 1){
                         pantalla = 2;
                     }
+                }
+            }
+
+            if(pantalla == 1){
+                if(tecla == GBTK_IZQUIERDA){
+                    juego_mover_izquierda();
+                }
+
+                if(tecla == GBTK_DERECHA){
+                    juego_mover_derecha();
                 }
             }
         }
@@ -250,6 +278,12 @@ int main(int argc, char* argv[])
         }
 
         gbt_volcar_backbuffer();
+
+        if(pantalla == 1){
+            juego_caer();
+        }
+
+
         gbt_esperar(16);
     }
     destruir_tablero(tablero, FILAS);

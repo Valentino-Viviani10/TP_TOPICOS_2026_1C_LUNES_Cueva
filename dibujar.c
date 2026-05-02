@@ -1,10 +1,17 @@
 #include "dibujar.h"
+#include "juego.h"
 #include "colores.h"
 #include <string.h>
 #include "tablero.h"
 
 int calcular_x_centrada(const char *palabra, const int ancho) {
     return (ancho - strlen(palabra) * 8) / 2;
+}
+
+void dibujar_linea_horizontal(const int x_ini, const int x_fin, const int y) {
+    for(int x = x_ini; x <= x_fin; x++) {
+        gbt_dibujar_pixel(x, y, COL_MAG_BRILL);
+    }
 }
 
 
@@ -104,6 +111,7 @@ void dibujar_tetromino(tTetrominoFondo tetromino, const int pantalla, const int 
     }
 }
 
+//<<<<<<< HEAD
 void dibujar_juego(int ancho, int alto, int** tablero) {
     int lado_bloque = 10; // Tamaño del bloque en píxeles
 
@@ -135,3 +143,36 @@ void dibujar_juego(int ancho, int alto, int** tablero) {
         }
     }
 }
+/*=======
+void dibujar_marco_juego()
+{
+    int x;
+    int y;
+
+    for(x = JUEGO_X; x <= JUEGO_X + JUEGO_ANCHO; x++){
+        gbt_dibujar_pixel(x, JUEGO_Y, COL_AZUL_BRILL);
+        gbt_dibujar_pixel(x, JUEGO_Y + JUEGO_ALTO, COL_AZUL_BRILL);
+    }
+
+    for(y = JUEGO_Y; y <= JUEGO_Y + JUEGO_ALTO; y++){
+        gbt_dibujar_pixel(JUEGO_X, y, COL_AZUL_BRILL);
+        gbt_dibujar_pixel(JUEGO_X + JUEGO_ANCHO, y, COL_AZUL_BRILL);
+    }
+}
+
+
+
+void dibujar_juego(int ancho, int alto)
+{
+    dibujar_marco_juego();
+    tTetrominoFondo tetromino;
+    tetromino.x = juego_obtener_x();
+    tetromino.y = juego_obtener_y();
+    tetromino.tipo = 0;
+    tetromino.rot = 0;
+    tetromino.activo = 1;
+    tetromino.color = COL_CIAN;
+
+    dibujar_tetromino(tetromino, 1, tetromino.rot, alto, ancho);
+}
+>>>>>>> origin/master*/

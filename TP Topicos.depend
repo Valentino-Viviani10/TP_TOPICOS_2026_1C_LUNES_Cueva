@@ -55,13 +55,14 @@
 	<stdlib.h>
 	<stdint.h>
 
-1777528616 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\dibujar.c
+1777682232 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\dibujar.c
 	"dibujar.h"
+	"juego.h"
 	"colores.h"
 	<string.h>
 	"tablero.h"
 
-1777506085 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\dibujar.h
+1777681772 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\dibujar.h
 	"font8x8_basic.h"
 	"GBT/gbt.h"
 	"tetrominos.h"
@@ -73,7 +74,7 @@
 
 1777404733 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\font8x8_basic.c
 
-1777528616 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\main.c
+1777682370 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -83,15 +84,38 @@
 	"colores.h"
 	"dibujar.h"
 	"tablero.h"
+	"juego.h"
+	"instrucciones.h"
 
 1777404733 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tetrominos.c
 	"tetrominos.h"
 	"colores.h"
 	<stdio.h>
 
-1777504251 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tablero.h
+1777682208 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tablero.h
 	<stdlib.h>
 
-1777504251 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tablero.c
+1777682267 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tablero.c
 	"tablero.h"
+
+1776898854 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tetris.c
+	"tetris.h"
+
+1776790886 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tetris.h
+	<GBT/gbt.h>
+
+1777681772 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\instrucciones.c
+	"instrucciones.h"
+	"dibujar.h"
+	"colores.h"
+
+1777681772 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\instrucciones.h
+	<stdio.h>
+	<stdlib.h>
+
+1777681772 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\juego.c
+	"juego.h"
+	"tetrominos.h"
+
+1777681772 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\juego.h
 
