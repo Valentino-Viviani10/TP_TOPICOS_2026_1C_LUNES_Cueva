@@ -114,15 +114,17 @@ void dibujar_marco_juego()
 {
     int x;
     int y;
+    int marco_x = juego_obtener_marco_x();
+    int marco_y = juego_obtener_marco_y();
 
-    for(x = JUEGO_X; x <= JUEGO_X + JUEGO_ANCHO; x++){
-        gbt_dibujar_pixel(x, JUEGO_Y, COL_AZUL_BRILL);
-        gbt_dibujar_pixel(x, JUEGO_Y + JUEGO_ALTO, COL_AZUL_BRILL);
+    for(x = marco_x; x <= marco_x + JUEGO_ANCHO; x++){
+        gbt_dibujar_pixel(x, marco_y, COL_AZUL_BRILL);
+        gbt_dibujar_pixel(x, marco_y + JUEGO_ALTO, COL_AZUL_BRILL);
     }
 
-    for(y = JUEGO_Y; y <= JUEGO_Y + JUEGO_ALTO; y++){
-        gbt_dibujar_pixel(JUEGO_X, y, COL_AZUL_BRILL);
-        gbt_dibujar_pixel(JUEGO_X + JUEGO_ANCHO, y, COL_AZUL_BRILL);
+    for(y = marco_y; y <= marco_y + JUEGO_ALTO; y++){
+        gbt_dibujar_pixel(marco_x, y, COL_AZUL_BRILL);
+        gbt_dibujar_pixel(marco_x + JUEGO_ANCHO, y, COL_AZUL_BRILL);
     }
 }
 

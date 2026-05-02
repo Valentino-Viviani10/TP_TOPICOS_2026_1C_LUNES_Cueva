@@ -52,8 +52,8 @@ int main(int argc, char* argv[])
 
     srand((unsigned)time(NULL));
 
+
     tablero_inicializar();
-    juego_inicializar();
 
     int ancho = CGA_ANCHO;
     int alto = CGA_ALTO;
@@ -101,6 +101,7 @@ int main(int argc, char* argv[])
         }
     }
 
+    juego_inicializar(ancho, alto);
     char nombreVentana[50];
     sprintf(nombreVentana, "TETRIS - %dx%d", ancho, alto);
 
