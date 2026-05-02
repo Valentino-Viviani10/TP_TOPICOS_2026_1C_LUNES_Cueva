@@ -55,17 +55,18 @@
 	<stdlib.h>
 	<stdint.h>
 
-1777682232 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\dibujar.c
+1777692949 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\dibujar.c
 	"dibujar.h"
 	"juego.h"
 	"colores.h"
 	<string.h>
 	"tablero.h"
 
-1777681772 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\dibujar.h
+1777692691 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\dibujar.h
 	"font8x8_basic.h"
 	"GBT/gbt.h"
 	"tetrominos.h"
+	"juego.h"
 
 1777404733 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\font8x8_basic.h
 
@@ -74,7 +75,7 @@
 
 1777404733 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\font8x8_basic.c
 
-1777682370 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\main.c
+1777710623 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -92,10 +93,10 @@
 	"colores.h"
 	<stdio.h>
 
-1777682208 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tablero.h
+1777741202 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tablero.h
 	<stdlib.h>
 
-1777682267 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tablero.c
+1777688097 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tablero.c
 	"tablero.h"
 
 1776898854 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\tetris.c
@@ -113,9 +114,11 @@
 	<stdio.h>
 	<stdlib.h>
 
-1777681772 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\juego.c
+1777710120 source:c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\juego.c
 	"juego.h"
-	"tetrominos.h"
+	<stdlib.h>
 
-1777681772 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\juego.h
+1777689362 c:\users\valen\onedrive\escritorio\tp_topicos_2026_1c_lunes_cueva\juego.h
+	"tablero.h"
+	"tetrominos.h"
 

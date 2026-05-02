@@ -7,11 +7,8 @@
 #include "colores.h"
 #include "dibujar.h"
 #include "tablero.h"
-//<<<<<<< HEAD
-//=======
 #include "juego.h"
 #include "instrucciones.h"
-//>>>>>>> origin/master
 
 #define CGA_ANCHO 320
 #define CGA_ALTO 200
@@ -35,18 +32,13 @@
     Entrega: Si
 */
 
-//<<<<<<< HEAD
-// Stubs de funciones pendientes
-//void dibujar_juego(int ancho, int alto,int** tablero) {
-    // TODO: Implementar
-//}
+
 
 //void dibujar_inst(int ancho, int alto) {
     // TODO: Implementar
 //}
 
-//=======
-//>>>>>>> origin/master
+
 static uint8_t elegir_color_permitido(void) {
     static const uint8_t coloresPermitidos[] = {
         COL_AZUL_BRILL,
@@ -67,8 +59,6 @@ int main(int argc, char* argv[])
 
     srand((unsigned)time(NULL));
 
-    //tablero_inicializar();
-    //juego_inicializar();
 
     int ancho = CGA_ANCHO;
     int alto = CGA_ALTO;
@@ -163,12 +153,12 @@ int main(int argc, char* argv[])
     if (limiteDerechoTetrominos > ancho - anchoTetromino) {
         limiteDerechoTetrominos = ancho - anchoTetromino;
     }
-
-    tGBT_Temporizador *temporizador = gbt_temporizador_crear(1.0);
+    //me parecio q no se usaba y la comente
+    /*tGBT_Temporizador *temporizador = gbt_temporizador_crear(1.0);
     if (!temporizador) {
         fprintf(stderr, "Error al crear el temporizador para los tetrominos: %s\n", gbt_obtener_log());
         return -1;
-    }
+    }*/
 
     tGBT_Temporizador *temp_activar_tetrominos = gbt_temporizador_crear(2.0);
     if (!temp_activar_tetrominos) {
@@ -182,6 +172,13 @@ int main(int argc, char* argv[])
         return -1;
     }
 
+    tGBT_Temporizador *temp_juego_caida = gbt_temporizador_crear(1.0);
+    if (!temp_juego_caida) {
+        fprintf(stderr, "Error al crear el temporizador de caída de juego: %s\n", gbt_obtener_log());
+        return -1;
+    }
+
+
     // Inicializar tetrominos decorativos
     tTetrominoFondo tetrominos_decorativos[4];
     inicializar_tetrominos_fondo(tetrominos_decorativos);
@@ -193,33 +190,29 @@ int main(int argc, char* argv[])
     // variable global o que le pases como parametro
     uint8_t colorSeleccionado = COL_AMARILLO;
 
-//<<<<<<< HEAD
+
     //creacion de tablero de juego
     int** tablero = crear_tablero(FILAS, COLUMNAS, sizeof(int));
     if (!tablero) {
         return -1;
     }
+    tPiezaActiva pieza_activa;
+    juego_inicializar_pieza(&pieza_activa);
 
-    //prueba
-    tablero[19][0] = COL_ROJO_BRILL;
-    tablero[19][9] = COL_ROJO_BRILL;
-    tablero[18][4] = COL_ROJO_BRILL;
-
-
-    //while(corriendo){
-//=======
     while(corriendo) {
-//>>>>>>> origin/master
+
         gbt_procesar_entrada();
         eGBT_Tecla tecla = gbt_obtener_tecla_presionada();
 
         if(tecla == GBTK_ESCAPE && (pantalla == 1 || pantalla == 0)) {
             corriendo = 0;
             printf("Saliendo del juego.\n");
-        } else if (tecla == GBTK_ESCAPE && pantalla == 2) {
+        }
+        else if (tecla == GBTK_ESCAPE && pantalla == 2) {
             pantalla = 0;
             printf("Volviendo al menu principal.\n");
-        } else if (tecla != GBTK_DESCONOCIDA) {
+        }
+        else if (tecla != GBTK_DESCONOCIDA) {
             if(pantalla == 0){
                 if(tecla == GBTK_ABAJO){
                     opcionSeleccionada = 1;
@@ -237,18 +230,30 @@ int main(int argc, char* argv[])
                     }
                 }
             }
-
+            //JUEGO
             if(pantalla == 1){
                 if(tecla == GBTK_IZQUIERDA){
-                    juego_mover_izquierda();
+                    juego_mover_izquierda(&pieza_activa, tablero);
                 }
 
                 if(tecla == GBTK_DERECHA){
-                    juego_mover_derecha();
+                    juego_mover_derecha(&pieza_activa, tablero);
                 }
+                if(tecla == GBTK_r){
+                    juego_rotar(&pieza_activa, tablero);
+                }
+
             }
         }
 
+        if(pantalla == 1){
+            if (gbt_temporizador_consumir(temp_juego_caida)) {
+                if (juego_caer(&pieza_activa, tablero) == 0) {
+                    juego_inicializar_pieza(&pieza_activa);
+                    juego_fijar_pieza(&pieza_activa, tablero);
+                }
+            }
+        }
         // Dibujar fondo y bordes
         dibujar_fondo(alto, ancho);
         dibujar_borde(alto, ancho);
@@ -272,19 +277,17 @@ int main(int argc, char* argv[])
                 }
             }
         } else if(pantalla == 1){
-            dibujar_juego(ancho, alto,tablero);
+            dibujar_juego(ancho, alto,tablero,&pieza_activa);
         } else if(pantalla == 2){
             dibujar_inst(ancho, alto);
         }
 
         gbt_volcar_backbuffer();
 
-        if(pantalla == 1){
-            juego_caer();
-        }
-
-
         gbt_esperar(16);
     }
     destruir_tablero(tablero, FILAS);
+    gbt_temporizador_destruir(temp_caida_tetrominos);
+    gbt_temporizador_destruir(temp_activar_tetrominos);
+    gbt_temporizador_destruir(temp_juego_caida);
 }

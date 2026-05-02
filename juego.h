@@ -1,19 +1,28 @@
 #ifndef JUEGO_H_INCLUDED
 #define JUEGO_H_INCLUDED
 
-#define JUEGO_X 120
-#define JUEGO_Y 20
-#define JUEGO_ANCHO 80
-#define JUEGO_ALTO 160
+#include "tablero.h"
+#include "tetrominos.h"
 
-void juego_inicializar();
 
-void juego_mover_izquierda();
-void juego_mover_derecha();
-void juego_caer();
+typedef struct {
+    int x;          // Posicion X en el tablero 0 a 9
+    int y;          // Posicion Y en el tablero 0 a 19
+    int tipo;       // Que pieza es (0 a 6)
+    int rotacion;   // Estado (0 a 3)
+    int color;      // Color
+} tPiezaActiva;
 
-int juego_obtener_x();
-int juego_obtener_y();
+void juego_inicializar_pieza(tPiezaActiva* pieza);
 
+void juego_mover_izquierda(tPiezaActiva* pieza, int** tablero);
+
+void juego_mover_derecha(tPiezaActiva* pieza, int** tablero);
+
+void juego_rotar(tPiezaActiva* pieza, int** tablero);
+
+int juego_caer(tPiezaActiva* pieza, int** tablero);
+
+void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero);
 
 #endif // JUEGO_H_INCLUDED

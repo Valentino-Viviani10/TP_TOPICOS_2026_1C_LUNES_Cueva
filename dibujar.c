@@ -111,8 +111,7 @@ void dibujar_tetromino(tTetrominoFondo tetromino, const int pantalla, const int 
     }
 }
 
-//<<<<<<< HEAD
-void dibujar_juego(int ancho, int alto, int** tablero) {
+void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza) {
     int lado_bloque = 10; // Tamaño del bloque en píxeles
 
     // Centrar el tablero
@@ -142,37 +141,26 @@ void dibujar_juego(int ancho, int alto, int** tablero) {
             }
         }
     }
-}
-/*=======
-void dibujar_marco_juego()
-{
-    int x;
-    int y;
+    for (int pi = 0; pi < 4; pi++) {
+        for (int pj = 0; pj < 4; pj++) {
 
-    for(x = JUEGO_X; x <= JUEGO_X + JUEGO_ANCHO; x++){
-        gbt_dibujar_pixel(x, JUEGO_Y, COL_AZUL_BRILL);
-        gbt_dibujar_pixel(x, JUEGO_Y + JUEGO_ALTO, COL_AZUL_BRILL);
+            if (piezas[pieza->tipo][pieza->rotacion][pi][pj]) {
+
+                int grilla_x = pieza->x + pj;
+                int grilla_y = pieza->y + pi;
+
+                if (grilla_x >= 0 && grilla_x < COLUMNAS && grilla_y >= 0 && grilla_y < FILAS) {
+                    for (int dy = 0; dy < lado_bloque - 1; dy++) {
+                        for (int dx = 0; dx < lado_bloque - 1; dx++) {
+                            int pixel_x = inicio_x + (grilla_x * lado_bloque) + dx;
+                            int pixel_y = inicio_y + (grilla_y * lado_bloque) + dy;
+
+                            gbt_dibujar_pixel(pixel_x, pixel_y, pieza->color);
+                        }
+                    }
+                }
+            }
+        }
     }
-
-    for(y = JUEGO_Y; y <= JUEGO_Y + JUEGO_ALTO; y++){
-        gbt_dibujar_pixel(JUEGO_X, y, COL_AZUL_BRILL);
-        gbt_dibujar_pixel(JUEGO_X + JUEGO_ANCHO, y, COL_AZUL_BRILL);
-    }
 }
 
-
-
-void dibujar_juego(int ancho, int alto)
-{
-    dibujar_marco_juego();
-    tTetrominoFondo tetromino;
-    tetromino.x = juego_obtener_x();
-    tetromino.y = juego_obtener_y();
-    tetromino.tipo = 0;
-    tetromino.rot = 0;
-    tetromino.activo = 1;
-    tetromino.color = COL_CIAN;
-
-    dibujar_tetromino(tetromino, 1, tetromino.rot, alto, ancho);
-}
->>>>>>> origin/master*/
