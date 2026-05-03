@@ -111,7 +111,128 @@ void dibujar_tetromino(tTetrominoFondo tetromino, const int pantalla, const int 
     }
 }
 
-void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza) {
+int calcular_lado_bloque_juego(int alto)
+{
+    int lado_bloque;
+
+    lado_bloque = alto / 24;
+
+    if(lado_bloque < 6){
+        lado_bloque = 6;
+    }
+
+    if(lado_bloque > 20){
+        lado_bloque = 20;
+    }
+
+    return lado_bloque;
+}
+
+void dibujar_bloque_tablero(int x, int y, int color, int lado_bloque)
+{
+    int dx;
+    int dy;
+
+    for(dy = 0; dy < lado_bloque - 1; dy++){
+        for(dx = 0; dx < lado_bloque - 1; dx++){
+            gbt_dibujar_pixel(x + dx, y + dy, color);
+        }
+    }
+}
+
+void dibujar_marco_tablero(int marco_x, int marco_y, int lado_bloque)
+{
+    int x;
+    int y;
+    int ancho_tablero;
+    int alto_tablero;
+
+    ancho_tablero = COLUMNAS * lado_bloque;
+    alto_tablero = FILAS * lado_bloque;
+
+    for(x = marco_x - 1; x <= marco_x + ancho_tablero; x++){
+        gbt_dibujar_pixel(x, marco_y - 1, COL_MAG_BRILL);
+        gbt_dibujar_pixel(x, marco_y + alto_tablero, COL_MAG_BRILL);
+    }
+
+    for(y = marco_y - 1; y <= marco_y + alto_tablero; y++){
+        gbt_dibujar_pixel(marco_x - 1, y, COL_MAG_BRILL);
+        gbt_dibujar_pixel(marco_x + ancho_tablero, y, COL_MAG_BRILL);
+    }
+}
+
+void dibujar_tablero(int** tablero, int marco_x, int marco_y, int lado_bloque)
+{
+    int fila;
+    int col;
+    int color;
+
+    for(fila = 0; fila < FILAS; fila++){
+        for(col = 0; col < COLUMNAS; col++){
+            color = tablero[fila][col];
+
+            if(color == 0){
+                color = COL_NEGRO;
+            }
+
+            dibujar_bloque_tablero(marco_x + col * lado_bloque,
+                                   marco_y + fila * lado_bloque,
+                                   color,
+                                   lado_bloque);
+        }
+    }
+}
+
+void dibujar_pieza_activa(tPiezaActiva* pieza, int marco_x, int marco_y, int lado_bloque)
+{
+    int fila;
+    int col;
+    int grilla_x;
+    int grilla_y;
+
+    for(fila = 0; fila < 4; fila++){
+        for(col = 0; col < 4; col++){
+            if(piezas[pieza->tipo][pieza->rotacion][fila][col]){
+                grilla_x = pieza->x + col;
+                grilla_y = pieza->y + fila;
+
+                if(grilla_x >= 0 && grilla_x < COLUMNAS && grilla_y >= 0 && grilla_y < FILAS){
+                    dibujar_bloque_tablero(marco_x + grilla_x * lado_bloque,
+                                           marco_y + grilla_y * lado_bloque,
+                                           pieza->color,
+                                           lado_bloque);
+                }
+            }
+        }
+    }
+}
+
+void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int juego_terminado)
+{
+    int lado_bloque;
+    int marco_x;
+    int marco_y;
+
+    lado_bloque = calcular_lado_bloque_juego(alto);
+
+    marco_x = (ancho / 2) - ((COLUMNAS * lado_bloque) / 2);
+    marco_y = (alto / 2) - ((FILAS * lado_bloque) / 2);
+
+    dibujar_marco_tablero(marco_x, marco_y, lado_bloque);
+    dibujar_tablero(tablero, marco_x, marco_y, lado_bloque);
+
+    if(!juego_terminado){
+        dibujar_pieza_activa(pieza, marco_x, marco_y, lado_bloque);
+    }
+
+    if(juego_terminado){
+        dibujar_texto_8x8("JUEGO TERMINADO", calcular_x_centrada("JUEGO TERMINADO", ancho), alto / 2, COL_ROJO_BRILL);
+        dibujar_texto_8x8("ESC PARA SALIR", calcular_x_centrada("ESC PARA SALIR", ancho), alto / 2 + 12, COL_GRIS_CLARO);
+    }
+}
+
+
+/*void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza) {
     int lado_bloque = 10; // Tamaño del bloque en píxeles
 
     // Centrar el tablero
@@ -164,6 +285,8 @@ void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza) {
         }
     }
 }
+*/
+
 /*
 void dibujar_marco_juego() {
     int x;

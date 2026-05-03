@@ -5,6 +5,7 @@
 #include "GBT/gbt.h"
 #include "tetrominos.h"
 #include "juego.h"
+#include "tablero.h"
 
 #define GROSOR_BORDE 2
 
@@ -22,7 +23,7 @@ void dibujar_borde(const int alto, const int ancho);
 
 void dibujar_tetromino(tTetrominoFondo tetromino, const int pantalla, const int rot, const int alto, const int ancho);
 
-void dibujar_juego(int ancho, int alto,int** tablero, tPiezaActiva* pieza);
+void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int juego_terminado);
 
 void dibujar_marco_juego();
 

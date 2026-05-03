@@ -19,11 +19,12 @@ int elegirColor(int pieza)
         color = COL_AMARILLO;
         break;
     case 2:
-        color = COL_PURPURA;
+        color = COL_MAG_BRILL;
         break;
     case 3:
         color = COL_VERDE;
         break;
+
     case 4:
         color = COL_ROJO;
         break;
@@ -113,7 +114,7 @@ void actualizar_tetrominos_fondo(tTetrominoFondo tetrominos[], const int alto, c
                 tetrominos[i].rot = rand() % 4;
                 tetrominos[i].color = elegirColor(tetrominos[i].tipo);
                 tetrominos[i].y = -4 * TETROMINO_ESCALA;  // Entra desde arriba
-                
+
                 // Alternar entre lados: izquierda (0,1) y derecha (2,3)
                 if(i < 2) {
                     int max_x = limite_izquierdo - ancho_tetromino;
@@ -141,7 +142,7 @@ void actualizar_tetrominos_fondo(tTetrominoFondo tetrominos[], const int alto, c
         for(i = 0; i < cantidad; i++) {
             if(tetrominos[i].activo) {
                 tetrominos[i].y += 2;
-                
+
                 // Desactivar si sale de pantalla
                 if(tetrominos[i].y > alto) {
                     tetrominos[i].activo = 0;

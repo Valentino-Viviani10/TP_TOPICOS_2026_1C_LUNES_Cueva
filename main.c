@@ -192,6 +192,7 @@ int main(int argc, char* argv[])
     int corriendo = 1;
     int opcionSeleccionada = 0;
     int pantalla = 0;
+    int juego_terminado = 0;
 
     // variable global o que le pases como parametro
     uint8_t colorSeleccionado = COL_AMARILLO;
@@ -237,7 +238,7 @@ int main(int argc, char* argv[])
                 }
             }
             //JUEGO
-            if(pantalla == 1){
+            if(pantalla == 1 && !juego_terminado){
                 if(tecla == GBTK_IZQUIERDA){
                     juego_mover_izquierda(&pieza_activa, tablero);
                 }
@@ -248,10 +249,25 @@ int main(int argc, char* argv[])
                 if(tecla == GBTK_r){
                     juego_rotar(&pieza_activa, tablero);
                 }
+                if(tecla == GBTK_ARRIBA){
+                    juego_rotar(&pieza_activa, tablero);
+                }
+                if(tecla == GBTK_ABAJO){
+                    if(!juego_caer(&pieza_activa, tablero)){
+                        juego_fijar_pieza(&pieza_activa, tablero);
+                        juego_inicializar_pieza(&pieza_activa);
+
+                        if(!juego_puede_iniciar_pieza(&pieza_activa, tablero)){
+                            juego_terminado = 1;
+                        }
+                    }
+                }
+
 
             }
         }
 
+        /* Lo dejo comentado para incluir mejora de juego terminado y fijar pieza al tableo
         if(pantalla == 1){
             if (gbt_temporizador_consumir(temp_juego_caida)) {
                 if (juego_caer(&pieza_activa, tablero) == 0) {
@@ -260,6 +276,20 @@ int main(int argc, char* argv[])
                 }
             }
         }
+        */
+        if(pantalla == 1 && !juego_terminado){
+            if(gbt_temporizador_consumir(temp_juego_caida)){
+                if(!juego_caer(&pieza_activa, tablero)){
+                    juego_fijar_pieza(&pieza_activa, tablero);
+                    juego_inicializar_pieza(&pieza_activa);
+
+                    if(!juego_puede_iniciar_pieza(&pieza_activa, tablero)){
+                    juego_terminado = 1;
+                    }
+                }
+            }
+        }
+
         // Dibujar fondo y bordes
         dibujar_fondo(alto, ancho);
         dibujar_borde(alto, ancho);
@@ -283,7 +313,8 @@ int main(int argc, char* argv[])
                 }
             }
         } else if(pantalla == 1){
-            dibujar_juego(ancho, alto,tablero,&pieza_activa);
+           /* dibujar_juego(ancho, alto,tablero,&pieza_activa);*/
+           dibujar_juego(ancho, alto, tablero, &pieza_activa, juego_terminado);
         } else if(pantalla == 2){
             dibujar_inst(ancho, alto);
         }

@@ -84,6 +84,26 @@ void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero) {
     // TODO: Recorrer la matriz 4x4 de la pieza actual.
     // Si hay un bloque (1), copiar el pieza->color en esa
     // coordenada (y, x) de int** tablero.
+    int fila;
+    int col;
+
+    for (fila = 0; fila < 4; fila++) {
+        for (col = 0; col < 4; col++) {
+            if (piezas[pieza->tipo][pieza->rotacion][fila][col]) {
+                int pos_tablero_x = pieza->x + col;
+                int pos_tablero_y = pieza->y + fila;
+
+                if (pos_tablero_y >= 0 && pos_tablero_y < FILAS &&
+                    pos_tablero_x >= 0 && pos_tablero_x < COLUMNAS) {
+                    tablero[pos_tablero_y][pos_tablero_x] = pieza->color;
+                }
+            }
+        }
+    }
+}
+
+int juego_puede_iniciar_pieza(tPiezaActiva* pieza, int** tablero) {
+    return posicion_valida(pieza, tablero, pieza->x, pieza->y);
 }
 
 /*
