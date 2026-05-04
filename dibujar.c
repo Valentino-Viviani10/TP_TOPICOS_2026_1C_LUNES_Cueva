@@ -2,6 +2,7 @@
 #include "juego.h"
 #include "colores.h"
 #include <string.h>
+#include <stdio.h>
 #include "tablero.h"
 
 int calcular_x_centrada(const char *palabra, const int ancho) {
@@ -72,11 +73,11 @@ void dibujar_borde(const int alto, const int ancho, const int iniX, const int in
 
     for(int g = 0; g < GROSOR_BORDE; g++){
         for(x = iniX; x < ancho; x++){
-            gbt_dibujar_pixel(x, g, COL_AZUL);          // superior
+            gbt_dibujar_pixel(x, iniY + g, COL_AZUL);          // superior
             gbt_dibujar_pixel(x, alto - 1 - g, COL_AZUL); // inferior
         }
         for(y = iniY; y < alto; y++){
-            gbt_dibujar_pixel(g, y, COL_AZUL);          // izquierdo
+            gbt_dibujar_pixel(iniX + g, y, COL_AZUL);          // izquierdo
             gbt_dibujar_pixel(ancho - 1 - g, y, COL_AZUL); // derecho
         }
     }
@@ -207,17 +208,8 @@ void dibujar_pieza_activa(tPiezaActiva* pieza, int marco_x, int marco_y, int lad
     }
 }
 
-void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int juego_terminado)
+void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int juego_terminado, int marco_x, int marco_y, int lado_bloque)
 {
-    int lado_bloque;
-    int marco_x;
-    int marco_y;
-
-    lado_bloque = calcular_lado_bloque_juego(alto);
-
-    marco_x = (ancho / 2) - ((COLUMNAS * lado_bloque) / 2);
-    marco_y = (alto / 2) - ((FILAS * lado_bloque) / 2);
-
     dibujar_marco_tablero(marco_x, marco_y, lado_bloque);
     dibujar_tablero(tablero, marco_x, marco_y, lado_bloque);
 
@@ -234,14 +226,14 @@ void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int 
 void dibujar_puntuacion(int* puntaje, int altoPantalla, int altoJuego, int anchoPantalla, int anchoJuego) {
     int iniX = anchoJuego + 2;
     int finX = anchoPantalla - 10;
-    int maxY = 40;
-    int y = 5;
+    int maxY = 60;
+    int y = 7;
     int iniPal = iniX + 4;
 
     char buffer[20];
     sprintf(buffer, "%07d", *puntaje);
 
-    dibujar_borde(maxY, finX, iniX, 2);
+    dibujar_borde(maxY, finX, iniX, 4);
 
     dibujar_texto_8x8("SCORE", iniPal, y, COL_VERDE_BRILL);
     dibujar_texto_8x8(buffer, iniPal, y + ESPACIO_ENTRE_SCORES, COL_VERDE_BRILL);

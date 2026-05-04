@@ -8,7 +8,7 @@
 #include "tablero.h"
 
 #define GROSOR_BORDE 2
-#define ESPACIO_ENTRE_SCORES 5
+#define ESPACIO_ENTRE_SCORES 10
 
 int calcular_x_centrada(const char *palabra, const int ancho);
 
@@ -24,10 +24,12 @@ void dibujar_borde(const int alto, const int ancho, const int iniX, const int in
 
 void dibujar_tetromino(tTetrominoFondo tetromino, const int pantalla, const int rot, const int alto, const int ancho);
 
-void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int juego_terminado);
+void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int juego_terminado, int marco_x, int marco_y, int lado_bloque);
 
 void dibujar_inst(int ancho, int alto);
 
 void dibujar_puntuacion(int* puntaje, int altoPantalla, int altoJuego, int anchoPantalla, int anchoJuego);
+
+int calcular_lado_bloque_juego(int alto);
 
 #endif // DIBUJAR_H_INCLUDED

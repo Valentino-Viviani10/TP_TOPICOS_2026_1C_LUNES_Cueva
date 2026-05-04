@@ -12,7 +12,7 @@ void destruir_tablero(int** tablero, int filas);
 
 void eliminar_fila_y_bajar(int** tablero, int fila_a_borrar,int columnas);
 
-void borrar_lineas(int** tablero,int filas, int columnas);
+int borrar_lineas(int** tablero, int filas, int columnas);
 
 #endif
 
