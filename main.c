@@ -292,9 +292,9 @@ int main(int argc, char* argv[])
 
         // Dibujar fondo y bordes
         dibujar_fondo(alto, ancho);
-        dibujar_borde(alto, ancho);
+        dibujar_borde(alto, ancho, 0, 0);
 
-        // Cambiar color de fondo al presionar arriba/abajo
+        // Cambiar color de opciones al presionar arriba/abajo
         if(tecla == GBTK_ABAJO || tecla == GBTK_ARRIBA){
             colorSeleccionado = elegir_color_permitido();
         }

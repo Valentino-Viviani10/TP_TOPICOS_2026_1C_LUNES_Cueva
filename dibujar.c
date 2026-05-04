@@ -67,15 +67,15 @@ void dibujar_fondo(const int alto, const int ancho) {
     }
 }
 
-void dibujar_borde(const int alto, const int ancho) {
+void dibujar_borde(const int alto, const int ancho, const int iniX, const int iniY) {
     int x, y;
 
     for(int g = 0; g < GROSOR_BORDE; g++){
-        for(x = 0; x < ancho; x++){
+        for(x = iniX; x < ancho; x++){
             gbt_dibujar_pixel(x, g, COL_AZUL);          // superior
             gbt_dibujar_pixel(x, alto - 1 - g, COL_AZUL); // inferior
         }
-        for(y = 0; y < alto; y++){
+        for(y = iniY; y < alto; y++){
             gbt_dibujar_pixel(g, y, COL_AZUL);          // izquierdo
             gbt_dibujar_pixel(ancho - 1 - g, y, COL_AZUL); // derecho
         }
@@ -231,6 +231,21 @@ void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int 
     }
 }
 
+void dibujar_puntuacion(int* puntaje, int altoPantalla, int altoJuego, int anchoPantalla, int anchoJuego) {
+    int iniX = anchoJuego + 2;
+    int finX = anchoPantalla - 10;
+    int maxY = 40;
+    int y = 5;
+    int iniPal = iniX + 4;
+
+    char buffer[20];
+    sprintf(buffer, "%07d", *puntaje);
+
+    dibujar_borde(maxY, finX, iniX, 2);
+
+    dibujar_texto_8x8("SCORE", iniPal, y, COL_VERDE_BRILL);
+    dibujar_texto_8x8(buffer, iniPal, y + ESPACIO_ENTRE_SCORES, COL_VERDE_BRILL);
+}
 
 /*void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza) {
     int lado_bloque = 10; // Tamaño del bloque en píxeles

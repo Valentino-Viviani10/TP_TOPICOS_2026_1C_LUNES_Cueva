@@ -9,6 +9,4 @@
 #define OFFSET_X 20
 #define OFFSET_Y 10
 
-void dibujar_inst(int ancho, int alto);
-
 #endif // INSTRUCCIONES_H_INCLUDED
