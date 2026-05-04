@@ -59,12 +59,6 @@ int main(int argc, char* argv[])
 
     srand((unsigned)time(NULL));
 
-/*<<<<<<< HEAD
-=======
-
-    tablero_inicializar();
->>>>>>> 8bb2de69627d242a00f91586679acdb38cfb856f*/
-
     int ancho = CGA_ANCHO;
     int alto = CGA_ALTO;
     int escala = 2;
@@ -111,7 +105,6 @@ int main(int argc, char* argv[])
         }
     }
 
-    //juego_inicializar(ancho, alto);
     char nombreVentana[50];
     sprintf(nombreVentana, "TETRIS - %dx%d", ancho, alto);
 
@@ -184,6 +177,17 @@ int main(int argc, char* argv[])
         return -1;
     }
 
+    tGBT_Temporizador *temp_movimiento_lateral = gbt_temporizador_crear(0.1);
+    if (!temp_movimiento_lateral) {
+        fprintf(stderr, "Error al crear el temporizador de movimiento lateral: %s\n", gbt_obtener_log());
+        return -1;
+    }
+
+    tGBT_Temporizador *temp_caida_rapida = gbt_temporizador_crear(0.05);
+    if (!temp_caida_rapida) {
+        fprintf(stderr, "Error al crear el temporizador de movimiento abajo: %s\n", gbt_obtener_log());
+        return -1;
+    }
 
     // Inicializar tetrominos decorativos
     tTetrominoFondo tetrominos_decorativos[4];
@@ -211,6 +215,7 @@ int main(int argc, char* argv[])
         gbt_procesar_entrada();
         eGBT_Tecla tecla = gbt_obtener_tecla_presionada();
 
+        //MENU
         if(tecla == GBTK_ESCAPE && (pantalla == 1 || pantalla == 0)) {
             corriendo = 0;
             printf("Saliendo del juego.\n");
@@ -222,39 +227,46 @@ int main(int argc, char* argv[])
         else if (tecla != GBTK_DESCONOCIDA) {
             if(pantalla == 0){
                 if(tecla == GBTK_ABAJO){
-                    opcionSeleccionada = 1;
+                        opcionSeleccionada = 1;
                 }
-
                 if(tecla == GBTK_ARRIBA){
-                    opcionSeleccionada = 0;
+                        opcionSeleccionada = 0;
                 }
-
                 if(tecla == GBTK_ENTER){
                     if(opcionSeleccionada == 0){
-                        pantalla = 1;
-                    } else if(opcionSeleccionada == 1){
-                        pantalla = 2;
+                            pantalla = 1;
+                    }
+                    else if(opcionSeleccionada == 1){
+                            pantalla = 2;
                     }
                 }
-            }
-            //JUEGO
+            }//JUEGO
             if(pantalla == 1 && !juego_terminado){
-                if(tecla == GBTK_IZQUIERDA){
+                if(tecla == GBTK_r || tecla == GBTK_ARRIBA){
+                    juego_rotar(&pieza_activa, tablero);
+                }
+            }
+        }
+
+        if(pantalla == 1 && !juego_terminado){
+
+            if (gbt_tecla_sostenida(GBTK_IZQUIERDA)) {
+                if (gbt_temporizador_consumir(temp_movimiento_lateral) || tecla == GBTK_IZQUIERDA) {
                     juego_mover_izquierda(&pieza_activa, tablero);
                 }
-
-                if(tecla == GBTK_DERECHA){
+            }
+            if (gbt_tecla_sostenida(GBTK_DERECHA)) {
+                if (gbt_temporizador_consumir(temp_movimiento_lateral) || tecla == GBTK_DERECHA) {
                     juego_mover_derecha(&pieza_activa, tablero);
                 }
-                if(tecla == GBTK_r){
-                    juego_rotar(&pieza_activa, tablero);
-                }
-                if(tecla == GBTK_ARRIBA){
-                    juego_rotar(&pieza_activa, tablero);
-                }
-                if(tecla == GBTK_ABAJO){
+            }
+
+            if (gbt_tecla_sostenida(GBTK_ABAJO)) {
+                if (gbt_temporizador_consumir(temp_caida_rapida) || tecla == GBTK_ABAJO) {
                     if(!juego_caer(&pieza_activa, tablero)){
+
                         juego_fijar_pieza(&pieza_activa, tablero);
+                        borrar_lineas(tablero, FILAS, COLUMNAS);
                         juego_inicializar_pieza(&pieza_activa);
 
                         if(!juego_puede_iniciar_pieza(&pieza_activa, tablero)){
@@ -262,29 +274,18 @@ int main(int argc, char* argv[])
                         }
                     }
                 }
-
-
             }
-        }
+            else {
+                if(gbt_temporizador_consumir(temp_juego_caida)){
+                    if(!juego_caer(&pieza_activa, tablero)){
 
-        /* Lo dejo comentado para incluir mejora de juego terminado y fijar pieza al tableo
-        if(pantalla == 1){
-            if (gbt_temporizador_consumir(temp_juego_caida)) {
-                if (juego_caer(&pieza_activa, tablero) == 0) {
-                    juego_inicializar_pieza(&pieza_activa);
-                    juego_fijar_pieza(&pieza_activa, tablero);
-                }
-            }
-        }
-        */
-        if(pantalla == 1 && !juego_terminado){
-            if(gbt_temporizador_consumir(temp_juego_caida)){
-                if(!juego_caer(&pieza_activa, tablero)){
-                    juego_fijar_pieza(&pieza_activa, tablero);
-                    juego_inicializar_pieza(&pieza_activa);
+                        juego_fijar_pieza(&pieza_activa, tablero);
+                        borrar_lineas(tablero, FILAS, COLUMNAS);
+                        juego_inicializar_pieza(&pieza_activa);
 
-                    if(!juego_puede_iniciar_pieza(&pieza_activa, tablero)){
-                    juego_terminado = 1;
+                        if(!juego_puede_iniciar_pieza(&pieza_activa, tablero)){
+                            juego_terminado = 1;
+                        }
                     }
                 }
             }
@@ -327,4 +328,6 @@ int main(int argc, char* argv[])
     gbt_temporizador_destruir(temp_caida_tetrominos);
     gbt_temporizador_destruir(temp_activar_tetrominos);
     gbt_temporizador_destruir(temp_juego_caida);
+    gbt_temporizador_destruir(temp_movimiento_lateral);
+    gbt_temporizador_destruir(temp_caida_rapida);
 }

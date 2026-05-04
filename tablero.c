@@ -45,3 +45,26 @@ void destruir_tablero(int** tablero,int filas) {
     free(tablero);
 }
 
+void borrar_lineas(int** tablero,int filas, int columnas){
+    int fila = 0;
+    int columna = 0;
+    int llena = 0;
+
+    while(fila < filas){
+        while(columna < columnas && tablero[fila][columna]){
+            llena++;
+            columna++;
+        }
+        if(llena == columnas){
+            eliminar_fila_y_bajar(tablero, fila, columnas);
+        }
+        columna = 0;
+        fila++;
+        llena = 0;
+    }
+}
+
+
+
+
+

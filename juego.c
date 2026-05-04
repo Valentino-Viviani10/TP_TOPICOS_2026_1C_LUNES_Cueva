@@ -106,6 +106,11 @@ int juego_puede_iniciar_pieza(tPiezaActiva* pieza, int** tablero) {
     return posicion_valida(pieza, tablero, pieza->x, pieza->y);
 }
 
+
+
+
+
+
 /*
 static int marco_x;
 static int marco_y;
