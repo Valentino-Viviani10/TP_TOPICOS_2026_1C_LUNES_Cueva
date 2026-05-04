@@ -19,7 +19,6 @@ typedef struct {
 
 void juego_inicializar_pieza(tPiezaActiva* pieza);
 
-//<<<<<<< HEAD
 void juego_mover_izquierda(tPiezaActiva* pieza, int** tablero);
 
 void juego_mover_derecha(tPiezaActiva* pieza, int** tablero);
@@ -32,7 +31,7 @@ void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero);
 
 int juego_puede_iniciar_pieza(tPiezaActiva* pieza, int** tablero);
 
-/*=======
+/*
 int juego_obtener_marco_x();
 int juego_obtener_marco_y();
 
