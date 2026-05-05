@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include "GBT/gbt.h"
-#include "font8x8_basic.h"
+// #include "font8x8_basic.h" // ya no usamos esa fuente externa
 #include "colores.h"
 #include "dibujar.h"
 #include "tablero.h"
@@ -40,7 +40,7 @@ static void fijar_y_nueva_pieza(tPiezaActiva *pieza, int *puntaje, int **tablero
     sumar_puntos(filasElim, *casillasManuales, puntaje);
 
     *casillasManuales = 0;
-    
+
     juego_inicializar_pieza(pieza);
 
     if(!juego_puede_iniciar_pieza(pieza, tablero)){
@@ -135,7 +135,8 @@ int main(int argc, char* argv[])
     int xInstrucciones = calcular_x_centrada(opcionInstrucciones, ancho);
 
     int menuIzquierdo = xTitulo;
-    int menuDerecho = xTitulo + (int)strlen(titulo) * 8;
+    // int menuDerecho = xTitulo + (int)strlen(titulo) * 8; //
+    int menuDerecho = xTitulo + calcular_ancho_texto_5x7(titulo);
 
     if (xJugar < menuIzquierdo) {
         menuIzquierdo = xJugar;
@@ -144,13 +145,20 @@ int main(int argc, char* argv[])
         menuIzquierdo = xInstrucciones;
     }
 
-    if (xJugar + (int)strlen(opcionJugar) * 8 > menuDerecho) {
-        menuDerecho = xJugar + (int)strlen(opcionJugar) * 8;
-    }
-    if (xInstrucciones + (int)strlen(opcionInstrucciones) * 8 > menuDerecho) {
-        menuDerecho = xInstrucciones + (int)strlen(opcionInstrucciones) * 8;
+    /*if (xJugar + (int)strlen(opcionJugar) * 8 > menuDerecho) {
+            menuDerecho = xJugar + (int)strlen(opcionJugar) * 8;
+    }*/
+    if (xJugar + calcular_ancho_texto_5x7(opcionJugar) > menuDerecho) {
+        menuDerecho = xJugar + calcular_ancho_texto_5x7(opcionJugar);
     }
 
+    /*if (xInstrucciones + (int)strlen(opcionInstrucciones) * 8 > menuDerecho) {
+        menuDerecho = xInstrucciones + (int)strlen(opcionInstrucciones) * 8;
+    }*/
+
+    if (xInstrucciones + calcular_ancho_texto_5x7(opcionInstrucciones) > menuDerecho) {
+        menuDerecho = xInstrucciones + calcular_ancho_texto_5x7(opcionInstrucciones);
+    }
     int anchoTetromino = 4 * TETROMINO_ESCALA;
     int limiteIzquierdoTetrominos = menuIzquierdo - 20 - anchoTetromino;
     int limiteDerechoTetrominos = menuDerecho + 20;

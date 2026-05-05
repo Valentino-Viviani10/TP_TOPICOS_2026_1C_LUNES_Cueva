@@ -4,9 +4,13 @@
 #include <string.h>
 #include <stdio.h>
 #include "tablero.h"
+#include "fuentes.h"
 
-int calcular_x_centrada(const char *palabra, const int ancho) {
+/*int calcular_x_centrada(const char *palabra, const int ancho) {
     return (ancho - strlen(palabra) * 8) / 2;
+}*/
+int calcular_x_centrada(const char *palabra, const int ancho) {
+    return (ancho - calcular_ancho_texto_5x7(palabra)) / 2;
 }
 
 void dibujar_linea_horizontal(const int x_ini, const int x_fin, const int y) {
@@ -16,7 +20,7 @@ void dibujar_linea_horizontal(const int x_ini, const int x_fin, const int y) {
 }
 
 
-void dibujar_texto_8x8(const char *texto, uint16_t x, uint16_t y, uint8_t color) {
+/*void dibujar_texto_8x8(const char *texto, uint16_t x, uint16_t y, uint8_t color) {
     for (int i = 0; texto[i] != '\0'; i++) {
         char c = texto[i];
         for (int fila = 0; fila < 8; fila++) {
@@ -27,7 +31,13 @@ void dibujar_texto_8x8(const char *texto, uint16_t x, uint16_t y, uint8_t color)
             }
         }
     }
+}*/
+
+void dibujar_texto_8x8(const char *texto, uint16_t x, uint16_t y, uint8_t color) { /*se deja el nombre de la vieja funcion hasta ver si funciona*/
+    dibujar_texto_5x7(texto, x, y, color);
 }
+
+
 
 void dibujar_menu(const int opcionSeleccionada, const int ancho, const int alto, uint8_t colorSeleccionado) {
     int y;
