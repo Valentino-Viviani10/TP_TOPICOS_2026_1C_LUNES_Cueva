@@ -3,7 +3,6 @@
 #include <string.h>
 #include <time.h>
 #include "GBT/gbt.h"
-// #include "font8x8_basic.h" // ya no usamos esa fuente externa
 #include "colores.h"
 #include "dibujar.h"
 #include "tablero.h"
@@ -145,16 +144,9 @@ int main(int argc, char* argv[])
         menuIzquierdo = xInstrucciones;
     }
 
-    /*if (xJugar + (int)strlen(opcionJugar) * 8 > menuDerecho) {
-            menuDerecho = xJugar + (int)strlen(opcionJugar) * 8;
-    }*/
     if (xJugar + calcular_ancho_texto_5x7(opcionJugar) > menuDerecho) {
         menuDerecho = xJugar + calcular_ancho_texto_5x7(opcionJugar);
     }
-
-    /*if (xInstrucciones + (int)strlen(opcionInstrucciones) * 8 > menuDerecho) {
-        menuDerecho = xInstrucciones + (int)strlen(opcionInstrucciones) * 8;
-    }*/
 
     if (xInstrucciones + calcular_ancho_texto_5x7(opcionInstrucciones) > menuDerecho) {
         menuDerecho = xInstrucciones + calcular_ancho_texto_5x7(opcionInstrucciones);

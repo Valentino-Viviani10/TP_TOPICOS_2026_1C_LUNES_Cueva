@@ -1,7 +1,6 @@
 #ifndef DIBUJAR_H_INCLUDED
 #define DIBUJAR_H_INCLUDED
 
-// #include "font8x8_basic.h" // ya no usamos fuente externa
 #include "fuentes.h"
 #include "GBT/gbt.h"
 #include "tetrominos.h"
@@ -15,7 +14,7 @@ int calcular_x_centrada(const char *palabra, const int ancho);
 
 void dibujar_linea_horizontal(const int x_ini, const int x_fin, const int y);
 
-void dibujar_texto_8x8(const char *texto, uint16_t x, uint16_t y, uint8_t color); // por ahora lo dejo asi para no romper nada, luego se puede cambiar por dibujar_texto_5x7 //
+void dibujar_texto_5x7(const char *texto, uint16_t x, uint16_t y, uint8_t color);
 
 void dibujar_menu(const int opcionSeleccionada, const int ancho, const int alto, uint8_t colorSeleccionado);
 

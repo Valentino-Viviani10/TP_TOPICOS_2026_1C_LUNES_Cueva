@@ -4,10 +4,6 @@
 #include "tablero.h"
 #include "tetrominos.h"
 
-/*<<<<<<< HEAD
-=======
-void juego_inicializar(int ancho, int alto);
->>>>>>> 8bb2de69627d242a00f91586679acdb38cfb856f*/
 
 typedef struct {
     int x;          // Posicion X en el tablero 0 a 9
@@ -30,11 +26,5 @@ int juego_caer(tPiezaActiva* pieza, int** tablero);
 void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero);
 
 int juego_puede_iniciar_pieza(tPiezaActiva* pieza, int** tablero);
-
-/*
-int juego_obtener_marco_x();
-int juego_obtener_marco_y();
-
->>>>>>> 8bb2de69627d242a00f91586679acdb38cfb856f*/
 
 #endif // JUEGO_H_INCLUDED
