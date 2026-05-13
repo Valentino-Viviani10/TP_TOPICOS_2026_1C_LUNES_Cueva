@@ -82,9 +82,6 @@ int juego_caer(tPiezaActiva* pieza, int** tablero) {
 }
 
 void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero) {
-    // TODO: Recorrer la matriz 4x4 de la pieza actual.
-    // Si hay un bloque (1), copiar el pieza->color en esa
-    // coordenada (y, x) de int** tablero.
     int fila;
     int col;
 

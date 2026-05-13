@@ -199,6 +199,8 @@ int main(int argc, char* argv[])
     int fin_tablero_x = marco_x + (COLUMNAS * lado_bloque);
     int fin_tablero_y = marco_y + (FILAS * lado_bloque);
     static int sostenida_activa = 0;
+    static int cooldown_lateral = 0;
+    static int das_activo = 0;  // 1 = ya pasó el DAS inicial, auto-repeat activo
 
     uint8_t colorSeleccionado = COL_AMARILLO;
 
@@ -250,22 +252,31 @@ int main(int argc, char* argv[])
 
         if(pantalla == 1 && !juego_terminado){
 
-            if(tecla == GBTK_IZQUIERDA) {
-                juego_mover_izquierda(&pieza_activa, tablero);
-                gbt_temporizador_consumir(temp_movimiento_lateral); // Resetear para evitar doble movimiento
-            } else if (gbt_tecla_sostenida(GBTK_IZQUIERDA)) {
-                if (gbt_temporizador_consumir(temp_movimiento_lateral)) {
-                    juego_mover_izquierda(&pieza_activa, tablero);
-                }
+            int izq = gbt_tecla_sostenida(GBTK_IZQUIERDA);
+            int der = gbt_tecla_sostenida(GBTK_DERECHA);
+
+            if (cooldown_lateral > 0) {
+                cooldown_lateral--;
             }
 
-            if(tecla == GBTK_DERECHA) {
-                juego_mover_derecha(&pieza_activa, tablero);
-                gbt_temporizador_consumir(temp_movimiento_lateral); // Resetear para evitar doble movimiento
-            } else if (gbt_tecla_sostenida(GBTK_DERECHA)) {
-                if (gbt_temporizador_consumir(temp_movimiento_lateral)) {
-                    juego_mover_derecha(&pieza_activa, tablero);
+            if (izq || der) {
+                if (cooldown_lateral == 0) {
+                    if (izq) juego_mover_izquierda(&pieza_activa, tablero);
+                    if (der) juego_mover_derecha(&pieza_activa, tablero);
+
+                    if (!das_activo) {
+                        // Primera pulsación o DAS delay: ~192ms (12 frames * 16ms)
+                        cooldown_lateral = 12;
+                        das_activo = 1;
+                    } else {
+                        // Auto-repeat: ~48ms (3 frames * 16ms)
+                        cooldown_lateral = 3;
+                    }
                 }
+            } else {
+                // Tecla soltada: resetear DAS
+                cooldown_lateral = 0;
+                das_activo = 0;
             }
 
             if(tecla == GBTK_ABAJO) {
