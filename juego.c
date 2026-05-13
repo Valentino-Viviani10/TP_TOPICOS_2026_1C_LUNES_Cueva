@@ -1,4 +1,5 @@
 #include "juego.h"
+#include "puntuaciones.h"
 #include <stdlib.h>
 
 extern int elegirColor(int pieza);
@@ -105,3 +106,27 @@ void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero) {
 int juego_puede_iniciar_pieza(tPiezaActiva* pieza, int** tablero) {
     return posicion_valida(pieza, tablero, pieza->x, pieza->y);
 }
+
+void fijar_y_nueva_pieza(tPiezaActiva *pieza, int *puntaje, int **tablero, int *casillasManuales, int *juego_terminado, int *piezas_colocadas, int *nivel_velocidad, double *duracion_caida, tGBT_Temporizador **temp_juego_caida) {
+    juego_fijar_pieza(pieza, tablero);
+
+    int filasElim = borrar_lineas(tablero, FILAS, COLUMNAS);
+    sumar_puntos(filasElim, *casillasManuales, puntaje, *nivel_velocidad);
+
+    *casillasManuales = 0;
+    (*piezas_colocadas)++;
+
+    // Cada 10 piezas, acelerar un 3%
+    if (*piezas_colocadas % 10 == 0) {
+        (*nivel_velocidad)++;
+        *duracion_caida *= 0.97;
+        gbt_temporizador_destruir(*temp_juego_caida);
+        *temp_juego_caida = gbt_temporizador_crear(*duracion_caida);
+    }
+
+    juego_inicializar_pieza(pieza);
+
+    if(!juego_puede_iniciar_pieza(pieza, tablero)){
+        *juego_terminado = 1;
+    }
+}

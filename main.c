@@ -3,7 +3,6 @@
 #include <string.h>
 #include <time.h>
 #include "GBT/gbt.h"
-#include "font8x8_basic.h"
 #include "colores.h"
 #include "dibujar.h"
 #include "tablero.h"
@@ -33,20 +32,6 @@
     Entrega: Si
 */
 
-static void fijar_y_nueva_pieza(tPiezaActiva *pieza, int *puntaje, int **tablero, int *casillasManuales, int *juego_terminado) {
-    juego_fijar_pieza(pieza, tablero);
-
-    int filasElim = borrar_lineas(tablero, FILAS, COLUMNAS);
-    sumar_puntos(filasElim, *casillasManuales, puntaje);
-
-    *casillasManuales = 0;
-    
-    juego_inicializar_pieza(pieza);
-
-    if(!juego_puede_iniciar_pieza(pieza, tablero)){
-        *juego_terminado = 1;
-    }
-}
 
 static uint8_t elegir_color_permitido(void) {
     static const uint8_t coloresPermitidos[] = {
@@ -115,7 +100,7 @@ int main(int argc, char* argv[])
     }
 
     char nombreVentana[50];
-    sprintf(nombreVentana, "TETRIS - %dx%d", ancho, alto);
+    snprintf(nombreVentana, sizeof(nombreVentana), "TETRIS - %dx%d", ancho, alto);
 
     if(gbt_crear_ventana(nombreVentana, ancho, alto, escala) != 0){
         fprintf(stderr, "Error al iniciar el modulo de graficos de GBT: %s\n", gbt_obtener_log());
@@ -135,7 +120,8 @@ int main(int argc, char* argv[])
     int xInstrucciones = calcular_x_centrada(opcionInstrucciones, ancho);
 
     int menuIzquierdo = xTitulo;
-    int menuDerecho = xTitulo + (int)strlen(titulo) * 8;
+    // int menuDerecho = xTitulo + (int)strlen(titulo) * 8; //
+    int menuDerecho = xTitulo + calcular_ancho_texto_5x7(titulo);
 
     if (xJugar < menuIzquierdo) {
         menuIzquierdo = xJugar;
@@ -144,13 +130,13 @@ int main(int argc, char* argv[])
         menuIzquierdo = xInstrucciones;
     }
 
-    if (xJugar + (int)strlen(opcionJugar) * 8 > menuDerecho) {
-        menuDerecho = xJugar + (int)strlen(opcionJugar) * 8;
-    }
-    if (xInstrucciones + (int)strlen(opcionInstrucciones) * 8 > menuDerecho) {
-        menuDerecho = xInstrucciones + (int)strlen(opcionInstrucciones) * 8;
+    if (xJugar + calcular_ancho_texto_5x7(opcionJugar) > menuDerecho) {
+        menuDerecho = xJugar + calcular_ancho_texto_5x7(opcionJugar);
     }
 
+    if (xInstrucciones + calcular_ancho_texto_5x7(opcionInstrucciones) > menuDerecho) {
+        menuDerecho = xInstrucciones + calcular_ancho_texto_5x7(opcionInstrucciones);
+    }
     int anchoTetromino = 4 * TETROMINO_ESCALA;
     int limiteIzquierdoTetrominos = menuIzquierdo - 20 - anchoTetromino;
     int limiteDerechoTetrominos = menuDerecho + 20;
@@ -180,13 +166,13 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    tGBT_Temporizador *temp_movimiento_lateral = gbt_temporizador_crear(0.5);
+    tGBT_Temporizador *temp_movimiento_lateral = gbt_temporizador_crear(0.25);
     if (!temp_movimiento_lateral) {
         fprintf(stderr, "Error al crear el temporizador de movimiento lateral: %s\n", gbt_obtener_log());
         return -1;
     }
 
-    tGBT_Temporizador *temp_caida_rapida = gbt_temporizador_crear(0.2);
+    tGBT_Temporizador *temp_caida_rapida = gbt_temporizador_crear(0.07);
     if (!temp_caida_rapida) {
         fprintf(stderr, "Error al crear el temporizador de movimiento abajo: %s\n", gbt_obtener_log());
         return -1;
@@ -202,6 +188,9 @@ int main(int argc, char* argv[])
     int juego_terminado = 0;
     int puntaje = 0;
     int casillasManuales = 0;
+    int piezas_colocadas = 0;
+    int nivel_velocidad = 0;
+    double duracion_caida = 1.0;
     int lado_bloque = calcular_lado_bloque_juego(alto);
     int marco_x = (ancho / 2) - ((COLUMNAS * lado_bloque) / 2);
     int marco_y = (alto / 2) - ((FILAS * lado_bloque) / 2);
@@ -261,9 +250,8 @@ int main(int argc, char* argv[])
 
             if(tecla == GBTK_IZQUIERDA) {
                 juego_mover_izquierda(&pieza_activa, tablero);
-            }
-
-            if (gbt_tecla_sostenida(GBTK_IZQUIERDA)) {
+                gbt_temporizador_consumir(temp_movimiento_lateral); // Resetear para evitar doble movimiento
+            } else if (gbt_tecla_sostenida(GBTK_IZQUIERDA)) {
                 if (gbt_temporizador_consumir(temp_movimiento_lateral)) {
                     juego_mover_izquierda(&pieza_activa, tablero);
                 }
@@ -271,9 +259,8 @@ int main(int argc, char* argv[])
 
             if(tecla == GBTK_DERECHA) {
                 juego_mover_derecha(&pieza_activa, tablero);
-            }
-
-            if (gbt_tecla_sostenida(GBTK_DERECHA)) {
+                gbt_temporizador_consumir(temp_movimiento_lateral); // Resetear para evitar doble movimiento
+            } else if (gbt_tecla_sostenida(GBTK_DERECHA)) {
                 if (gbt_temporizador_consumir(temp_movimiento_lateral)) {
                     juego_mover_derecha(&pieza_activa, tablero);
                 }
@@ -285,7 +272,7 @@ int main(int argc, char* argv[])
                 if(juego_caer(&pieza_activa, tablero)) {
                     casillasManuales++;
                 } else {
-                    fijar_y_nueva_pieza(&pieza_activa, &puntaje, tablero, &casillasManuales, &juego_terminado);
+                    fijar_y_nueva_pieza(&pieza_activa, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_colocadas, &nivel_velocidad, &duracion_caida, &temp_juego_caida);
                 }
             } else if (gbt_tecla_sostenida(GBTK_ABAJO)) {
                 if(!sostenida_activa && gbt_temporizador_consumir(temp_caida_rapida)) {
@@ -295,13 +282,13 @@ int main(int argc, char* argv[])
                     if(juego_caer(&pieza_activa, tablero)) {
                         casillasManuales++;
                     } else {
-                        fijar_y_nueva_pieza(&pieza_activa, &puntaje, tablero, &casillasManuales, &juego_terminado);
+                        fijar_y_nueva_pieza(&pieza_activa, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_colocadas, &nivel_velocidad, &duracion_caida, &temp_juego_caida);
                     }
                 }
             } else {
                 if(gbt_temporizador_consumir(temp_juego_caida)){
                     if(!juego_caer(&pieza_activa, tablero)){
-                        fijar_y_nueva_pieza(&pieza_activa, &puntaje, tablero, &casillasManuales, &juego_terminado);
+                        fijar_y_nueva_pieza(&pieza_activa, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_colocadas, &nivel_velocidad, &duracion_caida, &temp_juego_caida);
                     }
                 }
             }
@@ -347,4 +334,5 @@ int main(int argc, char* argv[])
     gbt_temporizador_destruir(temp_juego_caida);
     gbt_temporizador_destruir(temp_movimiento_lateral);
     gbt_temporizador_destruir(temp_caida_rapida);
+    return 0;
 }

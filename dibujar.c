@@ -4,9 +4,11 @@
 #include <string.h>
 #include <stdio.h>
 #include "tablero.h"
+#include "fuentes.h"
+
 
 int calcular_x_centrada(const char *palabra, const int ancho) {
-    return (ancho - strlen(palabra) * 8) / 2;
+    return (ancho - calcular_ancho_texto_5x7(palabra)) / 2;
 }
 
 void dibujar_linea_horizontal(const int x_ini, const int x_fin, const int y) {
@@ -15,19 +17,6 @@ void dibujar_linea_horizontal(const int x_ini, const int x_fin, const int y) {
     }
 }
 
-
-void dibujar_texto_8x8(const char *texto, uint16_t x, uint16_t y, uint8_t color) {
-    for (int i = 0; texto[i] != '\0'; i++) {
-        char c = texto[i];
-        for (int fila = 0; fila < 8; fila++) {
-            for (int col = 0; col < 8; col++) {
-                if (font8x8_basic[(int)c][fila] & (1 << col)) {
-                    gbt_dibujar_pixel(x + i*8 + col, y + fila, color);
-                }
-            }
-        }
-    }
-}
 
 void dibujar_menu(const int opcionSeleccionada, const int ancho, const int alto, uint8_t colorSeleccionado) {
     int y;
@@ -42,15 +31,15 @@ void dibujar_menu(const int opcionSeleccionada, const int ancho, const int alto,
 
     y = 20;
 
-    dibujar_texto_8x8(titulo, xTitulo, y, COL_VERDE_BRILL);
+    dibujar_texto_5x7(titulo, xTitulo, y, COL_VERDE_BRILL);
 
     y = alto / 2;
 
     uint8_t colorJugar = (opcionSeleccionada == 0) ? colorSeleccionado : COL_GRIS_CLARO;
     uint8_t colorInstrucciones = (opcionSeleccionada == 1) ? colorSeleccionado : COL_GRIS_CLARO;
 
-    dibujar_texto_8x8(opciones[0], xJugar, y, colorJugar);
-    dibujar_texto_8x8(opciones[1], xInstrucciones, y + 20, colorInstrucciones);
+    dibujar_texto_5x7(opciones[0], xJugar, y, colorJugar);
+    dibujar_texto_5x7(opciones[1], xInstrucciones, y + 20, colorInstrucciones);
 
 }
 
@@ -218,8 +207,8 @@ void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int 
     }
 
     if(juego_terminado){
-        dibujar_texto_8x8("JUEGO TERMINADO", calcular_x_centrada("JUEGO TERMINADO", ancho), alto / 2, COL_ROJO_BRILL);
-        dibujar_texto_8x8("ESC PARA SALIR", calcular_x_centrada("ESC PARA SALIR", ancho), alto / 2 + 12, COL_GRIS_CLARO);
+        dibujar_texto_5x7("JUEGO TERMINADO", calcular_x_centrada("JUEGO TERMINADO", ancho), alto / 2, COL_ROJO_BRILL);
+        dibujar_texto_5x7("ESC PARA SALIR", calcular_x_centrada("ESC PARA SALIR", ancho), alto / 2 + 12, COL_GRIS_CLARO);
     }
 }
 
@@ -231,10 +220,10 @@ void dibujar_puntuacion(int* puntaje, int altoPantalla, int altoJuego, int ancho
     int iniPal = iniX + 4;
 
     char buffer[20];
-    sprintf(buffer, "%07d", *puntaje);
+    snprintf(buffer, sizeof(buffer), "%07d", *puntaje);
 
     dibujar_borde(maxY, finX, iniX, 4);
 
-    dibujar_texto_8x8("SCORE", iniPal, y, COL_VERDE_BRILL);
-    dibujar_texto_8x8(buffer, iniPal, y + ESPACIO_ENTRE_SCORES, COL_VERDE_BRILL);
+    dibujar_texto_5x7("SCORE", iniPal, y, COL_VERDE_BRILL);
+    dibujar_texto_5x7(buffer, iniPal, y + ESPACIO_ENTRE_SCORES, COL_VERDE_BRILL);
 }
