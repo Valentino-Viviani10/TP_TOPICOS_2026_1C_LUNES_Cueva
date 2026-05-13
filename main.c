@@ -33,6 +33,8 @@
 */
 
 
+
+
 static uint8_t elegir_color_permitido(void) {
     static const uint8_t coloresPermitidos[] = {
         COL_AZUL_BRILL,
