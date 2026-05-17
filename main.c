@@ -89,7 +89,19 @@ static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, int *puntaje, 
         juego_inicializar_pieza(pieza);
 }
 
+static int caracter_soportado(eGBT_Tecla tecla){
 
+    return (tecla >= GBTK_a && tecla <= GBTK_z) || (tecla >= GBTK_0 && tecla <= GBTK_9) || tecla == GBTK_ESPACIO || tecla == GBTK_MENOS;
+}
+
+static char convertir_caracter_nombre(eGBT_Tecla tecla)
+{
+    if(tecla >= GBTK_a && tecla <= GBTK_z){
+        return tecla - 32; //convierte lo que el usuario tipea en minúscula a mayúscula
+    }
+
+    return tecla;
+}
 
 int main(int argc, char* argv[])
 {
@@ -235,6 +247,10 @@ int main(int argc, char* argv[])
     int juego_terminado = 0;
     int juego_pausado = 0;
 
+    char nombre_jugador[16] = "";
+    int largo_nombre = 0;
+    int mostrar_error_nombre = 0;
+
     int puntaje = 0;
     int piezas_caidas = 0;
     int velocidad_caida_ms = 1000;
@@ -274,20 +290,22 @@ int main(int argc, char* argv[])
         else if (tecla != GBTK_DESCONOCIDA) {
             if(pantalla == 1 && juego_terminado && tecla == GBTK_ENTER){
                 reiniciar_partida(tablero, &pieza_activa, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida);
-            }
+                            }
             if(pantalla == 0){
                 if(tecla == GBTK_ABAJO){
-                        opcionSeleccionada = 1;
+                    opcionSeleccionada = 1;
                 }
                 if(tecla == GBTK_ARRIBA){
-                        opcionSeleccionada = 0;
+                    opcionSeleccionada = 0;
                 }
                 if(tecla == GBTK_ENTER){
                     if(opcionSeleccionada == 0){
-                            pantalla = 1;
+                        pantalla = 3;
+                        tecla = GBTK_DESCONOCIDA;
+                        mostrar_error_nombre = 0;
                     }
                     else if(opcionSeleccionada == 1){
-                            pantalla = 2;
+                        pantalla = 2;
                     }
                 }
             }
@@ -299,6 +317,35 @@ int main(int argc, char* argv[])
 
                 if(!juego_pausado && (tecla == GBTK_r || tecla == GBTK_ARRIBA)){
                     juego_rotar(&pieza_activa, tablero);
+                }
+            }
+            if(pantalla == 3){
+
+                if(tecla == GBTK_ENTER){
+
+                    if(largo_nombre == 0){
+                        strcpy(nombre_jugador, "ANONIMO");
+                        largo_nombre = 8;
+                    }
+
+                    mostrar_error_nombre = 0;
+                    pantalla = 1;
+                }
+                else if(tecla == GBTK_RETROCESO && largo_nombre > 0){
+
+                    largo_nombre--;
+                    nombre_jugador[largo_nombre] = '\0';
+                    mostrar_error_nombre = 0;
+                }
+                else if(caracter_soportado(tecla) && largo_nombre < 15){
+
+                    nombre_jugador[largo_nombre] = convertir_caracter_nombre(tecla);
+                    largo_nombre++;
+                    nombre_jugador[largo_nombre] = '\0';
+                    mostrar_error_nombre = 0;
+                }
+                else if(tecla != GBTK_DESCONOCIDA){
+                    mostrar_error_nombre = 1;
                 }
             }
         }
@@ -377,19 +424,27 @@ int main(int argc, char* argv[])
             }
         } else if(pantalla == 1){
             dibujar_juego(ancho, alto, tablero, &pieza_activa, juego_terminado, marco_x, marco_y, lado_bloque);
-            dibujar_puntuacion(&puntaje, lineas_eliminadas, piezas_caidas, velocidad_caida_ms, alto, fin_tablero_y, ancho, fin_tablero_x);
+            dibujar_puntuacion(&puntaje, nombre_jugador, lineas_eliminadas, piezas_caidas, velocidad_caida_ms, alto, fin_tablero_y, ancho, fin_tablero_x);
 
             if(juego_pausado && !juego_terminado){
                 dibujar_texto_5x7("PAUSA", calcular_x_centrada("PAUSA", ancho), alto / 2, COL_AMARILLO);
                 dibujar_texto_5x7("P PARA CONTINUAR", calcular_x_centrada("P PARA CONTINUAR", ancho), alto / 2 + 12, COL_GRIS_CLARO);
             }
           }
+          else if(pantalla == 3){
+            dibujar_texto_5x7("INGRESE NOMBRE", calcular_x_centrada("INGRESE NOMBRE", ancho), alto / 2 - 20, COL_VERDE_BRILL);
+            dibujar_texto_5x7(nombre_jugador, calcular_x_centrada(nombre_jugador, ancho), alto / 2, COL_AMARILLO);
+            dibujar_texto_5x7("ENTER PARA JUGAR", calcular_x_centrada("ENTER PARA JUGAR", ancho), alto / 2 + 20, COL_GRIS_CLARO);
+
+            if(mostrar_error_nombre){
+                dibujar_texto_5x7("CARACTER NO SOPORTADO", calcular_x_centrada("CARACTER NO SOPORTADO", ancho), alto / 2 + 32, COL_ROJO_BRILL);
+            }
+          }
           else if(pantalla == 2){
             dibujar_inst(ancho, alto);
-        }
+          }
 
         gbt_volcar_backbuffer();
-
         gbt_esperar(16);
     }
 

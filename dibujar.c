@@ -213,11 +213,11 @@ void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int 
     }
 }
 
-void dibujar_puntuacion(int* puntaje, int lineas, int piezas_caidas, int velocidad_caida_ms, int altoPantalla, int altoJuego, int anchoPantalla, int anchoJuego){
+void dibujar_puntuacion(int* puntaje, const char nombre_jugador[], int lineas, int piezas_caidas, int velocidad_caida_ms, int altoPantalla, int altoJuego, int anchoPantalla, int anchoJuego){
 
     int iniX = anchoJuego + 2;
     int finX = anchoPantalla - 10;
-    int maxY = 110;
+    int maxY = altoJuego;
     int y = 7;
     int iniPal = iniX + 4;
 
@@ -233,20 +233,24 @@ void dibujar_puntuacion(int* puntaje, int lineas, int piezas_caidas, int velocid
 
     dibujar_borde(maxY, finX, iniX, 4);
 
+    // JUGADOR
+    dibujar_texto_5x7("JUGADOR", iniPal, y, COL_AMARILLO);
+    dibujar_texto_5x7(nombre_jugador, iniPal, y + 10, COL_AMARILLO);
+
     // PUNTAJE
-    dibujar_texto_5x7("PUNTAJE", iniPal, y, COL_VERDE_BRILL);
-    dibujar_texto_5x7(bufferPuntaje, iniPal, y + 10, COL_VERDE_BRILL);
+    dibujar_texto_5x7("PUNTAJE", iniPal, y + 25, COL_VERDE_BRILL);
+    dibujar_texto_5x7(bufferPuntaje, iniPal, y + 35, COL_VERDE_BRILL);
 
     // LINEAS
-    dibujar_texto_5x7("LINEAS", iniPal, y + 28, COL_VERDE_BRILL);
-    dibujar_texto_5x7(bufferLineas, iniPal, y + 38, COL_VERDE_BRILL);
+    dibujar_texto_5x7("LINEAS", iniPal, y + 53, COL_VERDE_BRILL);
+    dibujar_texto_5x7(bufferLineas, iniPal, y + 63, COL_VERDE_BRILL);
 
     // CAIDA
-    dibujar_texto_5x7("VEL-CAIDA", iniPal, y + 50, COL_VERDE_BRILL);
-    dibujar_texto_5x7(bufferCaida, iniPal, y + 60, COL_VERDE_BRILL);
+    dibujar_texto_5x7("VEL-CAIDA", iniPal, y + 75, COL_VERDE_BRILL);
+    dibujar_texto_5x7(bufferCaida, iniPal, y + 85, COL_VERDE_BRILL);
 
     // PIEZAS CAIDAS
-    dibujar_texto_5x7("TETROMINOS", iniPal, y + 75, COL_VERDE_BRILL);
-    dibujar_texto_5x7("UTILIZADOS", iniPal, y + 85, COL_VERDE_BRILL);
-    dibujar_texto_5x7(bufferPiezas, iniPal, y + 95, COL_VERDE_BRILL);
+    dibujar_texto_5x7("TETROMINOS", iniPal, y + 100, COL_VERDE_BRILL);
+    dibujar_texto_5x7("UTILIZADOS", iniPal, y + 110, COL_VERDE_BRILL);
+    dibujar_texto_5x7(bufferPiezas, iniPal, y + 120, COL_VERDE_BRILL);
 }
