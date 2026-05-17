@@ -32,7 +32,8 @@
     Entrega: Si
 */
 
-static void fijar_y_nueva_pieza(tPiezaActiva *pieza, int *puntaje, int **tablero, int *casillasManuales, int *juego_terminado, int *piezas_caidas, int *velocidad_caida_ms, tGBT_Temporizador **temp_juego_caida, int *lineas_eliminadas){
+
+static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, int *puntaje, int **tablero, int *casillasManuales, int *juego_terminado, int *piezas_caidas, int *velocidad_caida_ms, tGBT_Temporizador **temp_juego_caida, int *lineas_eliminadas){
 
     juego_fijar_pieza(pieza, tablero);
 
@@ -51,7 +52,8 @@ static void fijar_y_nueva_pieza(tPiezaActiva *pieza, int *puntaje, int **tablero
         printf("Velocidad actual: %d ms\n", *velocidad_caida_ms);
     }
 
-    juego_inicializar_pieza(pieza);
+    *pieza = *pieza_siguiente;
+    juego_inicializar_pieza(pieza_siguiente);
 
     if(!juego_puede_iniciar_pieza(pieza, tablero)){
         *juego_terminado = 1;
@@ -273,6 +275,9 @@ int main(int argc, char* argv[])
     tPiezaActiva pieza_activa;
     juego_inicializar_pieza(&pieza_activa);
 
+    tPiezaActiva pieza_siguiente;
+    juego_inicializar_pieza(&pieza_siguiente);
+
     while(corriendo) {
 
         gbt_procesar_entrada();
@@ -378,7 +383,7 @@ int main(int argc, char* argv[])
                 if(juego_caer(&pieza_activa, tablero)) {
                     casillasManuales++;
                 } else {
-                    fijar_y_nueva_pieza(&pieza_activa, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas);
+                    fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas);
                 }
             } else if (gbt_tecla_sostenida(GBTK_ABAJO)) {
                 if(!sostenida_activa && gbt_temporizador_consumir(temp_caida_rapida)) {
@@ -388,13 +393,13 @@ int main(int argc, char* argv[])
                     if(juego_caer(&pieza_activa, tablero)) {
                         casillasManuales++;
                     } else {
-                        fijar_y_nueva_pieza(&pieza_activa, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas);
+                        fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas);
                     }
                 }
             } else {
                 if(gbt_temporizador_consumir(temp_juego_caida)){
                     if(!juego_caer(&pieza_activa, tablero)){
-                        fijar_y_nueva_pieza(&pieza_activa, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas);
+                        fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas);
                     }
                 }
             }
@@ -424,7 +429,7 @@ int main(int argc, char* argv[])
             }
         } else if(pantalla == 1){
             dibujar_juego(ancho, alto, tablero, &pieza_activa, juego_terminado, marco_x, marco_y, lado_bloque);
-            dibujar_puntuacion(&puntaje, nombre_jugador, lineas_eliminadas, piezas_caidas, velocidad_caida_ms, alto, fin_tablero_y, ancho, fin_tablero_x);
+            dibujar_puntuacion(&puntaje, nombre_jugador, lineas_eliminadas, piezas_caidas, velocidad_caida_ms, alto, fin_tablero_y, ancho, fin_tablero_x, &pieza_siguiente);
 
             if(juego_pausado && !juego_terminado){
                 dibujar_texto_5x7("PAUSA", calcular_x_centrada("PAUSA", ancho), alto / 2, COL_AMARILLO);

@@ -213,13 +213,15 @@ void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int 
     }
 }
 
-void dibujar_puntuacion(int* puntaje, const char nombre_jugador[], int lineas, int piezas_caidas, int velocidad_caida_ms, int altoPantalla, int altoJuego, int anchoPantalla, int anchoJuego){
+void dibujar_puntuacion(int* puntaje, const char nombre_jugador[], int lineas, int piezas_caidas, int velocidad_caida_ms, int altoPantalla, int altoJuego, int anchoPantalla, int anchoJuego, tPiezaActiva* pieza_siguiente){
 
-    int iniX = anchoJuego + 2;
-    int finX = anchoPantalla - 10;
-    int maxY = altoJuego;
-    int y = 7;
-    int iniPal = iniX + 4;
+    int margen = 10;
+    int iniX = anchoJuego + margen;
+    int finX = anchoPantalla - margen;
+    int maxY = altoPantalla - margen;
+    int y = margen + 5;
+    int iniPal = iniX + 10;
+
 
     char bufferPuntaje[20];
     char bufferLineas[20];
@@ -231,7 +233,7 @@ void dibujar_puntuacion(int* puntaje, const char nombre_jugador[], int lineas, i
     sprintf(bufferCaida, "%04dMS", velocidad_caida_ms);
     sprintf(bufferPiezas, "%03d", piezas_caidas);
 
-    dibujar_borde(maxY, finX, iniX, 4);
+    dibujar_borde(maxY, finX, iniX, margen);
 
     // JUGADOR
     dibujar_texto_5x7("JUGADOR", iniPal, y, COL_AMARILLO);
@@ -253,4 +255,16 @@ void dibujar_puntuacion(int* puntaje, const char nombre_jugador[], int lineas, i
     dibujar_texto_5x7("TETROMINOS", iniPal, y + 100, COL_VERDE_BRILL);
     dibujar_texto_5x7("UTILIZADOS", iniPal, y + 110, COL_VERDE_BRILL);
     dibujar_texto_5x7(bufferPiezas, iniPal, y + 120, COL_VERDE_BRILL);
+
+    // SIGUIENTE PIEZA
+    dibujar_texto_5x7("SIGUIENTE", iniPal, y + 140, COL_AMARILLO);
+    dibujar_texto_5x7("PIEZA", iniPal, y + 150, COL_AMARILLO);
+
+    for(int fila = 0; fila < 4; fila++){
+        for(int col = 0; col < 4; col++){
+            if(piezas[pieza_siguiente->tipo][0][fila][col]){
+                dibujar_bloque_tablero(iniPal + 10 + col * 5, y + 163 + fila * 5, pieza_siguiente->color, 5);
+            }
+        }
+    }
 }
