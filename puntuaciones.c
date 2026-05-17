@@ -21,5 +21,5 @@ void sumar_puntos(int lineas_completadas, int casillasManuales, int* puntaje) {
             break;
     }
 
-    *puntaje += casillasManuales;
+    *puntaje += casillasManuales * 10;
 }

@@ -214,7 +214,6 @@ int main(int argc, char* argv[])
     int puntaje = 0;
     int piezas_caidas = 0;
     int velocidad_caida_ms = 1000;
-//int velocidad_fijacion_ms = 500;
     int casillasManuales = 0;
     int lado_bloque = calcular_lado_bloque_juego(alto);
     int marco_x = (ancho / 2) - ((COLUMNAS * lado_bloque) / 2);
