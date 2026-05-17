@@ -197,6 +197,28 @@ void dibujar_pieza_activa(tPiezaActiva* pieza, int marco_x, int marco_y, int lad
     }
 }
 
+void dibujar_mini_pieza(int tipo, int color, int x, int y)
+{
+    int fila;
+    int col;
+
+    for(fila = 0; fila < 4; fila++){
+        for(col = 0; col < 4; col++){
+
+            if(piezas[tipo][0][fila][col]){
+
+                dibujar_bloque_tablero(
+                    x + (col * 4),
+                    y + (fila * 4),
+                    color,
+                    4
+                );
+            }
+        }
+    }
+}
+
+
 void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int juego_terminado, int marco_x, int marco_y, int lado_bloque)
 {
     dibujar_marco_tablero(marco_x, marco_y, lado_bloque);
@@ -285,30 +307,30 @@ void dibujar_estadisticas(tEstadisticas* stats, int altoPantalla, int altoJuego,
     dibujar_texto_5x7("ESTADISTICAS", iniPal, y, COL_VERDE_BRILL);
 
     sprintf(buffer, "%03d", stats->usadas[0]);
-    dibujar_texto_5x7("I", iniPal, y + 25, COL_CIAN);
+    dibujar_mini_pieza(0, COL_CIAN, iniPal, y + 22);
     dibujar_texto_5x7(buffer, iniPal + 25, y + 25, COL_GRIS_CLARO);
 
     sprintf(buffer, "%03d", stats->usadas[1]);
-    dibujar_texto_5x7("O", iniPal, y + 45, COL_AMARILLO);
+    dibujar_mini_pieza(1, COL_AMARILLO, iniPal, y + 42);
     dibujar_texto_5x7(buffer, iniPal + 25, y + 45, COL_GRIS_CLARO);
 
     sprintf(buffer, "%03d", stats->usadas[2]);
-    dibujar_texto_5x7("T", iniPal, y + 65, COL_MAG_BRILL);
+    dibujar_mini_pieza(2, COL_MAG_BRILL, iniPal, y + 62);
     dibujar_texto_5x7(buffer, iniPal + 25, y + 65, COL_GRIS_CLARO);
 
     sprintf(buffer, "%03d", stats->usadas[3]);
-    dibujar_texto_5x7("L", iniPal, y + 85, COL_NARANJA);
+    dibujar_mini_pieza(3, COL_NARANJA, iniPal, y + 82);
     dibujar_texto_5x7(buffer, iniPal + 25, y + 85, COL_GRIS_CLARO);
 
     sprintf(buffer, "%03d", stats->usadas[4]);
-    dibujar_texto_5x7("J", iniPal, y + 105, COL_AZUL);
+    dibujar_mini_pieza(4, COL_AZUL, iniPal, y + 102);
     dibujar_texto_5x7(buffer, iniPal + 25, y + 105, COL_GRIS_CLARO);
 
     sprintf(buffer, "%03d", stats->usadas[5]);
-    dibujar_texto_5x7("S", iniPal, y + 125, COL_VERDE);
+    dibujar_mini_pieza(5, COL_VERDE, iniPal, y + 122);
     dibujar_texto_5x7(buffer, iniPal + 25, y + 125, COL_GRIS_CLARO);
 
     sprintf(buffer, "%03d", stats->usadas[6]);
-    dibujar_texto_5x7("Z", iniPal, y + 145, COL_ROJO);
+    dibujar_mini_pieza(6, COL_ROJO, iniPal, y + 142);
     dibujar_texto_5x7(buffer, iniPal + 25, y + 145, COL_GRIS_CLARO);
 }
