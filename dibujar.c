@@ -212,18 +212,40 @@ void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int 
     }
 }
 
-void dibujar_puntuacion(int* puntaje, int altoPantalla, int altoJuego, int anchoPantalla, int anchoJuego) {
+void dibujar_puntuacion(int* puntaje, int lineas, int piezas_caidas, int velocidad_caida_ms, int altoPantalla, int altoJuego, int anchoPantalla, int anchoJuego){
+
     int iniX = anchoJuego + 2;
     int finX = anchoPantalla - 10;
-    int maxY = 60;
+    int maxY = 110;
     int y = 7;
     int iniPal = iniX + 4;
 
-    char buffer[20];
-    sprintf(buffer, "%07d", *puntaje);
+    char bufferPuntaje[20];
+    char bufferLineas[20];
+    char bufferCaida[20];
+    char bufferPiezas[20];
+
+    sprintf(bufferPuntaje, "%07d", *puntaje);
+    sprintf(bufferLineas, "%03d", lineas);
+    sprintf(bufferCaida, "%04dMS", velocidad_caida_ms);
+    sprintf(bufferPiezas, "%03d", piezas_caidas);
 
     dibujar_borde(maxY, finX, iniX, 4);
 
-    dibujar_texto_5x7("SCORE", iniPal, y, COL_VERDE_BRILL);
-    dibujar_texto_5x7(buffer, iniPal, y + ESPACIO_ENTRE_SCORES, COL_VERDE_BRILL);
+    // PUNTAJE
+    dibujar_texto_5x7("PUNTAJE", iniPal, y, COL_VERDE_BRILL);
+    dibujar_texto_5x7(bufferPuntaje, iniPal, y + 10, COL_VERDE_BRILL);
+
+    // LINEAS
+    dibujar_texto_5x7("LINEAS", iniPal, y + 28, COL_VERDE_BRILL);
+    dibujar_texto_5x7(bufferLineas, iniPal, y + 38, COL_VERDE_BRILL);
+
+    // CAIDA
+    dibujar_texto_5x7("VEL-CAIDA", iniPal, y + 50, COL_VERDE_BRILL);
+    dibujar_texto_5x7(bufferCaida, iniPal, y + 60, COL_VERDE_BRILL);
+
+    // PIEZAS CAIDAS
+    dibujar_texto_5x7("TETROMINOS", iniPal, y + 75, COL_VERDE_BRILL);
+    dibujar_texto_5x7("UTILIZADOS", iniPal, y + 85, COL_VERDE_BRILL);
+    dibujar_texto_5x7(bufferPiezas, iniPal, y + 95, COL_VERDE_BRILL);
 }
