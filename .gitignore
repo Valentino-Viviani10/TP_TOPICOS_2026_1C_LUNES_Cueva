@@ -15,7 +15,7 @@ debug/
 release/
 
 # --- Configuración de Code::Blocks ---
-*.cbp
+#*.cbp
 # Nota: Si el archivo .cbp (Code::Blocks Project) se comparte,
 # todos deben tener la misma versión de la IDE.
 # Si tienen problemas, añade *.cbp también.
