@@ -211,6 +211,8 @@ int main(int argc, char* argv[])
     int opcionSeleccionada = 0;
     int pantalla = 0;
     int juego_terminado = 0;
+    int juego_pausado = 0;
+
     int puntaje = 0;
     int piezas_caidas = 0;
     int velocidad_caida_ms = 1000;
@@ -265,13 +267,17 @@ int main(int argc, char* argv[])
                 }
             }//JUEGO
             if(pantalla == 1 && !juego_terminado){
-                if(tecla == GBTK_r || tecla == GBTK_ARRIBA){
+                if(tecla == GBTK_p){
+                    juego_pausado = !juego_pausado;
+                }
+
+                if(!juego_pausado && (tecla == GBTK_r || tecla == GBTK_ARRIBA)){
                     juego_rotar(&pieza_activa, tablero);
                 }
             }
         }
 
-        if(pantalla == 1 && !juego_terminado){
+        if(pantalla == 1 && !juego_terminado && !juego_pausado){
 
             if(tecla == GBTK_IZQUIERDA) {
                 juego_mover_izquierda(&pieza_activa, tablero);
@@ -344,9 +350,15 @@ int main(int argc, char* argv[])
                 }
             }
         } else if(pantalla == 1){
-           dibujar_juego(ancho, alto, tablero, &pieza_activa, juego_terminado, marco_x, marco_y, lado_bloque);
-           dibujar_puntuacion(&puntaje, lineas_eliminadas, piezas_caidas, velocidad_caida_ms, alto, fin_tablero_y, ancho, fin_tablero_x);
-        } else if(pantalla == 2){
+            dibujar_juego(ancho, alto, tablero, &pieza_activa, juego_terminado, marco_x, marco_y, lado_bloque);
+            dibujar_puntuacion(&puntaje, lineas_eliminadas, piezas_caidas, velocidad_caida_ms, alto, fin_tablero_y, ancho, fin_tablero_x);
+
+            if(juego_pausado && !juego_terminado){
+                dibujar_texto_5x7("PAUSA", calcular_x_centrada("PAUSA", ancho), alto / 2, COL_AMARILLO);
+                dibujar_texto_5x7("P PARA CONTINUAR", calcular_x_centrada("P PARA CONTINUAR", ancho), alto / 2 + 12, COL_GRIS_CLARO);
+            }
+          }
+          else if(pantalla == 2){
             dibujar_inst(ancho, alto);
         }
 
