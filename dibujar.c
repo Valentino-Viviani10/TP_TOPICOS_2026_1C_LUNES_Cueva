@@ -268,3 +268,47 @@ void dibujar_puntuacion(int* puntaje, const char nombre_jugador[], int lineas, i
         }
     }
 }
+
+void dibujar_estadisticas(tEstadisticas* stats, int altoPantalla, int altoJuego, int anchoJuego){
+
+    int margen = 10;
+    int iniX = margen;
+    int finX = anchoJuego - margen;
+    int maxY = altoPantalla - margen;
+    int y = margen + 8;
+    int iniPal = iniX + 10;
+
+    char buffer[20];
+
+    dibujar_borde(maxY, finX, iniX, margen);
+
+    dibujar_texto_5x7("ESTADISTICAS", iniPal, y, COL_VERDE_BRILL);
+
+    sprintf(buffer, "%03d", stats->usadas[0]);
+    dibujar_texto_5x7("I", iniPal, y + 25, COL_CIAN);
+    dibujar_texto_5x7(buffer, iniPal + 25, y + 25, COL_GRIS_CLARO);
+
+    sprintf(buffer, "%03d", stats->usadas[1]);
+    dibujar_texto_5x7("O", iniPal, y + 45, COL_AMARILLO);
+    dibujar_texto_5x7(buffer, iniPal + 25, y + 45, COL_GRIS_CLARO);
+
+    sprintf(buffer, "%03d", stats->usadas[2]);
+    dibujar_texto_5x7("T", iniPal, y + 65, COL_MAG_BRILL);
+    dibujar_texto_5x7(buffer, iniPal + 25, y + 65, COL_GRIS_CLARO);
+
+    sprintf(buffer, "%03d", stats->usadas[3]);
+    dibujar_texto_5x7("L", iniPal, y + 85, COL_NARANJA);
+    dibujar_texto_5x7(buffer, iniPal + 25, y + 85, COL_GRIS_CLARO);
+
+    sprintf(buffer, "%03d", stats->usadas[4]);
+    dibujar_texto_5x7("J", iniPal, y + 105, COL_AZUL);
+    dibujar_texto_5x7(buffer, iniPal + 25, y + 105, COL_GRIS_CLARO);
+
+    sprintf(buffer, "%03d", stats->usadas[5]);
+    dibujar_texto_5x7("S", iniPal, y + 125, COL_VERDE);
+    dibujar_texto_5x7(buffer, iniPal + 25, y + 125, COL_GRIS_CLARO);
+
+    sprintf(buffer, "%03d", stats->usadas[6]);
+    dibujar_texto_5x7("Z", iniPal, y + 145, COL_ROJO);
+    dibujar_texto_5x7(buffer, iniPal + 25, y + 145, COL_GRIS_CLARO);
+}

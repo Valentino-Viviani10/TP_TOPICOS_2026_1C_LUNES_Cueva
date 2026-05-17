@@ -13,6 +13,10 @@ typedef struct {
     int color;      // Color
 } tPiezaActiva;
 
+typedef struct {
+    int usadas[7];
+} tEstadisticas;
+
 void juego_inicializar_pieza(tPiezaActiva* pieza);
 
 void juego_mover_izquierda(tPiezaActiva* pieza, int** tablero);
