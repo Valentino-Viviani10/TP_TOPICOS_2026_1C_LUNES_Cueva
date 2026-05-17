@@ -69,6 +69,28 @@ static uint8_t elegir_color_permitido(void) {
     return coloresPermitidos[rand() % (sizeof(coloresPermitidos) / sizeof(coloresPermitidos[0]))];
 }
 
+static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, int *puntaje, int *piezas_caidas, int *velocidad_caida_ms, int *lineas_eliminadas, int *casillasManuales, int *juego_terminado, tGBT_Temporizador **temp_juego_caida) {
+
+        int fila;
+        int col;
+        for(fila = 0; fila < FILAS; fila++){
+            for(col = 0; col < COLUMNAS; col++){
+                tablero[fila][col] = 0;
+            }
+        }
+        *puntaje = 0;
+        *piezas_caidas = 0;
+        *velocidad_caida_ms = 1000;
+        *lineas_eliminadas = 0;
+        *casillasManuales = 0;
+        *juego_terminado = 0;
+        gbt_temporizador_destruir(*temp_juego_caida);
+        *temp_juego_caida = gbt_temporizador_crear(1.0);
+        juego_inicializar_pieza(pieza);
+}
+
+
+
 int main(int argc, char* argv[])
 {
     if (gbt_iniciar() != 0) {
@@ -250,6 +272,9 @@ int main(int argc, char* argv[])
             printf("Volviendo al menu principal.\n");
         }
         else if (tecla != GBTK_DESCONOCIDA) {
+            if(pantalla == 1 && juego_terminado && tecla == GBTK_ENTER){
+                reiniciar_partida(tablero, &pieza_activa, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida);
+            }
             if(pantalla == 0){
                 if(tecla == GBTK_ABAJO){
                         opcionSeleccionada = 1;
@@ -265,7 +290,8 @@ int main(int argc, char* argv[])
                             pantalla = 2;
                     }
                 }
-            }//JUEGO
+            }
+            //JUEGO
             if(pantalla == 1 && !juego_terminado){
                 if(tecla == GBTK_p){
                     juego_pausado = !juego_pausado;
