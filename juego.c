@@ -1,11 +1,50 @@
-#include "juego.h"
+﻿#include "juego.h"
 #include "puntuaciones.h"
 #include <stdlib.h>
 
+#define CANT_TETROMINOS 7
+
+static int bolsa_tetrominos[CANT_TETROMINOS];
+static int indice_bolsa = CANT_TETROMINOS;
 extern int elegirColor(int pieza);
 
+static void cargar_bolsa_tetrominos(void){
+    int i;
+    for(i = 0; i < CANT_TETROMINOS; i++){
+        bolsa_tetrominos[i] = i;
+    }
+}
+
+static void intercambiar_enteros(int *a, int *b){
+    int aux;
+    aux = *a;
+    *a = *b;
+    *b = aux;
+}
+
+static void mezclar_bolsa_tetrominos(void){
+    int i;
+    int j;
+    for(i = CANT_TETROMINOS - 1; i > 0; i--){
+        j = rand() % (i + 1);
+        intercambiar_enteros(&bolsa_tetrominos[i], &bolsa_tetrominos[j]);
+    }
+}
+
+static int obtener_tipo_tetromino(void){
+    int tipo;
+    if(indice_bolsa >= CANT_TETROMINOS){
+        cargar_bolsa_tetrominos();
+        mezclar_bolsa_tetrominos();
+        indice_bolsa = 0;
+    }
+    tipo = bolsa_tetrominos[indice_bolsa];
+    indice_bolsa++;
+    return tipo;
+}
+
 void juego_inicializar_pieza(tPiezaActiva* pieza) {
-    pieza->tipo = rand() % 7;
+    pieza->tipo = obtener_tipo_tetromino();
     pieza->rotacion = 0;
     pieza->color = elegirColor(pieza->tipo);
 
@@ -103,4 +142,4 @@ void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero) {
 int juego_puede_iniciar_pieza(tPiezaActiva* pieza, int** tablero) {
     return posicion_valida(pieza, tablero, pieza->x, pieza->y);
 }
-
+

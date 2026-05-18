@@ -13,6 +13,11 @@ typedef struct {
     int color;      // Color
 } tPiezaActiva;
 
+typedef struct {
+    int piezas_usadas;
+    int lineas_por_jugada[5]; // usamos indices 1, 2, 3 y 4 para almacenar las cuatro opciones de eliminar lineas
+} tEstadisticas;
+
 void juego_inicializar_pieza(tPiezaActiva* pieza);
 
 void juego_mover_izquierda(tPiezaActiva* pieza, int** tablero);

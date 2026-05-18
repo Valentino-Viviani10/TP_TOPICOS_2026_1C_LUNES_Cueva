@@ -197,6 +197,28 @@ void dibujar_pieza_activa(tPiezaActiva* pieza, int marco_x, int marco_y, int lad
     }
 }
 
+void dibujar_mini_pieza(int tipo, int color, int x, int y)
+{
+    int fila;
+    int col;
+
+    for(fila = 0; fila < 4; fila++){
+        for(col = 0; col < 4; col++){
+
+            if(piezas[tipo][0][fila][col]){
+
+                dibujar_bloque_tablero(
+                    x + (col * 4),
+                    y + (fila * 4),
+                    color,
+                    4
+                );
+            }
+        }
+    }
+}
+
+
 void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int juego_terminado, int marco_x, int marco_y, int lado_bloque)
 {
     dibujar_marco_tablero(marco_x, marco_y, lado_bloque);
@@ -267,4 +289,44 @@ void dibujar_puntuacion(int* puntaje, const char nombre_jugador[], int lineas, i
             }
         }
     }
+}
+
+void dibujar_estadisticas(tEstadisticas* stats, int altoPantalla, int altoJuego, int anchoJuego){
+
+    int margen = 10;
+    int iniX = margen;
+    int finX = anchoJuego - margen;
+    int maxY = altoPantalla - margen;
+    int y = margen + 8;
+    int iniPal = iniX + 10;
+
+    char buffer[25];
+
+    dibujar_borde(maxY, finX, iniX, margen);
+
+    dibujar_texto_5x7("ESTADISTICAS", iniPal, y, COL_VERDE_BRILL);
+
+    dibujar_texto_5x7("TETROMINOS", iniPal, y + 22, COL_AMARILLO);
+    dibujar_texto_5x7("USADOS", iniPal, y + 32, COL_AMARILLO);
+
+    sprintf(buffer, "%03d", stats->piezas_usadas);
+    dibujar_texto_5x7(buffer, iniPal, y + 45, COL_GRIS_CLARO);
+
+    dibujar_texto_5x7("LINEAS ELIM", iniPal, y + 68, COL_VERDE_BRILL);
+
+    dibujar_texto_5x7("1 LINEA", iniPal, y + 88, COL_GRIS_CLARO);
+    sprintf(buffer, "%03d", stats->lineas_por_jugada[1]);
+    dibujar_texto_5x7(buffer, iniPal + 60, y + 88, COL_GRIS_CLARO);
+
+    dibujar_texto_5x7("2 LINEAS", iniPal, y + 108, COL_GRIS_CLARO);
+    sprintf(buffer, "%03d", stats->lineas_por_jugada[2]);
+    dibujar_texto_5x7(buffer, iniPal + 60, y + 108, COL_GRIS_CLARO);
+
+    dibujar_texto_5x7("3 LINEAS", iniPal, y + 128, COL_GRIS_CLARO);
+    sprintf(buffer, "%03d", stats->lineas_por_jugada[3]);
+    dibujar_texto_5x7(buffer, iniPal + 60, y + 128, COL_GRIS_CLARO);
+
+    dibujar_texto_5x7("4 LINEAS", iniPal, y + 148, COL_GRIS_CLARO);
+    sprintf(buffer, "%03d", stats->lineas_por_jugada[4]);
+    dibujar_texto_5x7(buffer, iniPal + 60, y + 148, COL_GRIS_CLARO);
 }
