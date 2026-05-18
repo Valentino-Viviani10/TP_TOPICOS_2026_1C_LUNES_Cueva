@@ -56,6 +56,7 @@ static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguien
 
     if(!juego_puede_iniciar_pieza(pieza, tablero)){
         *juego_terminado = 1;
+        remove("partida_guardada.bin");
     }
 }
 
@@ -273,6 +274,11 @@ int main(int argc, char* argv[])
     if (!tablero) {
         return -1;
     }
+    
+    // Intentar cargar partida guardada
+    if(cargar_tablero(tablero, filas, columnas, "partida_guardada.bin")) {
+        printf("Partida guardada cargada exitosamente.\n");
+    }
     tPiezaActiva pieza_activa;
     juego_inicializar_pieza(&pieza_activa);
 
@@ -286,6 +292,10 @@ int main(int argc, char* argv[])
 
         //MENU
         if(tecla == GBTK_ESCAPE && (pantalla == 1 || pantalla == 0)) {
+            if(pantalla == 1 && !juego_terminado){
+                guardar_tablero(tablero, filas, columnas, "partida_guardada.bin");
+                printf("Partida guardada exitosamente.\n");
+            }
             corriendo = 0;
             printf("Saliendo del juego.\n");
         }
