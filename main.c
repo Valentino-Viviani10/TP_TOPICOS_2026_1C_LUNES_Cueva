@@ -345,6 +345,13 @@ int main(int argc, char* argv[])
                 if(!juego_pausado && (tecla == GBTK_r || tecla == GBTK_ARRIBA)){
                     juego_rotar(&pieza_activa, tablero);
                 }
+                //cheat
+                if(!juego_pausado && (tecla >= GBTK_1 && tecla <= GBTK_9)){
+                    int indice_fila = filas - (tecla - '0');
+                    if(indice_fila >= 0) {
+                        eliminar_fila_y_bajar(tablero, indice_fila, columnas);
+                    }
+                }
             }
             if(pantalla == 3){
 
