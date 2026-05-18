@@ -32,17 +32,16 @@
     Entrega: Si
 */
 
-
 static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int **tablero, int *casillasManuales, int *juego_terminado, int *piezas_caidas, int *velocidad_caida_ms, tGBT_Temporizador **temp_juego_caida, int *lineas_eliminadas){
+
     juego_fijar_pieza(pieza, tablero);
     stats->piezas_usadas++;
 
-    int filasElim = borrar_lineas(tablero, FILAS, COLUMNAS);
+    int filasElim = borrar_lineas(tablero, filas, columnas);
     if(filasElim >= 1 && filasElim <= 4){
-    stats->lineas_por_jugada[filasElim]++;
+        stats->lineas_por_jugada[filasElim]++;
     }
-
-    sumar_puntos(filasElim, *casillasManuales, puntaje);
+    sumar_puntos(filasElim, *casillasManuales, puntaje, (*piezas_caidas) / 10);
     *lineas_eliminadas += filasElim;
     *casillasManuales = 0;
 
@@ -61,6 +60,7 @@ static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguien
 
     if(!juego_puede_iniciar_pieza(pieza, tablero)){
         *juego_terminado = 1;
+        remove("partida_guardada.bin");
     }
 }
 
@@ -79,8 +79,8 @@ static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *
 
         int fila;
         int col;
-        for(fila = 0; fila < FILAS; fila++){
-            for(col = 0; col < COLUMNAS; col++){
+        for(fila = 0; fila < filas; fila++){
+            for(col = 0; col < columnas; col++){
                 tablero[fila][col] = 0;
             }
         }
@@ -90,7 +90,6 @@ static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *
         *lineas_eliminadas = 0;
         *casillasManuales = 0;
         *juego_terminado = 0;
-
         stats->piezas_usadas = 0;
         for(int i = 0; i < 5; i++){
             stats->lineas_por_jugada[i] = 0;
@@ -172,7 +171,7 @@ int main(int argc, char* argv[])
     }
 
     char nombreVentana[50];
-    sprintf(nombreVentana, "TETRIS - %dx%d", ancho, alto);
+    snprintf(nombreVentana, sizeof(nombreVentana), "TETRIS - %dx%d", ancho, alto);
 
     if(gbt_crear_ventana(nombreVentana, ancho, alto, escala) != 0){
         fprintf(stderr, "Error al iniciar el modulo de graficos de GBT: %s\n", gbt_obtener_log());
@@ -238,13 +237,13 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    tGBT_Temporizador *temp_movimiento_lateral = gbt_temporizador_crear(0.5);
+    tGBT_Temporizador *temp_movimiento_lateral = gbt_temporizador_crear(0.25);
     if (!temp_movimiento_lateral) {
         fprintf(stderr, "Error al crear el temporizador de movimiento lateral: %s\n", gbt_obtener_log());
         return -1;
     }
 
-    tGBT_Temporizador *temp_caida_rapida = gbt_temporizador_crear(0.2);
+    tGBT_Temporizador *temp_caida_rapida = gbt_temporizador_crear(0.07);
     if (!temp_caida_rapida) {
         fprintf(stderr, "Error al crear el temporizador de movimiento abajo: %s\n", gbt_obtener_log());
         return -1;
@@ -271,18 +270,25 @@ int main(int argc, char* argv[])
     int casillasManuales = 0;
     tEstadisticas stats = {0};
     int lado_bloque = calcular_lado_bloque_juego(alto);
-    int marco_x = (ancho / 2) - ((COLUMNAS * lado_bloque) / 2);
-    int marco_y = (alto / 2) - ((FILAS * lado_bloque) / 2);
-    int fin_tablero_x = marco_x + (COLUMNAS * lado_bloque);
-    int fin_tablero_y = marco_y + (FILAS * lado_bloque);
+    int marco_x = (ancho / 2) - ((columnas * lado_bloque) / 2);
+    int marco_y = (alto / 2) - ((filas * lado_bloque) / 2);
+    int fin_tablero_x = marco_x + (columnas * lado_bloque);
+    int fin_tablero_y = marco_y + (filas * lado_bloque);
     static int sostenida_activa = 0;
+    static int cooldown_lateral = 0;
+    static int das_activo = 0;  // 1 = ya pasó el DAS inicial, auto-repeat activo
 
     uint8_t colorSeleccionado = COL_AMARILLO;
 
     //creacion de tablero de juego
-    int** tablero = crear_tablero(FILAS, COLUMNAS, sizeof(int));
+    int** tablero = crear_tablero(filas, columnas, sizeof(int));
     if (!tablero) {
         return -1;
+    }
+    
+    // Intentar cargar partida guardada
+    if(cargar_tablero(tablero, filas, columnas, "partida_guardada.bin")) {
+        printf("Partida guardada cargada exitosamente.\n");
     }
     tPiezaActiva pieza_activa;
     juego_inicializar_pieza(&pieza_activa);
@@ -297,6 +303,10 @@ int main(int argc, char* argv[])
 
         //MENU
         if(tecla == GBTK_ESCAPE && (pantalla == 1 || pantalla == 0)) {
+            if(pantalla == 1 && !juego_terminado){
+                guardar_tablero(tablero, filas, columnas, "partida_guardada.bin");
+                printf("Partida guardada exitosamente.\n");
+            }
             corriendo = 0;
             printf("Saliendo del juego.\n");
         }
@@ -375,24 +385,31 @@ int main(int argc, char* argv[])
 
         if(pantalla == 1 && !juego_terminado && !juego_pausado){
 
-            if(tecla == GBTK_IZQUIERDA) {
-                juego_mover_izquierda(&pieza_activa, tablero);
+            int izq = gbt_tecla_sostenida(GBTK_IZQUIERDA);
+            int der = gbt_tecla_sostenida(GBTK_DERECHA);
+
+            if (cooldown_lateral > 0) {
+                cooldown_lateral--;
             }
 
-            if (gbt_tecla_sostenida(GBTK_IZQUIERDA)) {
-                if (gbt_temporizador_consumir(temp_movimiento_lateral)) {
-                    juego_mover_izquierda(&pieza_activa, tablero);
+            if (izq || der) {
+                if (cooldown_lateral == 0) {
+                    if (izq) juego_mover_izquierda(&pieza_activa, tablero);
+                    if (der) juego_mover_derecha(&pieza_activa, tablero);
+
+                    if (!das_activo) {
+                        // Primera pulsación o DAS delay: ~192ms (12 frames * 16ms)
+                        cooldown_lateral = 12;
+                        das_activo = 1;
+                    } else {
+                        // Auto-repeat: ~48ms (3 frames * 16ms)
+                        cooldown_lateral = 3;
+                    }
                 }
-            }
-
-            if(tecla == GBTK_DERECHA) {
-                juego_mover_derecha(&pieza_activa, tablero);
-            }
-
-            if (gbt_tecla_sostenida(GBTK_DERECHA)) {
-                if (gbt_temporizador_consumir(temp_movimiento_lateral)) {
-                    juego_mover_derecha(&pieza_activa, tablero);
-                }
+            } else {
+                // Tecla soltada: resetear DAS
+                cooldown_lateral = 0;
+                das_activo = 0;
             }
 
             if(tecla == GBTK_ABAJO) {
@@ -472,10 +489,11 @@ int main(int argc, char* argv[])
         gbt_esperar(16);
     }
 
-    destruir_tablero(tablero, FILAS);
+    destruir_tablero(tablero, filas);
     gbt_temporizador_destruir(temp_caida_tetrominos);
     gbt_temporizador_destruir(temp_activar_tetrominos);
     gbt_temporizador_destruir(temp_juego_caida);
     gbt_temporizador_destruir(temp_movimiento_lateral);
     gbt_temporizador_destruir(temp_caida_rapida);
+    return 0;
 }

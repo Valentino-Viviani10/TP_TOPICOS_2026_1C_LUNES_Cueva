@@ -1,4 +1,5 @@
-#include "juego.h"
+ï»¿#include "juego.h"
+#include "puntuaciones.h"
 #include <stdlib.h>
 
 #define CANT_TETROMINOS 7
@@ -7,11 +8,6 @@ static int bolsa_tetrominos[CANT_TETROMINOS];
 static int indice_bolsa = CANT_TETROMINOS;
 extern int elegirColor(int pieza);
 
-
-/* Inicializa la bolsa con los 7 tipos de tetrominos. Cada numero representa un tipo de pieza:
-    0 = I // 1 = O // 2 = T // 3 = L // 4 = J // 5 = S // 6 = Z
-    La idea es que en cada bolsa aparezca una vez cada pieza.
-*/
 static void cargar_bolsa_tetrominos(void){
     int i;
     for(i = 0; i < CANT_TETROMINOS; i++){
@@ -19,35 +15,22 @@ static void cargar_bolsa_tetrominos(void){
     }
 }
 
-
-/* Intercambia dos posiciones enteras. Se usa durante la mezcla de la bolsa. La funcion recibe punteros para modificar directamente los valores originales del arreglo.
-*/
 static void intercambiar_enteros(int *a, int *b){
     int aux;
-
     aux = *a;
     *a = *b;
     *b = aux;
 }
 
-
-/* Mezcla la bolsa de tetrominos. Recorre la bolsa desde el final hacia el inicio. En cada vuelta elige una posicion aleatoria entre 0 e i, y cambia la pieza actual con esa posicion.
-   Esto evita que las piezas salgan siempre en el mismo orden.
-*/
 static void mezclar_bolsa_tetrominos(void){
     int i;
     int j;
-
     for(i = CANT_TETROMINOS - 1; i > 0; i--){
         j = rand() % (i + 1);
         intercambiar_enteros(&bolsa_tetrominos[i], &bolsa_tetrominos[j]);
     }
 }
 
-
-/* Devuelve el proximo tipo de tetromino. Si la bolsa ya fue usada completa, se vuelve a cargar con los 7 tipos de piezas, se mezcla nuevamente y se empieza desde la primera posicion.
-   Asi no puede haber una tendencia fuerte hacia un tipo de pieza, porque adentro de cada bolsa aparecen todos los tetrominos una sola vez.
-*/
 static int obtener_tipo_tetromino(void){
     int tipo;
     if(indice_bolsa >= CANT_TETROMINOS){
@@ -60,14 +43,12 @@ static int obtener_tipo_tetromino(void){
     return tipo;
 }
 
-
-
 void juego_inicializar_pieza(tPiezaActiva* pieza) {
-    pieza->tipo = obtener_tipo_tetromino(); //Antes usábamos rand() % 7, que daba igualdad de probabilidad en cada tirada, pero podía repetir muchas veces una misma pieza. Lamentablemente, con la bolsa estática, la estadística por tipo pierde valor porque tiende a quedar pareja por diseño.
+    pieza->tipo = obtener_tipo_tetromino();
     pieza->rotacion = 0;
     pieza->color = elegirColor(pieza->tipo);
 
-    pieza->x = COLUMNAS / 2 - 2;
+    pieza->x = columnas / 2 - 2;
     pieza->y = 0;
 }
 
@@ -78,10 +59,10 @@ int posicion_valida(tPiezaActiva* pieza, int** tablero, int nueva_x, int nueva_y
                 int pos_tablero_x = nueva_x + col;
                 int pos_tablero_y = nueva_y + fila;
 
-                if (pos_tablero_x < 0 || pos_tablero_x >= COLUMNAS) {
+                if (pos_tablero_x < 0 || pos_tablero_x >= columnas) {
                     return 0;
                 }
-                if (pos_tablero_y >= FILAS) {
+                if (pos_tablero_y >= filas) {
                     return 0;
                 }
                 if (pos_tablero_y >= 0 && tablero[pos_tablero_y][pos_tablero_x] != 0) {
@@ -179,9 +160,6 @@ int juego_caer(tPiezaActiva* pieza, int** tablero) {
 }
 
 void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero) {
-    // TODO: Recorrer la matriz 4x4 de la pieza actual.
-    // Si hay un bloque (1), copiar el pieza->color en esa
-    // coordenada (y, x) de int** tablero.
     int fila;
     int col;
 
@@ -191,8 +169,8 @@ void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero) {
                 int pos_tablero_x = pieza->x + col;
                 int pos_tablero_y = pieza->y + fila;
 
-                if (pos_tablero_y >= 0 && pos_tablero_y < FILAS &&
-                    pos_tablero_x >= 0 && pos_tablero_x < COLUMNAS) {
+                if (pos_tablero_y >= 0 && pos_tablero_y < filas &&
+                    pos_tablero_x >= 0 && pos_tablero_x < columnas) {
                     tablero[pos_tablero_y][pos_tablero_x] = pieza->color;
                 }
             }
@@ -203,3 +181,4 @@ void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero) {
 int juego_puede_iniciar_pieza(tPiezaActiva* pieza, int** tablero) {
     return posicion_valida(pieza, tablero, pieza->x, pieza->y);
 }
+

@@ -1,25 +1,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void sumar_puntos(int lineas_completadas, int casillasManuales, int* puntaje) {
-    if(lineas_completadas < 0 && casillasManuales < 0) return;
+void sumar_puntos(int lineas_completadas, int casillasManuales, int* puntaje, int nivel_velocidad) {
+    if(lineas_completadas < 0 || casillasManuales < 0) return;
+
+    int puntos_lineas = 0;
 
     switch(lineas_completadas) {
         case 1:
-            *puntaje += 100;
+            puntos_lineas = 100;
             break;
         case 2:
-            *puntaje += 200;
+            puntos_lineas = 200;
             break;
         case 3:
-            *puntaje += 400;
+            puntos_lineas = 400;
             break;
         case 4:
-            *puntaje += 800;
+            puntos_lineas = 800;
             break;
         default:
             break;
     }
 
+    // Bonus del 10% por cada nivel de velocidad
+    puntos_lineas += puntos_lineas * nivel_velocidad / 10;
+
+    *puntaje += puntos_lineas;
     *puntaje += casillasManuales * 10;
 }
