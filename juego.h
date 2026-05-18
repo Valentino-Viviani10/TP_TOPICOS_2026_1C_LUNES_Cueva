@@ -27,6 +27,4 @@ void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero);
 
 int juego_puede_iniciar_pieza(tPiezaActiva* pieza, int** tablero);
 
-void fijar_y_nueva_pieza(tPiezaActiva *pieza, int *puntaje, int **tablero, int *casillasManuales, int *juego_terminado, int *piezas_colocadas, int *nivel_velocidad, double *duracion_caida, tGBT_Temporizador **temp_juego_caida);
-
 #endif // JUEGO_H_INCLUDED

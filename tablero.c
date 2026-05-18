@@ -1,5 +1,8 @@
 #include "tablero.h"
 
+int filas = 20;
+int columnas = 10;
+
 int** crear_tablero(int filas, int columnas, size_t tamElem) {
     int** tablero = (int**)malloc(filas * sizeof(int*));
 

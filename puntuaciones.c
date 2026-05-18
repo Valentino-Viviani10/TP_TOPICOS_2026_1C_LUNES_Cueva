@@ -27,5 +27,5 @@ void sumar_puntos(int lineas_completadas, int casillasManuales, int* puntaje, in
     puntos_lineas += puntos_lineas * nivel_velocidad / 10;
 
     *puntaje += puntos_lineas;
-    *puntaje += casillasManuales;
+    *puntaje += casillasManuales * 10;
 }

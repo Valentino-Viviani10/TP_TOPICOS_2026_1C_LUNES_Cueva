@@ -3,8 +3,8 @@
 
 #include <stdlib.h>
 
-#define FILAS 20
-#define COLUMNAS 10
+extern int filas;
+extern int columnas;
 
 int** crear_tablero(int filas, int columnas, size_t tamElem);
 

@@ -32,8 +32,32 @@
     Entrega: Si
 */
 
+static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, int *puntaje, int **tablero, int *casillasManuales, int *juego_terminado, int *piezas_caidas, int *velocidad_caida_ms, tGBT_Temporizador **temp_juego_caida, int *lineas_eliminadas){
 
+    juego_fijar_pieza(pieza, tablero);
 
+    int filasElim = borrar_lineas(tablero, filas, columnas);
+    sumar_puntos(filasElim, *casillasManuales, puntaje, (*piezas_caidas) / 10);
+    *lineas_eliminadas += filasElim;
+    *casillasManuales = 0;
+
+    (*piezas_caidas)++;
+
+    if((*piezas_caidas) % 10 == 0){
+
+        *velocidad_caida_ms = ((*velocidad_caida_ms * 97) + 50) / 100;
+        gbt_temporizador_destruir(*temp_juego_caida);
+        *temp_juego_caida = gbt_temporizador_crear(*velocidad_caida_ms / 1000.0);
+        printf("Velocidad actual: %d ms\n", *velocidad_caida_ms);
+    }
+
+    *pieza = *pieza_siguiente;
+    juego_inicializar_pieza(pieza_siguiente);
+
+    if(!juego_puede_iniciar_pieza(pieza, tablero)){
+        *juego_terminado = 1;
+    }
+}
 
 static uint8_t elegir_color_permitido(void) {
     static const uint8_t coloresPermitidos[] = {
@@ -44,6 +68,40 @@ static uint8_t elegir_color_permitido(void) {
     };
 
     return coloresPermitidos[rand() % (sizeof(coloresPermitidos) / sizeof(coloresPermitidos[0]))];
+}
+
+static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, int *puntaje, int *piezas_caidas, int *velocidad_caida_ms, int *lineas_eliminadas, int *casillasManuales, int *juego_terminado, tGBT_Temporizador **temp_juego_caida) {
+
+        int fila;
+        int col;
+        for(fila = 0; fila < filas; fila++){
+            for(col = 0; col < columnas; col++){
+                tablero[fila][col] = 0;
+            }
+        }
+        *puntaje = 0;
+        *piezas_caidas = 0;
+        *velocidad_caida_ms = 1000;
+        *lineas_eliminadas = 0;
+        *casillasManuales = 0;
+        *juego_terminado = 0;
+        gbt_temporizador_destruir(*temp_juego_caida);
+        *temp_juego_caida = gbt_temporizador_crear(1.0);
+        juego_inicializar_pieza(pieza);
+}
+
+static int caracter_soportado(eGBT_Tecla tecla){
+
+    return (tecla >= GBTK_a && tecla <= GBTK_z) || (tecla >= GBTK_0 && tecla <= GBTK_9) || tecla == GBTK_ESPACIO || tecla == GBTK_MENOS;
+}
+
+static char convertir_caracter_nombre(eGBT_Tecla tecla)
+{
+    if(tecla >= GBTK_a && tecla <= GBTK_z){
+        return tecla - 32; //convierte lo que el usuario tipea en minúscula a mayúscula
+    }
+
+    return tecla;
 }
 
 int main(int argc, char* argv[])
@@ -188,16 +246,22 @@ int main(int argc, char* argv[])
     int opcionSeleccionada = 0;
     int pantalla = 0;
     int juego_terminado = 0;
+    int juego_pausado = 0;
+
+    char nombre_jugador[16] = "";
+    int largo_nombre = 0;
+    int mostrar_error_nombre = 0;
+
     int puntaje = 0;
+    int piezas_caidas = 0;
+    int velocidad_caida_ms = 1000;
+    int lineas_eliminadas = 0;
     int casillasManuales = 0;
-    int piezas_colocadas = 0;
-    int nivel_velocidad = 0;
-    double duracion_caida = 1.0;
     int lado_bloque = calcular_lado_bloque_juego(alto);
-    int marco_x = (ancho / 2) - ((COLUMNAS * lado_bloque) / 2);
-    int marco_y = (alto / 2) - ((FILAS * lado_bloque) / 2);
-    int fin_tablero_x = marco_x + (COLUMNAS * lado_bloque);
-    int fin_tablero_y = marco_y + (FILAS * lado_bloque);
+    int marco_x = (ancho / 2) - ((columnas * lado_bloque) / 2);
+    int marco_y = (alto / 2) - ((filas * lado_bloque) / 2);
+    int fin_tablero_x = marco_x + (columnas * lado_bloque);
+    int fin_tablero_y = marco_y + (filas * lado_bloque);
     static int sostenida_activa = 0;
     static int cooldown_lateral = 0;
     static int das_activo = 0;  // 1 = ya pasó el DAS inicial, auto-repeat activo
@@ -205,12 +269,15 @@ int main(int argc, char* argv[])
     uint8_t colorSeleccionado = COL_AMARILLO;
 
     //creacion de tablero de juego
-    int** tablero = crear_tablero(FILAS, COLUMNAS, sizeof(int));
+    int** tablero = crear_tablero(filas, columnas, sizeof(int));
     if (!tablero) {
         return -1;
     }
     tPiezaActiva pieza_activa;
     juego_inicializar_pieza(&pieza_activa);
+
+    tPiezaActiva pieza_siguiente;
+    juego_inicializar_pieza(&pieza_siguiente);
 
     while(corriendo) {
 
@@ -227,30 +294,69 @@ int main(int argc, char* argv[])
             printf("Volviendo al menu principal.\n");
         }
         else if (tecla != GBTK_DESCONOCIDA) {
+            if(pantalla == 1 && juego_terminado && tecla == GBTK_ENTER){
+                reiniciar_partida(tablero, &pieza_activa, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida);
+                            }
             if(pantalla == 0){
                 if(tecla == GBTK_ABAJO){
-                        opcionSeleccionada = 1;
+                    opcionSeleccionada = 1;
                 }
                 if(tecla == GBTK_ARRIBA){
-                        opcionSeleccionada = 0;
+                    opcionSeleccionada = 0;
                 }
                 if(tecla == GBTK_ENTER){
                     if(opcionSeleccionada == 0){
-                            pantalla = 1;
+                        pantalla = 3;
+                        tecla = GBTK_DESCONOCIDA;
+                        mostrar_error_nombre = 0;
                     }
                     else if(opcionSeleccionada == 1){
-                            pantalla = 2;
+                        pantalla = 2;
                     }
                 }
-            }//JUEGO
+            }
+            //JUEGO
             if(pantalla == 1 && !juego_terminado){
-                if(tecla == GBTK_r || tecla == GBTK_ARRIBA){
+                if(tecla == GBTK_p){
+                    juego_pausado = !juego_pausado;
+                }
+
+                if(!juego_pausado && (tecla == GBTK_r || tecla == GBTK_ARRIBA)){
                     juego_rotar(&pieza_activa, tablero);
+                }
+            }
+            if(pantalla == 3){
+
+                if(tecla == GBTK_ENTER){
+
+                    if(largo_nombre == 0){
+                        strcpy(nombre_jugador, "ANONIMO");
+                        largo_nombre = 8;
+                    }
+
+                    mostrar_error_nombre = 0;
+                    pantalla = 1;
+                }
+                else if(tecla == GBTK_RETROCESO && largo_nombre > 0){
+
+                    largo_nombre--;
+                    nombre_jugador[largo_nombre] = '\0';
+                    mostrar_error_nombre = 0;
+                }
+                else if(caracter_soportado(tecla) && largo_nombre < 15){
+
+                    nombre_jugador[largo_nombre] = convertir_caracter_nombre(tecla);
+                    largo_nombre++;
+                    nombre_jugador[largo_nombre] = '\0';
+                    mostrar_error_nombre = 0;
+                }
+                else if(tecla != GBTK_DESCONOCIDA){
+                    mostrar_error_nombre = 1;
                 }
             }
         }
 
-        if(pantalla == 1 && !juego_terminado){
+        if(pantalla == 1 && !juego_terminado && !juego_pausado){
 
             int izq = gbt_tecla_sostenida(GBTK_IZQUIERDA);
             int der = gbt_tecla_sostenida(GBTK_DERECHA);
@@ -285,7 +391,7 @@ int main(int argc, char* argv[])
                 if(juego_caer(&pieza_activa, tablero)) {
                     casillasManuales++;
                 } else {
-                    fijar_y_nueva_pieza(&pieza_activa, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_colocadas, &nivel_velocidad, &duracion_caida, &temp_juego_caida);
+                    fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas);
                 }
             } else if (gbt_tecla_sostenida(GBTK_ABAJO)) {
                 if(!sostenida_activa && gbt_temporizador_consumir(temp_caida_rapida)) {
@@ -295,13 +401,13 @@ int main(int argc, char* argv[])
                     if(juego_caer(&pieza_activa, tablero)) {
                         casillasManuales++;
                     } else {
-                        fijar_y_nueva_pieza(&pieza_activa, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_colocadas, &nivel_velocidad, &duracion_caida, &temp_juego_caida);
+                        fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas);
                     }
                 }
             } else {
                 if(gbt_temporizador_consumir(temp_juego_caida)){
                     if(!juego_caer(&pieza_activa, tablero)){
-                        fijar_y_nueva_pieza(&pieza_activa, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_colocadas, &nivel_velocidad, &duracion_caida, &temp_juego_caida);
+                        fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas);
                     }
                 }
             }
@@ -330,18 +436,32 @@ int main(int argc, char* argv[])
                 }
             }
         } else if(pantalla == 1){
-           dibujar_juego(ancho, alto, tablero, &pieza_activa, juego_terminado, marco_x, marco_y, lado_bloque);
-           dibujar_puntuacion(&puntaje, alto, fin_tablero_y, ancho, fin_tablero_x);
-        } else if(pantalla == 2){
+            dibujar_juego(ancho, alto, tablero, &pieza_activa, juego_terminado, marco_x, marco_y, lado_bloque);
+            dibujar_puntuacion(&puntaje, nombre_jugador, lineas_eliminadas, piezas_caidas, velocidad_caida_ms, alto, fin_tablero_y, ancho, fin_tablero_x, &pieza_siguiente);
+
+            if(juego_pausado && !juego_terminado){
+                dibujar_texto_5x7("PAUSA", calcular_x_centrada("PAUSA", ancho), alto / 2, COL_AMARILLO);
+                dibujar_texto_5x7("P PARA CONTINUAR", calcular_x_centrada("P PARA CONTINUAR", ancho), alto / 2 + 12, COL_GRIS_CLARO);
+            }
+          }
+          else if(pantalla == 3){
+            dibujar_texto_5x7("INGRESE NOMBRE", calcular_x_centrada("INGRESE NOMBRE", ancho), alto / 2 - 20, COL_VERDE_BRILL);
+            dibujar_texto_5x7(nombre_jugador, calcular_x_centrada(nombre_jugador, ancho), alto / 2, COL_AMARILLO);
+            dibujar_texto_5x7("ENTER PARA JUGAR", calcular_x_centrada("ENTER PARA JUGAR", ancho), alto / 2 + 20, COL_GRIS_CLARO);
+
+            if(mostrar_error_nombre){
+                dibujar_texto_5x7("CARACTER NO SOPORTADO", calcular_x_centrada("CARACTER NO SOPORTADO", ancho), alto / 2 + 32, COL_ROJO_BRILL);
+            }
+          }
+          else if(pantalla == 2){
             dibujar_inst(ancho, alto);
-        }
+          }
 
         gbt_volcar_backbuffer();
-
         gbt_esperar(16);
     }
 
-    destruir_tablero(tablero, FILAS);
+    destruir_tablero(tablero, filas);
     gbt_temporizador_destruir(temp_caida_tetrominos);
     gbt_temporizador_destruir(temp_activar_tetrominos);
     gbt_temporizador_destruir(temp_juego_caida);
