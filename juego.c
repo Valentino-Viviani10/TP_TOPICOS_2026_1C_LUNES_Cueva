@@ -1,10 +1,69 @@
 #include "juego.h"
 #include <stdlib.h>
 
+#define CANT_TETROMINOS 7
+
+static int bolsa_tetrominos[CANT_TETROMINOS];
+static int indice_bolsa = CANT_TETROMINOS;
 extern int elegirColor(int pieza);
 
+
+/* Inicializa la bolsa con los 7 tipos de tetrominos. Cada numero representa un tipo de pieza:
+    0 = I // 1 = O // 2 = T // 3 = L // 4 = J // 5 = S // 6 = Z
+    La idea es que en cada bolsa aparezca una vez cada pieza.
+*/
+static void cargar_bolsa_tetrominos(void){
+    int i;
+    for(i = 0; i < CANT_TETROMINOS; i++){
+        bolsa_tetrominos[i] = i;
+    }
+}
+
+
+/* Intercambia dos posiciones enteras. Se usa durante la mezcla de la bolsa. La funcion recibe punteros para modificar directamente los valores originales del arreglo.
+*/
+static void intercambiar_enteros(int *a, int *b){
+    int aux;
+
+    aux = *a;
+    *a = *b;
+    *b = aux;
+}
+
+
+/* Mezcla la bolsa de tetrominos. Recorre la bolsa desde el final hacia el inicio. En cada vuelta elige una posicion aleatoria entre 0 e i, y cambia la pieza actual con esa posicion.
+   Esto evita que las piezas salgan siempre en el mismo orden.
+*/
+static void mezclar_bolsa_tetrominos(void){
+    int i;
+    int j;
+
+    for(i = CANT_TETROMINOS - 1; i > 0; i--){
+        j = rand() % (i + 1);
+        intercambiar_enteros(&bolsa_tetrominos[i], &bolsa_tetrominos[j]);
+    }
+}
+
+
+/* Devuelve el proximo tipo de tetromino. Si la bolsa ya fue usada completa, se vuelve a cargar con los 7 tipos de piezas, se mezcla nuevamente y se empieza desde la primera posicion.
+   Asi no puede haber una tendencia fuerte hacia un tipo de pieza, porque adentro de cada bolsa aparecen todos los tetrominos una sola vez.
+*/
+static int obtener_tipo_tetromino(void){
+    int tipo;
+    if(indice_bolsa >= CANT_TETROMINOS){
+        cargar_bolsa_tetrominos();
+        mezclar_bolsa_tetrominos();
+        indice_bolsa = 0;
+    }
+    tipo = bolsa_tetrominos[indice_bolsa];
+    indice_bolsa++;
+    return tipo;
+}
+
+
+
 void juego_inicializar_pieza(tPiezaActiva* pieza) {
-    pieza->tipo = rand() % 7;
+    pieza->tipo = obtener_tipo_tetromino(); //Antes usábamos rand() % 7, que daba igualdad de probabilidad en cada tirada, pero podía repetir muchas veces una misma pieza.
     pieza->rotacion = 0;
     pieza->color = elegirColor(pieza->tipo);
 
