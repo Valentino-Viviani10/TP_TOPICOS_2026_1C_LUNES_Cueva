@@ -332,10 +332,16 @@ int main(int argc, char* argv[])
                     juego_pausado = !juego_pausado;
                 }
 
-                if(!juego_pausado && (tecla == GBTK_r || tecla == GBTK_ARRIBA)){
-                    juego_rotar(&pieza_activa, tablero);
+                if(!juego_pausado){
+                    if(tecla == GBTK_r || tecla == GBTK_ARRIBA){
+                        juego_rotar(&pieza_activa, tablero);
+                    }
+                if(tecla == GBTK_q){
+                    juego_rotar_izquierda(&pieza_activa, tablero);
+                }
                 }
             }
+
             if(pantalla == 3){
 
                 if(tecla == GBTK_ENTER){
