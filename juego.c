@@ -63,7 +63,7 @@ static int obtener_tipo_tetromino(void){
 
 
 void juego_inicializar_pieza(tPiezaActiva* pieza) {
-    pieza->tipo = obtener_tipo_tetromino(); //Antes usábamos rand() % 7, que daba igualdad de probabilidad en cada tirada, pero podía repetir muchas veces una misma pieza.
+    pieza->tipo = obtener_tipo_tetromino(); //Antes usábamos rand() % 7, que daba igualdad de probabilidad en cada tirada, pero podía repetir muchas veces una misma pieza. Lamentablemente, con la bolsa estática, la estadística por tipo pierde valor porque tiende a quedar pareja por diseño.
     pieza->rotacion = 0;
     pieza->color = elegirColor(pieza->tipo);
 

@@ -35,9 +35,13 @@
 
 static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int **tablero, int *casillasManuales, int *juego_terminado, int *piezas_caidas, int *velocidad_caida_ms, tGBT_Temporizador **temp_juego_caida, int *lineas_eliminadas){
     juego_fijar_pieza(pieza, tablero);
-    stats->usadas[pieza->tipo]++;
+    stats->piezas_usadas++;
 
     int filasElim = borrar_lineas(tablero, FILAS, COLUMNAS);
+    if(filasElim >= 1 && filasElim <= 4){
+    stats->lineas_por_jugada[filasElim]++;
+    }
+
     sumar_puntos(filasElim, *casillasManuales, puntaje);
     *lineas_eliminadas += filasElim;
     *casillasManuales = 0;
@@ -87,8 +91,9 @@ static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *
         *casillasManuales = 0;
         *juego_terminado = 0;
 
-        for(int i = 0; i < 7; i++){
-            stats->usadas[i] = 0;
+        stats->piezas_usadas = 0;
+        for(int i = 0; i < 5; i++){
+            stats->lineas_por_jugada[i] = 0;
         }
 
         gbt_temporizador_destruir(*temp_juego_caida);

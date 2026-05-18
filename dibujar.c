@@ -300,37 +300,33 @@ void dibujar_estadisticas(tEstadisticas* stats, int altoPantalla, int altoJuego,
     int y = margen + 8;
     int iniPal = iniX + 10;
 
-    char buffer[20];
+    char buffer[25];
 
     dibujar_borde(maxY, finX, iniX, margen);
 
     dibujar_texto_5x7("ESTADISTICAS", iniPal, y, COL_VERDE_BRILL);
 
-    sprintf(buffer, "%03d", stats->usadas[0]);
-    dibujar_mini_pieza(0, COL_CIAN, iniPal, y + 22);
-    dibujar_texto_5x7(buffer, iniPal + 25, y + 25, COL_GRIS_CLARO);
+    dibujar_texto_5x7("TETROMINOS", iniPal, y + 22, COL_AMARILLO);
+    dibujar_texto_5x7("USADOS", iniPal, y + 32, COL_AMARILLO);
 
-    sprintf(buffer, "%03d", stats->usadas[1]);
-    dibujar_mini_pieza(1, COL_AMARILLO, iniPal, y + 42);
-    dibujar_texto_5x7(buffer, iniPal + 25, y + 45, COL_GRIS_CLARO);
+    sprintf(buffer, "%03d", stats->piezas_usadas);
+    dibujar_texto_5x7(buffer, iniPal, y + 45, COL_GRIS_CLARO);
 
-    sprintf(buffer, "%03d", stats->usadas[2]);
-    dibujar_mini_pieza(2, COL_MAG_BRILL, iniPal, y + 62);
-    dibujar_texto_5x7(buffer, iniPal + 25, y + 65, COL_GRIS_CLARO);
+    dibujar_texto_5x7("LINEAS ELIM", iniPal, y + 68, COL_VERDE_BRILL);
 
-    sprintf(buffer, "%03d", stats->usadas[3]);
-    dibujar_mini_pieza(3, COL_NARANJA, iniPal, y + 82);
-    dibujar_texto_5x7(buffer, iniPal + 25, y + 85, COL_GRIS_CLARO);
+    dibujar_texto_5x7("1 LINEA", iniPal, y + 88, COL_GRIS_CLARO);
+    sprintf(buffer, "%03d", stats->lineas_por_jugada[1]);
+    dibujar_texto_5x7(buffer, iniPal + 60, y + 88, COL_GRIS_CLARO);
 
-    sprintf(buffer, "%03d", stats->usadas[4]);
-    dibujar_mini_pieza(4, COL_AZUL, iniPal, y + 102);
-    dibujar_texto_5x7(buffer, iniPal + 25, y + 105, COL_GRIS_CLARO);
+    dibujar_texto_5x7("2 LINEAS", iniPal, y + 108, COL_GRIS_CLARO);
+    sprintf(buffer, "%03d", stats->lineas_por_jugada[2]);
+    dibujar_texto_5x7(buffer, iniPal + 60, y + 108, COL_GRIS_CLARO);
 
-    sprintf(buffer, "%03d", stats->usadas[5]);
-    dibujar_mini_pieza(5, COL_VERDE, iniPal, y + 122);
-    dibujar_texto_5x7(buffer, iniPal + 25, y + 125, COL_GRIS_CLARO);
+    dibujar_texto_5x7("3 LINEAS", iniPal, y + 128, COL_GRIS_CLARO);
+    sprintf(buffer, "%03d", stats->lineas_por_jugada[3]);
+    dibujar_texto_5x7(buffer, iniPal + 60, y + 128, COL_GRIS_CLARO);
 
-    sprintf(buffer, "%03d", stats->usadas[6]);
-    dibujar_mini_pieza(6, COL_ROJO, iniPal, y + 142);
-    dibujar_texto_5x7(buffer, iniPal + 25, y + 145, COL_GRIS_CLARO);
+    dibujar_texto_5x7("4 LINEAS", iniPal, y + 148, COL_GRIS_CLARO);
+    sprintf(buffer, "%03d", stats->lineas_por_jugada[4]);
+    dibujar_texto_5x7(buffer, iniPal + 60, y + 148, COL_GRIS_CLARO);
 }

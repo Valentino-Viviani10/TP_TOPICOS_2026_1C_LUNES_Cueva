@@ -14,7 +14,8 @@ typedef struct {
 } tPiezaActiva;
 
 typedef struct {
-    int usadas[7];
+    int piezas_usadas;
+    int lineas_por_jugada[5]; // usamos indices 1, 2, 3 y 4 para almacenar las cuatro opciones de eliminar lineas
 } tEstadisticas;
 
 void juego_inicializar_pieza(tPiezaActiva* pieza);
