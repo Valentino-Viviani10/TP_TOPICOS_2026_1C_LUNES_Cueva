@@ -1,4 +1,7 @@
 #include "tablero.h"
+#include <stdio.h>
+int filas = 20;
+int columnas = 10;
 
 int** crear_tablero(int filas, int columnas, size_t tamElem) {
     int** tablero = (int**)malloc(filas * sizeof(int*));
@@ -68,7 +71,45 @@ int borrar_lineas(int** tablero, int filas, int columnas){
     return fil_eliminadas;
 }
 
+void guardar_tablero(int** tablero, int filas, int columnas, const char* archivo) {
+    FILE* f = fopen(archivo, "wb");
+    if(!f) return;
 
+    // Opcional: escribir las dimensiones para luego poder cargar el tablero correcto
+    fwrite(&filas, sizeof(int), 1, f);
+    fwrite(&columnas, sizeof(int), 1, f);
 
+    // Escribir fila por fila
+    for(int i = 0; i < filas; i++) {
+        fwrite(tablero[i], sizeof(int), columnas, f);
+    }
 
+    fclose(f);
+}
 
+int cargar_tablero(int** tablero, int filas_esperadas, int columnas_esperadas, const char* archivo) {
+    FILE* f = fopen(archivo, "rb");
+    if(!f) return 0; // No existe o no se puede leer
+
+    int f_leidas, c_leidas;
+    if(fread(&f_leidas, sizeof(int), 1, f) != 1 || fread(&c_leidas, sizeof(int), 1, f) != 1) {
+        fclose(f);
+        return 0;
+    }
+
+    if(f_leidas != filas_esperadas || c_leidas != columnas_esperadas) {
+        // Dimensiones distintas, se ignora el archivo
+        fclose(f);
+        return 0;
+    }
+
+    for(int i = 0; i < filas_esperadas; i++) {
+        if(fread(tablero[i], sizeof(int), columnas_esperadas, f) != (size_t)columnas_esperadas) {
+            fclose(f);
+            return 0;
+        }
+    }
+
+    fclose(f);
+    return 1; // Éxito
+}

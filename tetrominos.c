@@ -34,6 +34,8 @@ int elegirColor(int pieza)
     case 6:
         color = COL_NARANJA;
         break;
+    default:
+        break;
     }
 
     return color;

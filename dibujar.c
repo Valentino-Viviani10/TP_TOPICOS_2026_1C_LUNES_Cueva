@@ -137,8 +137,8 @@ void dibujar_marco_tablero(int marco_x, int marco_y, int lado_bloque)
     int ancho_tablero;
     int alto_tablero;
 
-    ancho_tablero = COLUMNAS * lado_bloque;
-    alto_tablero = FILAS * lado_bloque;
+    ancho_tablero = columnas * lado_bloque;
+    alto_tablero = filas * lado_bloque;
 
     for(x = marco_x - 1; x <= marco_x + ancho_tablero; x++){
         gbt_dibujar_pixel(x, marco_y - 1, COL_MAG_BRILL);
@@ -157,8 +157,8 @@ void dibujar_tablero(int** tablero, int marco_x, int marco_y, int lado_bloque)
     int col;
     int color;
 
-    for(fila = 0; fila < FILAS; fila++){
-        for(col = 0; col < COLUMNAS; col++){
+    for(fila = 0; fila < filas; fila++){
+        for(col = 0; col < columnas; col++){
             color = tablero[fila][col];
 
             if(color == 0){
@@ -186,7 +186,7 @@ void dibujar_pieza_activa(tPiezaActiva* pieza, int marco_x, int marco_y, int lad
                 grilla_x = pieza->x + col;
                 grilla_y = pieza->y + fila;
 
-                if(grilla_x >= 0 && grilla_x < COLUMNAS && grilla_y >= 0 && grilla_y < FILAS){
+                if(grilla_x >= 0 && grilla_x < columnas && grilla_y >= 0 && grilla_y < filas){
                     dibujar_bloque_tablero(marco_x + grilla_x * lado_bloque,
                                            marco_y + grilla_y * lado_bloque,
                                            pieza->color,

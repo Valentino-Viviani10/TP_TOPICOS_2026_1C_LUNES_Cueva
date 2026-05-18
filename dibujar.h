@@ -29,7 +29,6 @@ void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int 
 void dibujar_inst(int ancho, int alto);
 
 void dibujar_puntuacion(int* puntaje, const char nombre_jugador[], int lineas, int piezas_caidas, int velocidad_caida_ms, int altoPantalla, int altoJuego, int anchoPantalla, int anchoJuego, tPiezaActiva* pieza_siguiente);
-
 void dibujar_estadisticas(tEstadisticas* stats, int altoPantalla, int altoJuego, int anchoJuego);
 
 int calcular_lado_bloque_juego(int alto);
