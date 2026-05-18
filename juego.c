@@ -112,6 +112,45 @@ void juego_rotar(tPiezaActiva* pieza, int** tablero) {
     pieza->rotacion = rotacion_vieja;
 }
 
+void juego_rotar_izquierda(tPiezaActiva* pieza, int** tablero) {
+    int rotacion_vieja = pieza->rotacion;
+
+    // Retrocede una rotacion. Si esta en 0, pasa a 3.
+    pieza->rotacion = (pieza->rotacion + 3) % 4;
+
+    // Si la pieza entra en la misma posicion, queda rotada.
+    if (posicion_valida(pieza, tablero, pieza->x, pieza->y)) {
+        return;
+    }
+
+    // Si no entra, se intenta correr un lugar hacia la izquierda.
+    if (posicion_valida(pieza, tablero, pieza->x - 1, pieza->y)) {
+        pieza->x--;
+        return;
+    }
+
+    // Si no entra, se intenta correr un lugar hacia la derecha.
+    if (posicion_valida(pieza, tablero, pieza->x + 1, pieza->y)) {
+        pieza->x++;
+        return;
+    }
+
+    // Segundo intento hacia la izquierda, igual que en la rotacion derecha.
+    if (posicion_valida(pieza, tablero, pieza->x - 2, pieza->y)) {
+        pieza->x -= 2;
+        return;
+    }
+
+    // Segundo intento hacia la derecha, igual que en la rotacion derecha.
+    if (posicion_valida(pieza, tablero, pieza->x + 2, pieza->y)) {
+        pieza->x += 2;
+        return;
+    }
+
+    // Si no se pudo rotar, se vuelve a la rotacion anterior.
+    pieza->rotacion = rotacion_vieja;
+}
+
 int juego_caer(tPiezaActiva* pieza, int** tablero) {
     if (posicion_valida(pieza, tablero, pieza->x, pieza->y + 1)){
         pieza->y++;

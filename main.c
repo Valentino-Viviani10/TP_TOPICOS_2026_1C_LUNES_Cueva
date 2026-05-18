@@ -342,8 +342,20 @@ int main(int argc, char* argv[])
                     juego_pausado = !juego_pausado;
                 }
 
-                if(!juego_pausado && (tecla == GBTK_r || tecla == GBTK_ARRIBA)){
-                    juego_rotar(&pieza_activa, tablero);
+                if(!juego_pausado){
+                    if(tecla == GBTK_r || tecla == GBTK_ARRIBA){
+                        juego_rotar(&pieza_activa, tablero);
+                    }
+                if(tecla == GBTK_q){
+                    juego_rotar_izquierda(&pieza_activa, tablero);
+                }
+                }
+                //cheat
+                if(!juego_pausado && (tecla >= GBTK_1 && tecla <= GBTK_9)){
+                    int indice_fila = filas - (tecla - '0');
+                    if(indice_fila >= 0) {
+                        eliminar_fila_y_bajar(tablero, indice_fila, columnas);
+                    }
                 }
                 //cheat
                 if(!juego_pausado && (tecla >= GBTK_1 && tecla <= GBTK_9)){
@@ -353,6 +365,7 @@ int main(int argc, char* argv[])
                     }
                 }
             }
+
             if(pantalla == 3){
 
                 if(tecla == GBTK_ENTER){

@@ -26,6 +26,8 @@ void juego_mover_derecha(tPiezaActiva* pieza, int** tablero);
 
 void juego_rotar(tPiezaActiva* pieza, int** tablero);
 
+void juego_rotar_izquierda(tPiezaActiva* pieza, int** tablero);
+
 int juego_caer(tPiezaActiva* pieza, int** tablero);
 
 void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero);

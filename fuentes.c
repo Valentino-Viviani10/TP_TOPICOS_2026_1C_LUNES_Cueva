@@ -411,6 +411,56 @@ static const char FUENTE_PUNTO[7][6] = {
     "01100"
 };
 
+static const char FUENTE_PORCENTAJE[7][6] = {
+    "11001",
+    "11010",
+    "00100",
+    "01000",
+    "10011",
+    "00011",
+    "00000"
+};
+
+static const char FUENTE_MAS[7][6] = {
+    "00000",
+    "00100",
+    "00100",
+    "11111",
+    "00100",
+    "00100",
+    "00000"
+};
+
+static const char FUENTE_BARRA[7][6] = {
+    "00001",
+    "00010",
+    "00100",
+    "00100",
+    "01000",
+    "10000",
+    "00000"
+};
+
+static const char FUENTE_MENOR[7][6] = {
+    "00001",
+    "00010",
+    "00100",
+    "01000",
+    "00100",
+    "00010",
+    "00001"
+};
+
+static const char FUENTE_MAYOR[7][6] = {
+    "10000",
+    "01000",
+    "00100",
+    "00010",
+    "00100",
+    "01000",
+    "10000"
+};
+
 static const char (*obtener_matriz_caracter(char caracter))[6]
 {
     switch(caracter)
@@ -457,6 +507,11 @@ static const char (*obtener_matriz_caracter(char caracter))[6]
         case '-': return FUENTE_GUION;
         case '.': return FUENTE_PUNTO;
         case ' ': return FUENTE_ESPACIO_MAT;
+        case '%': return FUENTE_PORCENTAJE;
+        case '+': return FUENTE_MAS;
+        case '/': return FUENTE_BARRA;
+        case '<': return FUENTE_MENOR;
+        case '>': return FUENTE_MAYOR;
 
         default:
             return FUENTE_ESPACIO_MAT;
