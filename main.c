@@ -346,9 +346,9 @@ int main(int argc, char* argv[])
                     if(tecla == GBTK_r || tecla == GBTK_ARRIBA){
                         juego_rotar(&pieza_activa, tablero);
                     }
-                if(tecla == GBTK_q){
-                    juego_rotar_izquierda(&pieza_activa, tablero);
-                }
+                    if(tecla == GBTK_q){
+                        juego_rotar_izquierda(&pieza_activa, tablero);
+                    }
                 }
                 //cheat
                 if(!juego_pausado && (tecla >= GBTK_1 && tecla <= GBTK_9)){

@@ -25,3 +25,6 @@ release/
 Thumbs.db
 *~
 *.log
+
+# --- Otros archivos que podrían ser generados ---
+partida_guardada.bin
