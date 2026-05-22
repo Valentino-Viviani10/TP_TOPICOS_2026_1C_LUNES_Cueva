@@ -25,4 +25,8 @@
 
 extern tGBT_ColorRGB paletaCGA[CANT_COLORES];
 
+extern tGBT_ColorRGB paletaRetroGB[CANT_COLORES];
+
+extern tGBT_ColorRGB paletaCyberpunk[CANT_COLORES];
+
 #endif // COLORES_H_INCLUDED

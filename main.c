@@ -164,13 +164,43 @@ int main()
 
     srand((unsigned)time(NULL));
 
-    int ancho = CGA_ANCHO;
-    int alto = CGA_ALTO;
-    int escala = 2;
-    int velocidad_caida_ms = 1000;
-    int paleta_id = 1;
+    int ancho;
+    int alto;
+    int escala;
+    int velocidad_caida_ms;
+    int paleta_id;
+    int res;
 
+    if(!cargar_config(&velocidad_caida_ms, &paleta_id, &res, &escala, "config.cfg")) {
+        escala = 2;
+        velocidad_caida_ms = 1000;
+        paleta_id = 0;
+        res = 0;
+    }
 
+    if(res == 0) {
+        ancho = CGA_ANCHO;
+        alto = CGA_ALTO;
+    }
+
+    if(res == 1) {
+        ancho = VGA_ANCHO;
+        alto = VGA_ALTO; 
+    }
+
+    tGBT_ColorRGB *paleta;
+
+    if(paleta_id == 0) {
+        paleta = paletaCGA;
+    }
+
+    if(paleta_id == 1) {
+        paleta = paletaRetroGB;
+    }
+
+    if(paleta_id == 2) {
+        paleta = paletaCyberpunk;
+    }
 
     char nombreVentana[50];
     snprintf(nombreVentana, sizeof(nombreVentana), "TETRIS - %dx%d", ancho, alto);
@@ -180,7 +210,7 @@ int main()
         return -1;
     }
 
-    if (gbt_aplicar_paleta(paletaCGA, CANT_COLORES, GBT_FORMATO_888) != 0) {
+    if (gbt_aplicar_paleta(paleta, CANT_COLORES, GBT_FORMATO_888) != 0) {
         fprintf(stderr, "Error al aplicar la nueva paleta de colores: %s\n", gbt_obtener_log());
         return -1;
     }

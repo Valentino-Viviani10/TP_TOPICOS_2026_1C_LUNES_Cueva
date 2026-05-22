@@ -1,5 +1,69 @@
 #include "colores.h"
 
+/*
+    *Cyberpunk
+    Pieza I: Coral neón (#FF5349)
+    Pieza L: Amarillo flúor (#E6FF00)
+    Pieza J: Morado eléctrico (#9D00FF)
+    Pieza O: Fucsia (#FF0055)
+    Pieza S: Turquesa brillante (#00FFC4)
+    Pieza Z: Verde lima (#76FF03)
+    Pieza T: Azul neón (#009FFF)
+*/
+
+/*
+    *Retro Game Boy
+    Pieza I: Negro oscuro (#000000)
+    Pieza L: Verde oliva oscuro (#3C5E3B)
+    Pieza J: Verde menta (#7C9E7D)
+    Pieza O: Gris oscuro (#4A4A4A)
+    Pieza S: Verde clásico (#6FA86F)
+    Pieza Z: Verde claro (#9EBC9E)
+    Pieza T: Blanco hueso (#D0DDC0)
+*/
+
+tGBT_ColorRGB paletaCyberpunk[CANT_COLORES] = {
+    {0x08, 0x08, 0x10}, // 0: negro profundo
+    {0x13, 0x1A, 0x33}, // 1: azul oscuro neón
+    {0x10, 0x2B, 0x22}, // 2: verde oscuro
+    {0x10, 0x2F, 0x35}, // 3: cian oscuro
+    {0x2A, 0x10, 0x1D}, // 4: rojo oscuro
+    {0x2B, 0x12, 0x44}, // 5: magenta oscuro
+    {0x3B, 0x22, 0x10}, // 6: marron oscuro
+    {0xD8, 0xD8, 0xE0}, // 7: gris claro
+    {0x4A, 0x4A, 0x58}, // 8: gris oscuro
+    {0xFF, 0x53, 0x49}, // 9: coral neón
+    {0xE6, 0xFF, 0x00}, // 10: amarillo flúor
+    {0x00, 0xFF, 0xC4}, // 11: turquesa brillante
+    {0xFF, 0x00, 0x55}, // 12: fucsia / rojo neón
+    {0x9D, 0x00, 0xFF}, // 13: morado eléctrico
+    {0x00, 0x9F, 0xFF}, // 14: azul neón
+    {0xFF, 0xFF, 0xFF}, // 15: transparente / blanco
+    {0x76, 0xFF, 0x03}, // 16: verde lima
+    {0xFF, 0x7A, 0x00}  // 17: naranja neón
+};
+
+tGBT_ColorRGB paletaRetroGB[CANT_COLORES] = {
+    {0x0F, 0x14, 0x0F}, // 0: negro verdoso
+    {0x1E, 0x27, 0x1E}, // 1: azul apagado / sombra
+    {0x3C, 0x5E, 0x3B}, // 2: verde oliva oscuro
+    {0x2E, 0x4F, 0x4A}, // 3: cian apagado
+    {0x4A, 0x2F, 0x2B}, // 4: rojo marronoso
+    {0x3B, 0x2E, 0x4A}, // 5: magenta apagado
+    {0x5B, 0x4C, 0x2A}, // 6: marron / oliva
+    {0xD0, 0xDD, 0xC0}, // 7: hueso claro
+    {0x6C, 0x75, 0x67}, // 8: gris verdoso
+    {0x00, 0x00, 0x00}, // 9: negro oscuro
+    {0x3C, 0x5E, 0x3B}, // 10: verde clásico
+    {0x7C, 0x9E, 0x7D}, // 11: verde menta
+    {0x4A, 0x4A, 0x4A}, // 12: gris oscuro
+    {0x6F, 0xA8, 0x6F}, // 13: verde clásico claro
+    {0x9E, 0xBC, 0x9E}, // 14: verde claro
+    {0xFF, 0xFF, 0xFF}, // 15: transparente / blanco
+    {0xB8, 0xC7, 0xA6}, // 16: verde pálido
+    {0x8D, 0x9A, 0x7B}  // 17: oliva claro
+};
+
 tGBT_ColorRGB paletaCGA[CANT_COLORES] = {
 
     /// 0-17: Colores CGA (18 colores)
