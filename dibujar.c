@@ -21,13 +21,14 @@ void dibujar_linea_horizontal(const int x_ini, const int x_fin, const int y) {
 void dibujar_menu(const int opcionSeleccionada, const int ancho, const int alto, uint8_t colorSeleccionado) {
     int y;
 
-    const char *opciones[2] = {"JUGAR", "INSTRUCCIONES"};
+    const char *opciones[3] = {"JUGAR", "INSTRUCCIONES", "CONFIGURACION"};
 
     const char titulo[] = "TETRIS";
 
     int xTitulo = calcular_x_centrada(titulo, ancho);
     int xJugar = calcular_x_centrada(opciones[0], ancho);
     int xInstrucciones = calcular_x_centrada(opciones[1], ancho);
+    int xConfig = calcular_x_centrada(opciones[2], ancho);
 
     y = 20;
 
@@ -37,9 +38,11 @@ void dibujar_menu(const int opcionSeleccionada, const int ancho, const int alto,
 
     uint8_t colorJugar = (opcionSeleccionada == 0) ? colorSeleccionado : COL_GRIS_CLARO;
     uint8_t colorInstrucciones = (opcionSeleccionada == 1) ? colorSeleccionado : COL_GRIS_CLARO;
+    uint8_t colorConfig = (opcionSeleccionada == 2) ? colorSeleccionado : COL_GRIS_CLARO;
 
     dibujar_texto_5x7(opciones[0], xJugar, y, colorJugar);
     dibujar_texto_5x7(opciones[1], xInstrucciones, y + 20, colorInstrucciones);
+    dibujar_texto_5x7(opciones[2], xConfig, y + 40, colorConfig);
 
 }
 
