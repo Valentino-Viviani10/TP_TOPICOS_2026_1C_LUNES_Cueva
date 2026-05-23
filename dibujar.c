@@ -43,6 +43,30 @@ void dibujar_menu(const int opcionSeleccionada, const int ancho, const int alto,
 
 }
 
+void dibujar_seleccion_modo(const int opcionSeleccionada, const int ancho, const int alto, uint8_t colorSeleccionado) {
+    int y = alto / 2 - 20;
+    
+    dibujar_texto_5x7("ELEGIR MODO", calcular_x_centrada("ELEGIR MODO", ancho), y - 30, COL_VERDE_BRILL);
+    
+    uint8_t colorNormal = (opcionSeleccionada == 0) ? colorSeleccionado : COL_GRIS_CLARO;
+    uint8_t colorDeluxe = (opcionSeleccionada == 1) ? colorSeleccionado : COL_GRIS_CLARO;
+
+    dibujar_texto_5x7("NORMAL", calcular_x_centrada("NORMAL", ancho), y, colorNormal);
+    dibujar_texto_5x7("DELUXE", calcular_x_centrada("DELUXE", ancho), y + 20, colorDeluxe);
+}
+
+void dibujar_seleccion_alto(const int alto_tablero, const int ancho, const int alto) {
+    int y = alto / 2;
+    char buffer[20];
+    
+    dibujar_texto_5x7("ALTO DEL TABLERO", calcular_x_centrada("ALTO DEL TABLERO", ancho), y - 30, COL_VERDE_BRILL);
+    
+    sprintf(buffer, "< %d >", alto_tablero);
+    dibujar_texto_5x7(buffer, calcular_x_centrada(buffer, ancho), y, COL_AMARILLO);
+    
+    dibujar_texto_5x7("ENTER CONFIRMA", calcular_x_centrada("ENTER CONFIRMA", ancho), y + 30, COL_GRIS_CLARO);
+}
+
 void dibujar_fondo(const int alto, const int ancho) {
     int x, y;
 
@@ -138,7 +162,7 @@ void dibujar_marco_tablero(int marco_x, int marco_y, int lado_bloque)
     int alto_tablero;
 
     ancho_tablero = columnas * lado_bloque;
-    alto_tablero = filas * lado_bloque;
+    alto_tablero = (filas - 2) * lado_bloque;
 
     for(x = marco_x - 1; x <= marco_x + ancho_tablero; x++){
         gbt_dibujar_pixel(x, marco_y - 1, COL_MAG_BRILL);
@@ -157,7 +181,7 @@ void dibujar_tablero(int** tablero, int marco_x, int marco_y, int lado_bloque)
     int col;
     int color;
 
-    for(fila = 0; fila < filas; fila++){
+    for(fila = 2; fila < filas; fila++){
         for(col = 0; col < columnas; col++){
             color = tablero[fila][col];
 
@@ -166,7 +190,7 @@ void dibujar_tablero(int** tablero, int marco_x, int marco_y, int lado_bloque)
             }
 
             dibujar_bloque_tablero(marco_x + col * lado_bloque,
-                                   marco_y + fila * lado_bloque,
+                                   marco_y + (fila - 2) * lado_bloque,
                                    color,
                                    lado_bloque);
         }
@@ -184,11 +208,14 @@ void dibujar_pieza_activa(tPiezaActiva* pieza, int marco_x, int marco_y, int lad
         for(col = 0; col < 4; col++){
             if(piezas[pieza->tipo][pieza->rotacion][fila][col]){
                 grilla_x = pieza->x + col;
+                if (modo_deluxe) {
+                    grilla_x = ((grilla_x % columnas) + columnas) % columnas;
+                }
                 grilla_y = pieza->y + fila;
 
-                if(grilla_x >= 0 && grilla_x < columnas && grilla_y >= 0 && grilla_y < filas){
+                if(grilla_x >= 0 && grilla_x < columnas && grilla_y >= 2 && grilla_y < filas){
                     dibujar_bloque_tablero(marco_x + grilla_x * lado_bloque,
-                                           marco_y + grilla_y * lado_bloque,
+                                           marco_y + (grilla_y - 2) * lado_bloque,
                                            pieza->color,
                                            lado_bloque);
                 }

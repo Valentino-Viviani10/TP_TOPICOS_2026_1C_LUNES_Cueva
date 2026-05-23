@@ -34,6 +34,18 @@ int elegirColor(int pieza)
     case 6:
         color = COL_NARANJA;
         break;
+    case 7:
+        color = COL_GRIS_CLARO;
+        break;
+    case 8:
+        color = COL_PURPURA;
+        break;
+    case 9:
+        color = COL_MARRON;
+        break;
+    case 10:
+        color = COL_ROJO_BRILL;
+        break;
     default:
         break;
     }
@@ -41,7 +53,7 @@ int elegirColor(int pieza)
     return color;
 }
 
-int piezas[7][4][4][4] = {
+int piezas[TOTAL_PIEZAS_DELUXE][4][4][4] = {
     // I
     {
         {{0,0,0,0},{1,1,1,1},{0,0,0,0},{0,0,0,0}},
@@ -90,6 +102,34 @@ int piezas[7][4][4][4] = {
         {{0,0,1,0},{0,1,1,0},{0,1,0,0},{0,0,0,0}},
         {{1,1,0,0},{0,1,1,0},{0,0,0,0},{0,0,0,0}},
         {{0,0,1,0},{0,1,1,0},{0,1,0,0},{0,0,0,0}}
+    },
+    // X
+    {
+        {{0,0,0,0},{0,1,0,0},{0,0,0,0},{0,0,0,0}},
+        {{0,0,0,0},{0,1,0,0},{0,0,0,0},{0,0,0,0}},
+        {{0,0,0,0},{0,1,0,0},{0,0,0,0},{0,0,0,0}},
+        {{0,0,0,0},{0,1,0,0},{0,0,0,0},{0,0,0,0}}
+    },
+    // C
+    {
+        {{0,1,1,0},{0,1,0,0},{0,1,1,0},{0,0,0,0}},
+        {{0,1,1,1},{0,1,0,1},{0,0,0,0},{0,0,0,0}},
+        {{0,1,1,0},{0,0,1,0},{0,1,1,0},{0,0,0,0}},
+        {{0,0,0,0},{0,1,0,1},{0,1,1,1},{0,0,0,0}}
+    },
+    // P
+    {
+        {{0,1,1,0},{0,1,1,0},{0,1,0,0},{0,0,0,0}},
+        {{0,0,0,0},{1,1,1,0},{0,1,1,0},{0,0,0,0}},
+        {{0,0,1,0},{0,1,1,0},{0,1,1,0},{0,0,0,0}},
+        {{0,1,1,0},{1,1,1,0},{0,0,0,0},{0,0,0,0}}
+    },
+    // Y
+    {
+        {{0,1,0,0},{1,0,1,0},{0,0,0,0},{0,0,0,0}},
+        {{0,1,0,0},{0,0,1,0},{0,1,0,0},{0,0,0,0}},
+        {{0,0,0,0},{1,0,1,0},{0,1,0,0},{0,0,0,0}},
+        {{0,1,0,0},{1,0,0,0},{0,1,0,0},{0,0,0,0}}
     }
 };
 
@@ -112,7 +152,7 @@ void actualizar_tetrominos_fondo(tTetrominoFondo tetrominos[], const int alto, c
         for(i = 0; i < cantidad; i++) {
             if(!tetrominos[i].activo) {
                 tetrominos[i].activo = 1;
-                tetrominos[i].tipo = rand() % 7;
+                tetrominos[i].tipo = rand() % TOTAL_PIEZAS_NORMAL; // Solo normales para el menu
                 tetrominos[i].rot = rand() % 4;
                 tetrominos[i].color = elegirColor(tetrominos[i].tipo);
                 tetrominos[i].y = -4 * TETROMINO_ESCALA;  // Entra desde arriba

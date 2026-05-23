@@ -1,16 +1,21 @@
-﻿#include "juego.h"
+#include "juego.h"
 #include "puntuaciones.h"
 #include <stdlib.h>
 
-#define CANT_TETROMINOS 7
+#define MAX_TETROMINOS 11
 
-static int bolsa_tetrominos[CANT_TETROMINOS];
-static int indice_bolsa = CANT_TETROMINOS;
+static int bolsa_tetrominos[MAX_TETROMINOS];
+static int indice_bolsa = MAX_TETROMINOS;
 extern int elegirColor(int pieza);
+
+static int obtener_cant_tetrominos(void) {
+    return modo_deluxe ? TOTAL_PIEZAS_DELUXE : TOTAL_PIEZAS_NORMAL;
+}
 
 static void cargar_bolsa_tetrominos(void){
     int i;
-    for(i = 0; i < CANT_TETROMINOS; i++){
+    int cant = obtener_cant_tetrominos();
+    for(i = 0; i < cant; i++){
         bolsa_tetrominos[i] = i;
     }
 }
@@ -25,7 +30,8 @@ static void intercambiar_enteros(int *a, int *b){
 static void mezclar_bolsa_tetrominos(void){
     int i;
     int j;
-    for(i = CANT_TETROMINOS - 1; i > 0; i--){
+    int cant = obtener_cant_tetrominos();
+    for(i = cant - 1; i > 0; i--){
         j = rand() % (i + 1);
         intercambiar_enteros(&bolsa_tetrominos[i], &bolsa_tetrominos[j]);
     }
@@ -33,7 +39,8 @@ static void mezclar_bolsa_tetrominos(void){
 
 static int obtener_tipo_tetromino(void){
     int tipo;
-    if(indice_bolsa >= CANT_TETROMINOS){
+    int cant = obtener_cant_tetrominos();
+    if(indice_bolsa >= cant){
         cargar_bolsa_tetrominos();
         mezclar_bolsa_tetrominos();
         indice_bolsa = 0;
@@ -59,9 +66,14 @@ int posicion_valida(tPiezaActiva* pieza, int** tablero, int nueva_x, int nueva_y
                 int pos_tablero_x = nueva_x + col;
                 int pos_tablero_y = nueva_y + fila;
 
-                if (pos_tablero_x < 0 || pos_tablero_x >= columnas) {
-                    return 0;
+                if (modo_deluxe) {
+                    pos_tablero_x = ((pos_tablero_x % columnas) + columnas) % columnas;
+                } else {
+                    if (pos_tablero_x < 0 || pos_tablero_x >= columnas) {
+                        return 0;
+                    }
                 }
+                
                 if (pos_tablero_y >= filas) {
                     return 0;
                 }
@@ -168,6 +180,10 @@ void juego_fijar_pieza(tPiezaActiva* pieza, int** tablero) {
             if (piezas[pieza->tipo][pieza->rotacion][fila][col]) {
                 int pos_tablero_x = pieza->x + col;
                 int pos_tablero_y = pieza->y + fila;
+                
+                if (modo_deluxe) {
+                    pos_tablero_x = ((pos_tablero_x % columnas) + columnas) % columnas;
+                }
 
                 if (pos_tablero_y >= 0 && pos_tablero_y < filas &&
                     pos_tablero_x >= 0 && pos_tablero_x < columnas) {
@@ -182,3 +198,16 @@ int juego_puede_iniciar_pieza(tPiezaActiva* pieza, int** tablero) {
     return posicion_valida(pieza, tablero, pieza->x, pieza->y);
 }
 
+void juego_obtener_bolsa(int* bolsa_destino, int* indice_destino) {
+    for(int i = 0; i < MAX_TETROMINOS; i++) {
+        bolsa_destino[i] = bolsa_tetrominos[i];
+    }
+    *indice_destino = indice_bolsa;
+}
+
+void juego_cargar_bolsa(const int* bolsa_origen, int indice_origen) {
+    for(int i = 0; i < MAX_TETROMINOS; i++) {
+        bolsa_tetrominos[i] = bolsa_origen[i];
+    }
+    indice_bolsa = indice_origen;
+}

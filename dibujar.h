@@ -18,6 +18,10 @@ void dibujar_texto_5x7(const char *texto, uint16_t x, uint16_t y, uint8_t color)
 
 void dibujar_menu(const int opcionSeleccionada, const int ancho, const int alto, uint8_t colorSeleccionado);
 
+void dibujar_seleccion_modo(const int opcionSeleccionada, const int ancho, const int alto, uint8_t colorSeleccionado);
+
+void dibujar_seleccion_alto(const int alto_tablero, const int ancho, const int alto);
+
 void dibujar_fondo(const int alto, const int ancho);
 
 void dibujar_borde(const int alto, const int ancho, const int iniX, const int iniY);

@@ -15,6 +15,13 @@
 #define VGA_ANCHO 640
 #define VGA_ALTO 480
 
+#define PANTALLA_MENU 0
+#define PANTALLA_JUEGO 1
+#define PANTALLA_INSTRUCCIONES 2
+#define PANTALLA_NOMBRE 3
+#define PANTALLA_MODO 4
+#define PANTALLA_ALTO 5
+
 /*
     Apellido: Viviani, Valentino
     DNI: 46582790
@@ -31,6 +38,8 @@
     Usuario: sergiogfernandez-dev
     Entrega: Si
 */
+
+int modo_deluxe = 0;
 
 static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int **tablero, int *casillasManuales, int *juego_terminado, int *piezas_caidas, int *velocidad_caida_ms, tGBT_Temporizador **temp_juego_caida, int *lineas_eliminadas){
 
@@ -60,7 +69,8 @@ static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguien
 
     if(!juego_puede_iniciar_pieza(pieza, tablero)){
         *juego_terminado = 1;
-        remove("partida_guardada.bin");
+        const char* archivo_guardado = modo_deluxe ? "partida_deluxe.bin" : "partida_normal.bin";
+        remove(archivo_guardado);
     }
 }
 
@@ -255,9 +265,10 @@ int main(int argc, char* argv[])
 
     int corriendo = 1;
     int opcionSeleccionada = 0;
-    int pantalla = 0;
+    int pantalla = PANTALLA_MENU;
     int juego_terminado = 0;
     int juego_pausado = 0;
+    int alto_tablero_deluxe = 16;
 
     char nombre_jugador[16] = "";
     int largo_nombre = 0;
@@ -271,30 +282,19 @@ int main(int argc, char* argv[])
     tEstadisticas stats = {0};
     int lado_bloque = calcular_lado_bloque_juego(alto);
     int marco_x = (ancho / 2) - ((columnas * lado_bloque) / 2);
-    int marco_y = (alto / 2) - ((filas * lado_bloque) / 2);
+    int marco_y = (alto / 2) - (((filas - 2) * lado_bloque) / 2);
     int fin_tablero_x = marco_x + (columnas * lado_bloque);
-    int fin_tablero_y = marco_y + (filas * lado_bloque);
+    int fin_tablero_y = marco_y + ((filas - 2) * lado_bloque);
     static int sostenida_activa = 0;
     static int cooldown_lateral = 0;
     static int das_activo = 0;  // 1 = ya pasó el DAS inicial, auto-repeat activo
 
     uint8_t colorSeleccionado = COL_AMARILLO;
 
-    //creacion de tablero de juego
-    int** tablero = crear_tablero(filas, columnas, sizeof(int));
-    if (!tablero) {
-        return -1;
-    }
-    
-    // Intentar cargar partida guardada
-    if(cargar_tablero(tablero, filas, columnas, "partida_guardada.bin")) {
-        printf("Partida guardada cargada exitosamente.\n");
-    }
-    tPiezaActiva pieza_activa;
-    juego_inicializar_pieza(&pieza_activa);
+    int** tablero = NULL;
 
+    tPiezaActiva pieza_activa;
     tPiezaActiva pieza_siguiente;
-    juego_inicializar_pieza(&pieza_siguiente);
 
     while(corriendo) {
 
@@ -302,23 +302,42 @@ int main(int argc, char* argv[])
         eGBT_Tecla tecla = gbt_obtener_tecla_presionada();
 
         //MENU
-        if(tecla == GBTK_ESCAPE && (pantalla == 1 || pantalla == 0)) {
-            if(pantalla == 1 && !juego_terminado){
-                guardar_tablero(tablero, filas, columnas, "partida_guardada.bin");
+        if(tecla == GBTK_ESCAPE && (pantalla == PANTALLA_JUEGO || pantalla == PANTALLA_MENU)) {
+            if(pantalla == PANTALLA_JUEGO && !juego_terminado && tablero){
+                tPartidaGuardada datos;
+                datos.puntaje = puntaje;
+                datos.piezas_caidas = piezas_caidas;
+                datos.velocidad_caida_ms = velocidad_caida_ms;
+                datos.lineas_eliminadas = lineas_eliminadas;
+                datos.pieza_activa = pieza_activa;
+                datos.pieza_siguiente = pieza_siguiente;
+                datos.stats = stats;
+                strcpy(datos.nombre_jugador, nombre_jugador);
+                juego_obtener_bolsa(datos.bolsa_tetrominos, &datos.indice_bolsa);
+                const char* archivo_guardado = modo_deluxe ? "partida_deluxe.bin" : "partida_normal.bin";
+                guardar_partida(tablero, filas, columnas, &datos, archivo_guardado);
                 printf("Partida guardada exitosamente.\n");
             }
             corriendo = 0;
             printf("Saliendo del juego.\n");
         }
-        else if (tecla == GBTK_ESCAPE && pantalla == 2) {
-            pantalla = 0;
+        else if (tecla == GBTK_ESCAPE && pantalla == PANTALLA_INSTRUCCIONES) {
+            pantalla = PANTALLA_MENU;
             printf("Volviendo al menu principal.\n");
         }
+        else if (tecla == GBTK_ESCAPE && pantalla == PANTALLA_MODO) {
+            pantalla = PANTALLA_MENU;
+            opcionSeleccionada = 0;
+        }
+        else if (tecla == GBTK_ESCAPE && pantalla == PANTALLA_ALTO) {
+            pantalla = PANTALLA_MODO;
+            opcionSeleccionada = 1;
+        }
         else if (tecla != GBTK_DESCONOCIDA) {
-            if(pantalla == 1 && juego_terminado && tecla == GBTK_ENTER){
+            if(pantalla == PANTALLA_JUEGO && juego_terminado && tecla == GBTK_ENTER){
                 reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida);
             }
-            if(pantalla == 0){
+            if(pantalla == PANTALLA_MENU){
                 if(tecla == GBTK_ABAJO){
                     opcionSeleccionada = 1;
                 }
@@ -327,17 +346,86 @@ int main(int argc, char* argv[])
                 }
                 if(tecla == GBTK_ENTER){
                     if(opcionSeleccionada == 0){
-                        pantalla = 3;
+                        pantalla = PANTALLA_MODO;
+                        opcionSeleccionada = 0; // Por defecto modo normal
                         tecla = GBTK_DESCONOCIDA;
-                        mostrar_error_nombre = 0;
                     }
                     else if(opcionSeleccionada == 1){
-                        pantalla = 2;
+                        pantalla = PANTALLA_INSTRUCCIONES;
                     }
                 }
             }
+            else if(pantalla == PANTALLA_MODO){
+                if(tecla == GBTK_ABAJO){
+                    opcionSeleccionada = 1;
+                }
+                if(tecla == GBTK_ARRIBA){
+                    opcionSeleccionada = 0;
+                }
+                if(tecla == GBTK_ENTER){
+                    modo_deluxe = opcionSeleccionada;
+                    const char* archivo_guardado = modo_deluxe ? "partida_deluxe.bin" : "partida_normal.bin";
+                    tPartidaGuardada datos_guardados;
+                    int f_leidas, c_leidas;
+                    
+                    if (tablero) {
+                        destruir_tablero(tablero, filas);
+                        tablero = NULL;
+                    }
+                    
+                    if (cargar_partida(&tablero, &f_leidas, &c_leidas, &datos_guardados, archivo_guardado)) {
+                        filas = f_leidas;
+                        columnas = c_leidas;
+                        puntaje = datos_guardados.puntaje;
+                        piezas_caidas = datos_guardados.piezas_caidas;
+                        velocidad_caida_ms = datos_guardados.velocidad_caida_ms;
+                        lineas_eliminadas = datos_guardados.lineas_eliminadas;
+                        pieza_activa = datos_guardados.pieza_activa;
+                        pieza_siguiente = datos_guardados.pieza_siguiente;
+                        stats = datos_guardados.stats;
+                        juego_cargar_bolsa(datos_guardados.bolsa_tetrominos, datos_guardados.indice_bolsa);
+                        strcpy(nombre_jugador, datos_guardados.nombre_jugador);
+                        largo_nombre = strlen(nombre_jugador);
+                        
+                        gbt_temporizador_destruir(temp_juego_caida);
+                        temp_juego_caida = gbt_temporizador_crear(velocidad_caida_ms / 1000.0);
+                        
+                        lado_bloque = calcular_lado_bloque_juego(alto);
+                        marco_x = (ancho / 2) - ((columnas * lado_bloque) / 2);
+                        marco_y = (alto / 2) - (((filas - 2) * lado_bloque) / 2);
+                        fin_tablero_x = marco_x + (columnas * lado_bloque);
+                        fin_tablero_y = marco_y + ((filas - 2) * lado_bloque);
+                        
+                        pantalla = PANTALLA_JUEGO;
+                        printf("Partida guardada cargada exitosamente.\n");
+                    } else {
+                        if(opcionSeleccionada == 0){
+                            filas = 20;
+                            pantalla = PANTALLA_NOMBRE;
+                        } else {
+                            pantalla = PANTALLA_ALTO;
+                        }
+                    }
+                    tecla = GBTK_DESCONOCIDA;
+                    mostrar_error_nombre = 0;
+                }
+            }
+            else if(pantalla == PANTALLA_ALTO){
+                if(tecla == GBTK_IZQUIERDA && alto_tablero_deluxe > 8){
+                    alto_tablero_deluxe--;
+                }
+                if(tecla == GBTK_DERECHA && alto_tablero_deluxe < 16){
+                    alto_tablero_deluxe++;
+                }
+                if(tecla == GBTK_ENTER){
+                    filas = alto_tablero_deluxe + 2;
+                    pantalla = PANTALLA_NOMBRE;
+                    tecla = GBTK_DESCONOCIDA;
+                    mostrar_error_nombre = 0;
+                }
+            }
             //JUEGO
-            if(pantalla == 1 && !juego_terminado){
+            if(pantalla == PANTALLA_JUEGO && !juego_terminado){
                 if(tecla == GBTK_p){
                     juego_pausado = !juego_pausado;
                 }
@@ -359,7 +447,7 @@ int main(int argc, char* argv[])
                 }
             }
 
-            if(pantalla == 3){
+            if(pantalla == PANTALLA_NOMBRE){
 
                 if(tecla == GBTK_ENTER){
 
@@ -369,7 +457,22 @@ int main(int argc, char* argv[])
                     }
 
                     mostrar_error_nombre = 0;
-                    pantalla = 1;
+                    pantalla = PANTALLA_JUEGO;
+
+                    // Inicializar tablero al entrar al juego
+                    if (tablero) {
+                        destruir_tablero(tablero, filas); // En caso de que haya uno viejo
+                    }
+                    tablero = crear_tablero(filas, columnas, sizeof(int));
+                    if (!tablero) return -1;
+
+                    lado_bloque = calcular_lado_bloque_juego(alto);
+                    marco_x = (ancho / 2) - ((columnas * lado_bloque) / 2);
+                    marco_y = (alto / 2) - (((filas - 2) * lado_bloque) / 2);
+                    fin_tablero_x = marco_x + (columnas * lado_bloque);
+                    fin_tablero_y = marco_y + ((filas - 2) * lado_bloque);
+
+                    reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida);
                 }
                 else if(tecla == GBTK_RETROCESO && largo_nombre > 0){
 
@@ -390,7 +493,7 @@ int main(int argc, char* argv[])
             }
         }
 
-        if(pantalla == 1 && !juego_terminado && !juego_pausado){
+        if(pantalla == PANTALLA_JUEGO && !juego_terminado && !juego_pausado){
 
             int izq = gbt_tecla_sostenida(GBTK_IZQUIERDA);
             int der = gbt_tecla_sostenida(GBTK_DERECHA);
@@ -457,7 +560,7 @@ int main(int argc, char* argv[])
         }
 
         // Lógica según pantalla
-        if(pantalla == 0){
+        if(pantalla == PANTALLA_MENU){
             // Actualizar tetrominos decorativos
             actualizar_tetrominos_fondo(tetrominos_decorativos, alto, ancho, limiteIzquierdoTetrominos, limiteDerechoTetrominos, temp_caida_tetrominos, temp_activar_tetrominos);
 
@@ -469,7 +572,23 @@ int main(int argc, char* argv[])
                     dibujar_tetromino(tetrominos_decorativos[t], 0, tetrominos_decorativos[t].rot, alto, ancho);
                 }
             }
-        } else if(pantalla == 1){
+        } else if(pantalla == PANTALLA_MODO){
+            actualizar_tetrominos_fondo(tetrominos_decorativos, alto, ancho, limiteIzquierdoTetrominos, limiteDerechoTetrominos, temp_caida_tetrominos, temp_activar_tetrominos);
+            dibujar_seleccion_modo(opcionSeleccionada, ancho, alto, colorSeleccionado);
+            for(int t = 0; t < 4; t++){
+                if(tetrominos_decorativos[t].activo){
+                    dibujar_tetromino(tetrominos_decorativos[t], 0, tetrominos_decorativos[t].rot, alto, ancho);
+                }
+            }
+        } else if(pantalla == PANTALLA_ALTO){
+            actualizar_tetrominos_fondo(tetrominos_decorativos, alto, ancho, limiteIzquierdoTetrominos, limiteDerechoTetrominos, temp_caida_tetrominos, temp_activar_tetrominos);
+            dibujar_seleccion_alto(alto_tablero_deluxe, ancho, alto);
+            for(int t = 0; t < 4; t++){
+                if(tetrominos_decorativos[t].activo){
+                    dibujar_tetromino(tetrominos_decorativos[t], 0, tetrominos_decorativos[t].rot, alto, ancho);
+                }
+            }
+        } else if(pantalla == PANTALLA_JUEGO){
             dibujar_juego(ancho, alto, tablero, &pieza_activa, juego_terminado, marco_x, marco_y, lado_bloque);
             dibujar_puntuacion(&puntaje, nombre_jugador, lineas_eliminadas, piezas_caidas, velocidad_caida_ms, alto, fin_tablero_y, ancho, fin_tablero_x, &pieza_siguiente);
             dibujar_estadisticas(&stats, alto, fin_tablero_y, marco_x);
@@ -479,7 +598,7 @@ int main(int argc, char* argv[])
                 dibujar_texto_5x7("P PARA CONTINUAR", calcular_x_centrada("P PARA CONTINUAR", ancho), alto / 2 + 12, COL_GRIS_CLARO);
             }
           }
-          else if(pantalla == 3){
+          else if(pantalla == PANTALLA_NOMBRE){
             dibujar_texto_5x7("INGRESE NOMBRE", calcular_x_centrada("INGRESE NOMBRE", ancho), alto / 2 - 20, COL_VERDE_BRILL);
             dibujar_texto_5x7(nombre_jugador, calcular_x_centrada(nombre_jugador, ancho), alto / 2, COL_AMARILLO);
             dibujar_texto_5x7("ENTER PARA JUGAR", calcular_x_centrada("ENTER PARA JUGAR", ancho), alto / 2 + 20, COL_GRIS_CLARO);
@@ -488,7 +607,7 @@ int main(int argc, char* argv[])
                 dibujar_texto_5x7("CARACTER NO SOPORTADO", calcular_x_centrada("CARACTER NO SOPORTADO", ancho), alto / 2 + 32, COL_ROJO_BRILL);
             }
           }
-          else if(pantalla == 2){
+          else if(pantalla == PANTALLA_INSTRUCCIONES){
             dibujar_inst(ancho, alto);
           }
 
@@ -496,7 +615,9 @@ int main(int argc, char* argv[])
         gbt_esperar(16);
     }
 
-    destruir_tablero(tablero, filas);
+    if (tablero) {
+        destruir_tablero(tablero, filas);
+    }
     gbt_temporizador_destruir(temp_caida_tetrominos);
     gbt_temporizador_destruir(temp_activar_tetrominos);
     gbt_temporizador_destruir(temp_juego_caida);

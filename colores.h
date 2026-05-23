@@ -19,9 +19,9 @@
 #define COL_ROJO_BRILL  12
 #define COL_MAG_BRILL   13
 #define COL_AMARILLO    14
-#define COL_TRANSPAR    15
+#define COL_PURPURA     15
 #define COL_NARANJA     16
-#define COL_PURPURA     17
+#define COL_TRANSPAR    17
 
 extern tGBT_ColorRGB paletaCGA[CANT_COLORES];
 

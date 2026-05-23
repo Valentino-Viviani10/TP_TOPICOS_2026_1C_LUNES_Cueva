@@ -1,6 +1,7 @@
 #include "instrucciones.h"
 #include "dibujar.h"
 #include "colores.h"
+#include "juego.h"
 
 /*
 void dibujar_inst(int ancho, int alto) {
@@ -51,7 +52,11 @@ void dibujar_inst(int ancho, int alto){
 
     dibujar_linea_horizontal(x_ini, x_fin, y-4);
 
-    dibujar_texto_5x7("JUEGO NORMAL", calcular_x_centrada("JUEGO NORMAL", ancho), y_titulo,COL_VERDE_BRILL);
+    if (modo_deluxe) {
+        dibujar_texto_5x7("JUEGO DELUXE", calcular_x_centrada("JUEGO DELUXE", ancho), y_titulo, COL_VERDE_BRILL);
+    } else {
+        dibujar_texto_5x7("JUEGO NORMAL", calcular_x_centrada("JUEGO NORMAL", ancho), y_titulo, COL_VERDE_BRILL);
+    }
 
     dibujar_linea_horizontal(x_ini, x_fin, y + 16);
 
@@ -91,6 +96,11 @@ void dibujar_inst(int ancho, int alto){
     dibujar_texto_5x7("CADA 10 PIEZAS", x1, y_mecanicas + 14, COL_GRIS_CLARO);
     dibujar_texto_5x7("+3% VEL", x2 + 25, y_mecanicas + 14, COL_GRIS_CLARO);
 
-    dibujar_texto_5x7("BOLSA DE 7", x1, y_mecanicas + 28, COL_GRIS_CLARO);
-    dibujar_texto_5x7("SIN REPETICION", x2 + 25, y_mecanicas + 28, COL_GRIS_CLARO);
+    if (modo_deluxe) {
+        dibujar_texto_5x7("BOLSA DE 11", x1, y_mecanicas + 28, COL_GRIS_CLARO);
+        dibujar_texto_5x7("MOVIMIENTO 360", x2 + 25, y_mecanicas + 28, COL_GRIS_CLARO);
+    } else {
+        dibujar_texto_5x7("BOLSA DE 7", x1, y_mecanicas + 28, COL_GRIS_CLARO);
+        dibujar_texto_5x7("SIN REPETICION", x2 + 25, y_mecanicas + 28, COL_GRIS_CLARO);
+    }
 }

@@ -23,6 +23,9 @@ void inicializar_tetrominos_fondo(tTetrominoFondo tetrominos[]);
 
 void actualizar_tetrominos_fondo(tTetrominoFondo tetrominos[], const int alto, const int ancho, const int limite_izquierdo, const int limite_derecho, tGBT_Temporizador *temp_hacer_caer, tGBT_Temporizador *temp_activar);
 
-extern int piezas[7][4][4][4];
+#define TOTAL_PIEZAS_NORMAL 7
+#define TOTAL_PIEZAS_DELUXE 11
+
+extern int piezas[11][4][4][4];
 
 #endif // TETROMINOS_H_INCLUDED
