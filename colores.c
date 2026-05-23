@@ -44,24 +44,24 @@ tGBT_ColorRGB paletaCyberpunk[CANT_COLORES] = {
 };
 
 tGBT_ColorRGB paletaRetroGB[CANT_COLORES] = {
-    {0x0A, 0x14, 0x0A}, // 0: casi negro verdoso  — fondo principal
-    {0x0F, 0x20, 0x0F}, // 1: negro verdoso        — fondo secundario
-    {0x12, 0x28, 0x12}, // 2: verde muy oscuro     — bordes
-    {0x30, 0x62, 0x30}, // 3:  verde medio        — tetromino I
-    {0x4A, 0x7C, 0x3F}, // 4:  verde              — tetromino J
-    {0x5A, 0x8A, 0x3A}, // 5:  verde claro        — tetromino L
-    {0x3A, 0x6B, 0x2A}, // 6:  verde oliva        — tetromino O
-    {0x2D, 0x5A, 0x1E}, // 7:  verde bosque       — tetromino S
-    {0x4F, 0x79, 0x42}, // 8:  verde grisáceo     — tetromino T
-    {0x0A, 0x0A, 0x0A}, // 9:  negro puro         — fondo tablero
-    {0x8B, 0xAC, 0x0F}, // 10: verde amarillento  — TEXTO acento (COL_MAGENTA reemplazado)
-    {0x9B, 0xBC, 0x0F}, // 11: verde lima         — TEXTO normal
-    {0xC6, 0xDE, 0x8A}, // 12: verde pálido       — TEXTO secundario
-    {0x6F, 0xA8, 0x6F}, // 13: verde claro        — tetromino Z
-    {0x9E, 0xBC, 0x9E}, // 14: verde menta        — highlight
-    {0xFF, 0xFF, 0xFF}, // 15: transparente       — texto importante
-    {0xB8, 0xC7, 0xA6}, // 16: verde pálido       — gris claro
-    {0x8D, 0x9A, 0x7B}  // 17: oliva claro        — gris medio
+    {0x0A, 0x14, 0x0A}, // 0: casi negro verdoso
+    {0x0F, 0x20, 0x0F}, // 1: negro verdoso
+    {0x12, 0x28, 0x12}, // 2: verde muy oscuro
+    {0x30, 0x62, 0x30}, // 3:  verde medio
+    {0x4A, 0x7C, 0x3F}, // 4:  verde
+    {0x5A, 0x8A, 0x3A}, // 5:  verde claro
+    {0x3A, 0x6B, 0x2A}, // 6:  verde oliva
+    {0x2D, 0x5A, 0x1E}, // 7:  verde bosque
+    {0x4F, 0x79, 0x42}, // 8:  verde grisáceo
+    {0x0A, 0x0A, 0x0A}, // 9:  negro puro
+    {0x8B, 0xAC, 0x0F}, // 10: verde amarillento
+    {0x9B, 0xBC, 0x0F}, // 11: verde lima
+    {0xC6, 0xDE, 0x8A}, // 12: verde pálido
+    {0x6F, 0xA8, 0x6F}, // 13: verde claro
+    {0x9E, 0xBC, 0x9E}, // 14: verde menta
+    {0xFF, 0xFF, 0xFF}, // 15: transparente
+    {0xB8, 0xC7, 0xA6}, // 16: verde pálido
+    {0x8D, 0x9A, 0x7B}  // 17: oliva claro
 };
 
 tGBT_ColorRGB paletaCGA[CANT_COLORES] = {
@@ -89,6 +89,7 @@ tGBT_ColorRGB paletaCGA[CANT_COLORES] = {
 uint8_t COL_SEM_TEXTO_PRINCIPAL;
 uint8_t COL_SEM_TEXTO_SECUNDARIO;
 uint8_t COL_SEM_TEXTO_IMPORTANTE;
+uint8_t COL_SEM_BORDE;
 uint8_t COL_SEM_ACENTO;
 uint8_t COL_SEM_FONDO_1;
 uint8_t COL_SEM_FONDO_2;
@@ -96,17 +97,19 @@ uint8_t COL_SEM_FONDO_2;
 void inicializar_colores_semanticos(int paleta_id) {
     switch(paleta_id) {
         case 1: // RetroGB
-            COL_SEM_TEXTO_PRINCIPAL  = 15; // blanco
-            COL_SEM_TEXTO_SECUNDARIO = 11; // verde lima
-            COL_SEM_TEXTO_IMPORTANTE = 14; // verde menta
-            COL_SEM_ACENTO           = 10; // verde amarillento
-            COL_SEM_FONDO_1          = 0;  // casi negro verdoso
-            COL_SEM_FONDO_2          = 1;  // negro verdoso
+            COL_SEM_TEXTO_PRINCIPAL  = 15;
+            COL_SEM_TEXTO_SECUNDARIO = 11;
+            COL_SEM_TEXTO_IMPORTANTE = 14;
+            COL_SEM_BORDE            = 2;
+            COL_SEM_ACENTO           = 13;
+            COL_SEM_FONDO_1          = 0;
+            COL_SEM_FONDO_2          = 1;
             break;
         case 2: // Cyberpunk
             COL_SEM_TEXTO_PRINCIPAL  = 9;
             COL_SEM_TEXTO_SECUNDARIO = COL_CIAN_BRILL;
             COL_SEM_TEXTO_IMPORTANTE = 16;
+            COL_SEM_BORDE            = 1;
             COL_SEM_ACENTO           = COL_AMARILLO;
             COL_SEM_FONDO_1          = COL_NEGRO;
             COL_SEM_FONDO_2          = COL_GRIS_OSC;
@@ -115,6 +118,7 @@ void inicializar_colores_semanticos(int paleta_id) {
             COL_SEM_TEXTO_PRINCIPAL  = 9;
             COL_SEM_TEXTO_SECUNDARIO = COL_GRIS_CLARO;
             COL_SEM_TEXTO_IMPORTANTE = COL_ROJO_BRILL;
+            COL_SEM_BORDE            = COL_AZUL;
             COL_SEM_ACENTO           = COL_AMARILLO;
             COL_SEM_FONDO_1          = COL_NEGRO;
             COL_SEM_FONDO_2          = COL_GRIS_OSC;

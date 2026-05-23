@@ -68,11 +68,10 @@ static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguien
 static uint8_t elegir_color_permitido(void) {
     uint8_t opciones[] = {
         COL_SEM_ACENTO,
-        COL_SEM_TEXTO_PRINCIPAL,
-        COL_SEM_TEXTO_SECUNDARIO
+        COL_SEM_TEXTO_PRINCIPAL
     };
 
-    return opciones[rand() % 3];
+    return opciones[rand() % 2];
 }
 
 static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int *piezas_caidas, int *velocidad_caida_ms, int *lineas_eliminadas, int *casillasManuales, int *juego_terminado, tGBT_Temporizador **temp_juego_caida) {
@@ -490,7 +489,7 @@ int main(int argc, char *argv[])
         }
 
         // Dibujar fondo y bordes
-        dibujar_fondo(alto, ancho, paleta_id);
+        dibujar_fondo(alto, ancho);
         dibujar_borde(alto, ancho, 0, 0);
 
         // Cambiar color de opciones al presionar arriba/abajo

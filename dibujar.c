@@ -16,7 +16,6 @@ void dibujar_linea_horizontal(int x_ini, int x_fin, int y) {
     }
 }
 
-
 void dibujar_menu(int opcionSeleccionada, int ancho, int alto, uint8_t colorSeleccionado) {
     int y;
 
@@ -35,9 +34,9 @@ void dibujar_menu(int opcionSeleccionada, int ancho, int alto, uint8_t colorSele
 
     y = alto / 2;
 
-    uint8_t colorJugar = (opcionSeleccionada == 0) ? colorSeleccionado : COL_GRIS_CLARO;
-    uint8_t colorInstrucciones = (opcionSeleccionada == 1) ? colorSeleccionado : COL_GRIS_CLARO;
-    uint8_t colorConfig = (opcionSeleccionada == 2) ? colorSeleccionado : COL_GRIS_CLARO;
+    uint8_t colorJugar = (opcionSeleccionada == 0) ? colorSeleccionado : COL_SEM_TEXTO_SECUNDARIO;
+    uint8_t colorInstrucciones = (opcionSeleccionada == 1) ? colorSeleccionado : COL_SEM_TEXTO_SECUNDARIO;
+    uint8_t colorConfig = (opcionSeleccionada == 2) ? colorSeleccionado : COL_SEM_TEXTO_SECUNDARIO;
 
     dibujar_texto_5x7(opciones[0], xJugar, y, colorJugar);
     dibujar_texto_5x7(opciones[1], xInstrucciones, y + 20, colorInstrucciones);
@@ -45,7 +44,7 @@ void dibujar_menu(int opcionSeleccionada, int ancho, int alto, uint8_t colorSele
 
 }
 
-void dibujar_fondo(int alto, int ancho, int paleta_id) {
+void dibujar_fondo(int alto, int ancho) {
     int x, y;
     for(y = 0; y < alto; y++) {
         for(x = 0; x < ancho; x++) {
@@ -59,12 +58,12 @@ void dibujar_borde(int alto, int ancho, int iniX, int iniY) {
 
     for(int g = 0; g < GROSOR_BORDE; g++){
         for(x = iniX; x < ancho; x++){
-            gbt_dibujar_pixel(x, iniY + g, COL_AZUL);          // superior
-            gbt_dibujar_pixel(x, alto - 1 - g, COL_AZUL); // inferior
+            gbt_dibujar_pixel(x, iniY + g, COL_SEM_BORDE);          // superior
+            gbt_dibujar_pixel(x, alto - 1 - g, COL_SEM_BORDE); // inferior
         }
         for(y = iniY; y < alto; y++){
-            gbt_dibujar_pixel(iniX + g, y, COL_AZUL);          // izquierdo
-            gbt_dibujar_pixel(ancho - 1 - g, y, COL_AZUL); // derecho
+            gbt_dibujar_pixel(iniX + g, y, COL_SEM_BORDE);          // izquierdo
+            gbt_dibujar_pixel(ancho - 1 - g, y, COL_SEM_BORDE); // derecho
         }
     }
 }
@@ -343,7 +342,7 @@ void dibujar_configuracion(int ancho, int alto, const Config *config, int opcion
     static const char *nombres_paleta[] = { "CGA", "RETRO GB", "CYBERPUNK" };
     static const char *nombres_res[]    = { "CGA", "VGA" };
 
-    dibujar_texto_5x7("CONFIGURACION", calcular_x_centrada("CONFIGURACION", ancho), 20, COL_MAGENTA);
+    dibujar_texto_5x7("CONFIGURACION", calcular_x_centrada("CONFIGURACION", ancho), 20, COL_SEM_TEXTO_PRINCIPAL);
 
     int y = alto / 2;
 
@@ -351,9 +350,9 @@ void dibujar_configuracion(int ancho, int alto, const Config *config, int opcion
     char buf_vel[20];
     snprintf(buf_vel, sizeof(buf_vel), "< %d MS >", config->velocidad_caida_ms);
 
-    uint8_t col_vel = (opcionSeleccionada == 0) ? COL_AMARILLO : COL_MAGENTA;
-    uint8_t col_res = (opcionSeleccionada == 1) ? COL_AMARILLO : COL_MAGENTA;
-    uint8_t col_pal = (opcionSeleccionada == 2) ? COL_AMARILLO : COL_MAGENTA;
+    uint8_t col_vel = (opcionSeleccionada == 0) ? COL_SEM_ACENTO : COL_SEM_TEXTO_SECUNDARIO;
+    uint8_t col_res = (opcionSeleccionada == 1) ? COL_SEM_ACENTO  : COL_SEM_TEXTO_SECUNDARIO;
+    uint8_t col_pal = (opcionSeleccionada == 2) ? COL_SEM_ACENTO  : COL_SEM_TEXTO_SECUNDARIO;
 
     dibujar_texto_5x7("VELOCIDAD", calcular_x_centrada("VELOCIDAD", ancho), y - 40, col_vel);
     dibujar_texto_5x7(buf_vel, calcular_x_centrada(buf_vel, ancho), y - 25, COL_VERDE_BRILL);

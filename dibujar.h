@@ -17,7 +17,7 @@ void dibujar_linea_horizontal(int x_ini, int x_fin, int y);
 
 void dibujar_menu(int opcionSeleccionada, int ancho, int alto, uint8_t colorSeleccionado);
 
-void dibujar_fondo(int alto, int ancho, int paleta_id);
+void dibujar_fondo(int alto, int ancho);
 
 void dibujar_borde(int alto, int ancho, int iniX, int iniY);
 

@@ -8,7 +8,7 @@
 #define VGA_ANCHO 640
 #define VGA_ALTO  480
 
-int guardar_config(Config *config, const char *nomArch) {
+int guardar_config(const Config *config, const char *nomArch) {
     FILE *arch = fopen(nomArch, "wb");
     if (!arch) return 0;
 
