@@ -9,6 +9,7 @@
 #include "juego.h"
 #include "instrucciones.h"
 #include "puntuaciones.h"
+#include "config.h"
 
 #define CGA_ANCHO 320
 #define CGA_ALTO 200
@@ -21,6 +22,7 @@
 #define PANTALLA_NOMBRE 3
 #define PANTALLA_MODO 4
 #define PANTALLA_ALTO 5
+#define PANTALLA_CONFIGURACION 6
 
 /*
     Apellido: Viviani, Valentino
@@ -75,14 +77,12 @@ static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguien
 }
 
 static uint8_t elegir_color_permitido(void) {
-    static const uint8_t coloresPermitidos[] = {
-        COL_AZUL_BRILL,
-        COL_VERDE_BRILL,
-        COL_CIAN_BRILL,
-        COL_ROJO_BRILL
+    uint8_t opciones[] = {
+        COL_SEM_ACENTO,
+        COL_SEM_TEXTO_PRINCIPAL
     };
 
-    return coloresPermitidos[rand() % (sizeof(coloresPermitidos) / sizeof(coloresPermitidos[0]))];
+    return opciones[rand() % 2];
 }
 
 static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int *piezas_caidas, int *velocidad_caida_ms, int *lineas_eliminadas, int *casillasManuales, int *juego_terminado, tGBT_Temporizador **temp_juego_caida) {
@@ -111,6 +111,15 @@ static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *
         juego_inicializar_pieza(pieza_siguiente);
 }
 
+static int ajustar_velocidad(int *velocidad, const int dir) {
+    *velocidad += dir * 50;
+
+    if(*velocidad < 100)  *velocidad = 100;
+    if(*velocidad > 2000) *velocidad = 2000;
+
+    return *velocidad;
+}
+
 static int caracter_soportado(eGBT_Tecla tecla){
 
     return (tecla >= GBTK_a && tecla <= GBTK_z) || (tecla >= GBTK_0 && tecla <= GBTK_9) || tecla == GBTK_ESPACIO || tecla == GBTK_MENOS;
@@ -125,7 +134,7 @@ static char convertir_caracter_nombre(eGBT_Tecla tecla)
     return tecla;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     if (gbt_iniciar() != 0) {
         fprintf(stderr, "Error al iniciar GBT: %s\n", gbt_obtener_log());
@@ -134,50 +143,39 @@ int main(int argc, char* argv[])
 
     srand((unsigned)time(NULL));
 
-    int ancho = CGA_ANCHO;
-    int alto = CGA_ALTO;
-    int escala = 2;
+    Config config = {
+        .velocidad_caida_ms = 1000,
+        .paleta_id          = 0,
+        .resolucion         = 0,   // 0=CGA, 1=VGA
+        .escala             = 2
+    };
 
-    // Validar que se pasen argumentos
-    if (argc < 2) {
-        fprintf(stderr, "Uso: %s <CGA|VGA> [escala]\n", argv[0]);
-        fprintf(stderr, "Ejemplos:\n");
-        fprintf(stderr, "  %s CGA\n", argv[0]);
-        fprintf(stderr, "  %s VGA\n", argv[0]);
-        fprintf(stderr, "  %s CGA 2\n", argv[0]);
-        fprintf(stderr, "  %s VGA 3\n", argv[0]);
-        return -1;
-    }
+    // 2. Pisar con config guardada si existe
+    cargar_config(&config, "config.cfg");
 
-    // Parsear resolución (argumento obligatorio)
-    if (strcmp(argv[1], "VGA") == 0 || strcmp(argv[1], "vga") == 0) {
-        ancho = VGA_ANCHO;
-        alto = VGA_ALTO;
-    } else if (strcmp(argv[1], "CGA") == 0 || strcmp(argv[1], "cga") == 0) {
-        ancho = CGA_ANCHO;
-        alto = CGA_ALTO;
-    } else {
-        fprintf(stderr, "Error: Resolucion no valida '%s'. Use CGA o VGA.\n", argv[1]);
-        return -1;
-    }
+    // Traducir resolucion guardada a ancho/alto
+    int ancho = (config.resolucion == 1) ? VGA_ANCHO : CGA_ANCHO;
+    int alto  = (config.resolucion == 1) ? VGA_ALTO  : CGA_ALTO;
 
-    // Parsear escala (argumento opcional)
-    if (argc > 2) {
-        escala = atoi(argv[2]);
+    // 3. Pisar con argumentos si los hay (máxima prioridad)
+    int ret = parsearResolucion(argc, argv, &ancho, &alto, &config.escala);
+    if (ret == -1) return -1;  // arg inválido
 
-        if (strcmp(argv[1], "VGA") == 0) {
-            if(escala > 2 || escala <= 0) {
-                fprintf(stderr, "Error: Escala no valida '%s'. Use una escala para VGA de maximo 2 y minimo 1.\n", argv[2]);
-                printf("Ajustando escala a 2.\n");
-                escala = 2;
-            }
-        } else if (strcmp(argv[1], "CGA") == 0) {
-            if(escala > 4 || escala <= 0) {
-                fprintf(stderr, "Error: Escala no valida '%s'. Use una escala para CGA de maximo 4 y minimo 1.\n", argv[2]);
-                printf("Ajustando escala a 3.\n");
-                escala = 3;
-            }
-        }
+    int velocidad_caida_ms = config.velocidad_caida_ms;
+    int paleta_id          = config.paleta_id;
+    int escala             = config.escala;
+    tGBT_ColorRGB *paleta;
+
+    switch(paleta_id) {
+        case 1:
+            paleta = paletaRetroGB;
+            break;
+        case 2:
+            paleta = paletaCyberpunk;
+            break;
+        default:
+            paleta = paletaCGA;
+            break;
     }
 
     char nombreVentana[50];
@@ -188,17 +186,21 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    if (gbt_aplicar_paleta(paletaCGA, CANT_COLORES, GBT_FORMATO_888) != 0) {
+    if (gbt_aplicar_paleta(paleta, CANT_COLORES, GBT_FORMATO_888) != 0) {
         fprintf(stderr, "Error al aplicar la nueva paleta de colores: %s\n", gbt_obtener_log());
         return -1;
     }
 
+    inicializar_colores_semanticos(paleta_id);
+
     const char titulo[] = "TETRIS";
     const char *opcionJugar = "JUGAR";
     const char *opcionInstrucciones = "INSTRUCCIONES";
+    const char *opcionConfig = "CONFIGURACION";
     int xTitulo = calcular_x_centrada(titulo, ancho);
     int xJugar = calcular_x_centrada(opcionJugar, ancho);
     int xInstrucciones = calcular_x_centrada(opcionInstrucciones, ancho);
+    int xConfig = calcular_x_centrada(opcionConfig, ancho);
 
     int menuIzquierdo = xTitulo;
     // int menuDerecho = xTitulo + (int)strlen(titulo) * 8; //
@@ -211,6 +213,10 @@ int main(int argc, char* argv[])
         menuIzquierdo = xInstrucciones;
     }
 
+    if(xConfig < menuIzquierdo) {
+        menuIzquierdo = xConfig;
+    }
+
     if (xJugar + calcular_ancho_texto_5x7(opcionJugar) > menuDerecho) {
         menuDerecho = xJugar + calcular_ancho_texto_5x7(opcionJugar);
     }
@@ -218,6 +224,11 @@ int main(int argc, char* argv[])
     if (xInstrucciones + calcular_ancho_texto_5x7(opcionInstrucciones) > menuDerecho) {
         menuDerecho = xInstrucciones + calcular_ancho_texto_5x7(opcionInstrucciones);
     }
+
+    if(xConfig + calcular_ancho_texto_5x7(opcionConfig) > menuDerecho) {
+        menuDerecho = xConfig + calcular_ancho_texto_5x7(opcionConfig);
+    }
+
     int anchoTetromino = 4 * TETROMINO_ESCALA;
     int limiteIzquierdoTetrominos = menuIzquierdo - 20 - anchoTetromino;
     int limiteDerechoTetrominos = menuDerecho + 20;
@@ -265,6 +276,7 @@ int main(int argc, char* argv[])
 
     int corriendo = 1;
     int opcionSeleccionada = 0;
+    int opcionMenuConfig = 0;
     int pantalla = PANTALLA_MENU;
     int juego_terminado = 0;
     int juego_pausado = 0;
@@ -276,7 +288,6 @@ int main(int argc, char* argv[])
 
     int puntaje = 0;
     int piezas_caidas = 0;
-    int velocidad_caida_ms = 1000;
     int lineas_eliminadas = 0;
     int casillasManuales = 0;
     tEstadisticas stats = {0};
@@ -321,7 +332,7 @@ int main(int argc, char* argv[])
             corriendo = 0;
             printf("Saliendo del juego.\n");
         }
-        else if (tecla == GBTK_ESCAPE && pantalla == PANTALLA_INSTRUCCIONES) {
+        else if (tecla == GBTK_ESCAPE && (pantalla == PANTALLA_INSTRUCCIONES || pantalla == PANTALLA_CONFIGURACION)) {
             pantalla = PANTALLA_MENU;
             printf("Volviendo al menu principal.\n");
         }
@@ -339,10 +350,10 @@ int main(int argc, char* argv[])
             }
             if(pantalla == PANTALLA_MENU){
                 if(tecla == GBTK_ABAJO){
-                    opcionSeleccionada = 1;
+                    opcionSeleccionada = (opcionSeleccionada + 1) % 3;
                 }
                 if(tecla == GBTK_ARRIBA){
-                    opcionSeleccionada = 0;
+                    opcionSeleccionada = (opcionSeleccionada + 2) % 3;
                 }
                 if(tecla == GBTK_ENTER){
                     if(opcionSeleccionada == 0){
@@ -352,6 +363,10 @@ int main(int argc, char* argv[])
                     }
                     else if(opcionSeleccionada == 1){
                         pantalla = PANTALLA_INSTRUCCIONES;
+                    }
+                    else if(opcionSeleccionada == 2) {
+                        pantalla = PANTALLA_CONFIGURACION;
+                        tecla = GBTK_DESCONOCIDA;
                     }
                 }
             }
@@ -491,6 +506,33 @@ int main(int argc, char* argv[])
                     mostrar_error_nombre = 1;
                 }
             }
+            if(pantalla == 4) {
+                if (tecla == GBTK_ARRIBA)
+                    opcionMenuConfig = (opcionMenuConfig + 2) % 3;
+                if (tecla == GBTK_ABAJO)    
+                    opcionMenuConfig = (opcionMenuConfig + 1) % 3;
+
+                if (tecla == GBTK_IZQUIERDA || tecla == GBTK_DERECHA) {
+                    int dir = (tecla == GBTK_DERECHA) ? 1 : -1;
+                    switch(opcionMenuConfig) {
+                        case 0: // velocidad
+                            config.velocidad_caida_ms = ajustar_velocidad(&config.velocidad_caida_ms, dir);
+                            break;
+                        case 1: // resolución: alterna entre 0 y 1
+                            config.resolucion = !config.resolucion;
+                            break;
+                        case 2: // paleta: cicla entre 0, 1, 2
+                            config.paleta_id = ((config.paleta_id + dir) + 3) % 3;
+                            break;
+                    }
+                }
+
+                if (tecla == GBTK_ENTER) {
+                    guardar_config(&config, "config.cfg");
+                    printf("configuracion guardada correctamente\n");
+                    pantalla = 0;
+                }
+            }
         }
 
         if(pantalla == PANTALLA_JUEGO && !juego_terminado && !juego_pausado){
@@ -597,20 +639,17 @@ int main(int argc, char* argv[])
                 dibujar_texto_5x7("PAUSA", calcular_x_centrada("PAUSA", ancho), alto / 2, COL_AMARILLO);
                 dibujar_texto_5x7("P PARA CONTINUAR", calcular_x_centrada("P PARA CONTINUAR", ancho), alto / 2 + 12, COL_GRIS_CLARO);
             }
-          }
-          else if(pantalla == PANTALLA_NOMBRE){
-            dibujar_texto_5x7("INGRESE NOMBRE", calcular_x_centrada("INGRESE NOMBRE", ancho), alto / 2 - 20, COL_VERDE_BRILL);
-            dibujar_texto_5x7(nombre_jugador, calcular_x_centrada(nombre_jugador, ancho), alto / 2, COL_AMARILLO);
-            dibujar_texto_5x7("ENTER PARA JUGAR", calcular_x_centrada("ENTER PARA JUGAR", ancho), alto / 2 + 20, COL_GRIS_CLARO);
-
-            if(mostrar_error_nombre){
-                dibujar_texto_5x7("CARACTER NO SOPORTADO", calcular_x_centrada("CARACTER NO SOPORTADO", ancho), alto / 2 + 32, COL_ROJO_BRILL);
-            }
-          }
-          else if(pantalla == PANTALLA_INSTRUCCIONES){
+        }
+        else if(pantalla == PANTALLA_INSTRUCCIONES){
             dibujar_inst(ancho, alto);
-          }
-
+        }
+        else if(pantalla == PANTALLA_NOMBRE){
+            dibujar_inicio_usuario(ancho, alto, nombre_jugador, mostrar_error_nombre);
+        }
+        else if(pantalla == PANTALLA_CONFIGURACION) {
+            dibujar_configuracion(ancho, alto, &config, opcionMenuConfig);
+        }
+          
         gbt_volcar_backbuffer();
         gbt_esperar(16);
     }
@@ -624,4 +663,5 @@ int main(int argc, char* argv[])
     gbt_temporizador_destruir(temp_movimiento_lateral);
     gbt_temporizador_destruir(temp_caida_rapida);
     return 0;
+    
 }
