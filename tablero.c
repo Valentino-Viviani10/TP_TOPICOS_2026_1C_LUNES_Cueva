@@ -11,14 +11,15 @@ int** crear_tablero(int filas, int columnas, size_t tamElem) {
         return NULL;
     }
 
-    int** ult = tablero + filas;
+    for (int i = 0; i < filas; i++) {
+        tablero[i] = (int*)calloc(columnas, tamElem);
 
-    for (int** i = tablero; i < ult; i++) {
-        *i = calloc(columnas, tamElem);
-
-        if(!*i)
-        {
-            destruir_tablero(tablero, i - tablero);
+        if(!tablero[i]) {
+            // Limpieza en caso de error
+            for (int j = 0; j < i; j++) {
+                free(tablero[j]);
+            }
+            free(tablero);
             return NULL;
         }
     }
@@ -39,7 +40,7 @@ void eliminar_fila_y_bajar(int** tablero, int fila_a_borrar,int columnas) {
     }
 }
 
-void destruir_tablero(int** tablero,int filas) {
+/*void destruir_tablero(int** tablero,int filas) {
     int** ult = tablero + filas;
 
     for (int** i = tablero; i < ult; i++) {
@@ -47,27 +48,47 @@ void destruir_tablero(int** tablero,int filas) {
     }
     free(tablero);
 }
+*/
+void destruir_tablero(int** tablero, int filas) {
+    for (int i = 0; i < filas; i++) {
+        free(tablero[i]);
+    }
+    free(tablero);
+}
 
-int borrar_lineas(int** tablero, int filas, int columnas){
+
+int borrar_lineas(int** tablero, int filas, int columnas) {
     int fila = 0;
     int columna = 0;
     int llena = 0;
     int fil_eliminadas = 0;
 
-    while(fila < filas){
-        while(columna < columnas && tablero[fila][columna]){
+    while(fila < filas) {
+        while(columna < columnas && tablero[fila][columna]) {
             llena++;
             columna++;
         }
-        if(llena == columnas){
-            eliminar_fila_y_bajar(tablero, fila, columnas);
+        if(llena == columnas) {
+            // Fila completa encontrada
+            // Guardar el puntero actual
+            int* fila_reciclada = tablero[fila];
+            // Correr los punteros (no los datos)
+            for (int i = fila; i > 0; i--) {
+                tablero[i] = tablero[i - 1];
+            }
+            // Poner la fila limpia al inicio
+            tablero[0] = fila_reciclada;
+
+            // Limpiar la fila
+            for (int j = 0; j < columnas; j++) {
+                tablero[0][j] = 0;
+            }
             fil_eliminadas++;
         }
         columna = 0;
         fila++;
         llena = 0;
     }
-
     return fil_eliminadas;
 }
 
