@@ -45,16 +45,11 @@ void dibujar_menu(int opcionSeleccionada, int ancho, int alto, uint8_t colorSele
 
 }
 
-void dibujar_fondo(int alto, int ancho) {
+void dibujar_fondo(int alto, int ancho, int paleta_id) {
     int x, y;
-
     for(y = 0; y < alto; y++) {
         for(x = 0; x < ancho; x++) {
-            if((x + y) % 2 == 0) {
-                gbt_dibujar_pixel(x, y, COL_NEGRO);
-            } else {
-                gbt_dibujar_pixel(x, y, COL_GRIS_OSC);
-            }
+            gbt_dibujar_pixel(x, y, ((x + y) % 2 == 0) ? COL_SEM_FONDO_1 : COL_SEM_FONDO_2);
         }
     }
 }
@@ -231,9 +226,9 @@ void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int 
     }
 
     if(juego_terminado){
-    dibujar_texto_5x7("JUEGO TERMINADO", calcular_x_centrada("JUEGO TERMINADO", ancho), alto / 2, COL_ROJO_BRILL);
-    dibujar_texto_5x7("ENTER REINICIA", calcular_x_centrada("ENTER REINICIA", ancho), alto / 2 + 12, COL_GRIS_CLARO);
-    dibujar_texto_5x7("ESC PARA SALIR", calcular_x_centrada("ESC PARA SALIR", ancho), alto / 2 + 24, COL_GRIS_CLARO);
+    dibujar_texto_5x7("JUEGO TERMINADO", calcular_x_centrada("JUEGO TERMINADO", ancho), alto / 2, COL_SEM_TEXTO_IMPORTANTE);
+    dibujar_texto_5x7("ENTER REINICIA", calcular_x_centrada("ENTER REINICIA", ancho), alto / 2 + 12, COL_SEM_TEXTO_SECUNDARIO);
+    dibujar_texto_5x7("ESC PARA SALIR", calcular_x_centrada("ESC PARA SALIR", ancho), alto / 2 + 24, COL_SEM_TEXTO_SECUNDARIO);
     }
 }
 

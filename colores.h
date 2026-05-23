@@ -23,10 +23,20 @@
 #define COL_NARANJA     16
 #define COL_PURPURA     17
 
+// Colores semánticos — cambian según paleta
+extern uint8_t COL_SEM_TEXTO_PRINCIPAL;
+extern uint8_t COL_SEM_TEXTO_SECUNDARIO;
+extern uint8_t COL_SEM_TEXTO_IMPORTANTE;
+extern uint8_t COL_SEM_ACENTO;
+extern uint8_t COL_SEM_FONDO_1;
+extern uint8_t COL_SEM_FONDO_2;
+
 extern tGBT_ColorRGB paletaCGA[CANT_COLORES];
 
 extern tGBT_ColorRGB paletaRetroGB[CANT_COLORES];
 
 extern tGBT_ColorRGB paletaCyberpunk[CANT_COLORES];
+
+void inicializar_colores_semanticos(int paleta_id);
 
 #endif // COLORES_H_INCLUDED

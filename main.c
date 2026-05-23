@@ -66,14 +66,13 @@ static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguien
 }
 
 static uint8_t elegir_color_permitido(void) {
-    static const uint8_t coloresPermitidos[] = {
-        COL_AZUL_BRILL,
-        COL_VERDE_BRILL,
-        COL_CIAN_BRILL,
-        COL_ROJO_BRILL
+    uint8_t opciones[] = {
+        COL_SEM_ACENTO,
+        COL_SEM_TEXTO_PRINCIPAL,
+        COL_SEM_TEXTO_SECUNDARIO
     };
 
-    return coloresPermitidos[rand() % (sizeof(coloresPermitidos) / sizeof(coloresPermitidos[0]))];
+    return opciones[rand() % 3];
 }
 
 static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int *piezas_caidas, int *velocidad_caida_ms, int *lineas_eliminadas, int *casillasManuales, int *juego_terminado, tGBT_Temporizador **temp_juego_caida) {
@@ -102,9 +101,12 @@ static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *
         juego_inicializar_pieza(pieza_siguiente);
 }
 
-static int ajustar_velocidad(int *velocidad, const int dir)
-{
-    *velocidad += dir;
+static int ajustar_velocidad(int *velocidad, const int dir) {
+    *velocidad += dir * 50;
+
+    if(*velocidad < 100)  *velocidad = 100;
+    if(*velocidad > 2000) *velocidad = 2000;
+
     return *velocidad;
 }
 
@@ -178,6 +180,8 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Error al aplicar la nueva paleta de colores: %s\n", gbt_obtener_log());
         return -1;
     }
+
+    inicializar_colores_semanticos(paleta_id);
 
     const char titulo[] = "TETRIS";
     const char *opcionJugar = "JUGAR";
@@ -486,7 +490,7 @@ int main(int argc, char *argv[])
         }
 
         // Dibujar fondo y bordes
-        dibujar_fondo(alto, ancho);
+        dibujar_fondo(alto, ancho, paleta_id);
         dibujar_borde(alto, ancho, 0, 0);
 
         // Cambiar color de opciones al presionar arriba/abajo
