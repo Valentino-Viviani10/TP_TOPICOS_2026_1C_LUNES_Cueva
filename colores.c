@@ -65,9 +65,8 @@ tGBT_ColorRGB paletaRetroGB[CANT_COLORES] = {
 };
 
 tGBT_ColorRGB paletaCGA[CANT_COLORES] = {
-
     /// 0-17: Colores CGA (18 colores)
-    {0x00, 0x00, 0x00}, // 0:   Negro
+    {0x00, 0x00, 0x00}, // 0:   Negro 
     {0x00, 0x00, 0xAA}, // 1:   Azul
     {0x00, 0xAA, 0x00}, // 2:   Verde
     {0x00, 0xAA, 0xAA}, // 3:   Cian

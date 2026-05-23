@@ -9,6 +9,7 @@
 #include "juego.h"
 #include "instrucciones.h"
 #include "puntuaciones.h"
+#include "config.h"
 
 #define CGA_ANCHO 320
 #define CGA_ALTO 200
@@ -101,6 +102,12 @@ static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *
         juego_inicializar_pieza(pieza_siguiente);
 }
 
+static int ajustar_velocidad(int *velocidad, const int dir)
+{
+    *velocidad += dir;
+    return *velocidad;
+}
+
 static int caracter_soportado(eGBT_Tecla tecla){
 
     return (tecla >= GBTK_a && tecla <= GBTK_z) || (tecla >= GBTK_0 && tecla <= GBTK_9) || tecla == GBTK_ESPACIO || tecla == GBTK_MENOS;
@@ -115,47 +122,7 @@ static char convertir_caracter_nombre(eGBT_Tecla tecla)
     return tecla;
 }
 
-static int guardar_config(int *velocidad_caida_ms, int *paleta_id, int *res, int *escala, char *nomArch) {
-    int resolucion[2] = { *res, *escala };
-
-    FILE* arch = fopen(nomArch, "wb");
-    if (!arch) return 0;
-
-    if (fwrite(velocidad_caida_ms, sizeof(int), 1, arch) != 1) { fclose(arch); return 0; }
-    if (fwrite(paleta_id, sizeof(int), 1, arch) != 1) { fclose(arch); return 0; }
-    if (fwrite(resolucion, sizeof(int), 2, arch) != 2) { fclose(arch); return 0; }
-
-    fclose(arch);
-    return 1;
-}
-
-static int cargar_config(int *velocidad_caida_ms, int *paleta_id, int *res, int *escala, char *nomArch) {
-    FILE* arch = fopen(nomArch, "rb");
-    if (!arch) return 0;
-
-    if (fread(velocidad_caida_ms, sizeof(int), 1, arch) != 1) { 
-        fclose(arch); 
-        return 0; 
-    }
-    if (fread(paleta_id, sizeof(int), 1, arch) != 1) { 
-        fclose(arch); 
-        return 0; 
-    }
-
-    int resolucion[2];
-    if (fread(resolucion, sizeof(int), 2, arch) != 2) { 
-        fclose(arch); 
-        return 0; 
-    }
-
-    *res = resolucion[0];
-    *escala = resolucion[1];
-
-    fclose(arch);
-    return 1;
-}
-
-int main()
+int main(int argc, char *argv[])
 {
     if (gbt_iniciar() != 0) {
         fprintf(stderr, "Error al iniciar GBT: %s\n", gbt_obtener_log());
@@ -164,42 +131,39 @@ int main()
 
     srand((unsigned)time(NULL));
 
-    int ancho;
-    int alto;
-    int escala;
-    int velocidad_caida_ms;
-    int paleta_id;
-    int res;
+    Config config = {
+        .velocidad_caida_ms = 1000,
+        .paleta_id          = 0,
+        .resolucion         = 0,   // 0=CGA, 1=VGA
+        .escala             = 2
+    };
 
-    if(!cargar_config(&velocidad_caida_ms, &paleta_id, &res, &escala, "config.cfg")) {
-        escala = 2;
-        velocidad_caida_ms = 1000;
-        paleta_id = 0;
-        res = 0;
-    }
+    // 2. Pisar con config guardada si existe
+    cargar_config(&config, "config.cfg");
 
-    if(res == 0) {
-        ancho = CGA_ANCHO;
-        alto = CGA_ALTO;
-    }
+    // Traducir resolucion guardada a ancho/alto
+    int ancho = (config.resolucion == 1) ? VGA_ANCHO : CGA_ANCHO;
+    int alto  = (config.resolucion == 1) ? VGA_ALTO  : CGA_ALTO;
 
-    if(res == 1) {
-        ancho = VGA_ANCHO;
-        alto = VGA_ALTO; 
-    }
+    // 3. Pisar con argumentos si los hay (máxima prioridad)
+    int ret = parsearResolucion(argc, argv, &ancho, &alto, &config.escala);
+    if (ret == -1) return -1;  // arg inválido
 
+    int velocidad_caida_ms = config.velocidad_caida_ms;
+    int paleta_id          = config.paleta_id;
+    int escala             = config.escala;
     tGBT_ColorRGB *paleta;
 
-    if(paleta_id == 0) {
-        paleta = paletaCGA;
-    }
-
-    if(paleta_id == 1) {
-        paleta = paletaRetroGB;
-    }
-
-    if(paleta_id == 2) {
-        paleta = paletaCyberpunk;
+    switch(paleta_id) {
+        case 1:
+            paleta = paletaRetroGB;
+            break;
+        case 2:
+            paleta = paletaCyberpunk;
+            break;
+        default:
+            paleta = paletaCGA;
+            break;
     }
 
     char nombreVentana[50];
@@ -298,6 +262,7 @@ int main()
 
     int corriendo = 1;
     int opcionSeleccionada = 0;
+    int opcionMenuConfig = 0;
     int pantalla = 0;
     int juego_terminado = 0;
     int juego_pausado = 0;
@@ -378,6 +343,7 @@ int main()
                     }
                     else if(opcionSeleccionada == 2) {
                         pantalla = 4;
+                        tecla = GBTK_DESCONOCIDA;
                     }
                 }
             }
@@ -431,6 +397,33 @@ int main()
                 }
                 else if(tecla != GBTK_DESCONOCIDA){
                     mostrar_error_nombre = 1;
+                }
+            }
+            if(pantalla == 4) {
+                if (tecla == GBTK_ARRIBA)
+                    opcionMenuConfig = (opcionMenuConfig + 2) % 3;
+                if (tecla == GBTK_ABAJO)    
+                    opcionMenuConfig = (opcionMenuConfig + 1) % 3;
+
+                if (tecla == GBTK_IZQUIERDA || tecla == GBTK_DERECHA) {
+                    int dir = (tecla == GBTK_DERECHA) ? 1 : -1;
+                    switch(opcionMenuConfig) {
+                        case 0: // velocidad
+                            config.velocidad_caida_ms = ajustar_velocidad(&config.velocidad_caida_ms, dir);
+                            break;
+                        case 1: // resolución: alterna entre 0 y 1
+                            config.resolucion = !config.resolucion;
+                            break;
+                        case 2: // paleta: cicla entre 0, 1, 2
+                            config.paleta_id = ((config.paleta_id + dir) + 3) % 3;
+                            break;
+                    }
+                }
+
+                if (tecla == GBTK_ENTER) {
+                    guardar_config(&config, "config.cfg");
+                    printf("configuracion guardada correctamente\n");
+                    pantalla = 0;
                 }
             }
         }
@@ -523,21 +516,17 @@ int main()
                 dibujar_texto_5x7("PAUSA", calcular_x_centrada("PAUSA", ancho), alto / 2, COL_AMARILLO);
                 dibujar_texto_5x7("P PARA CONTINUAR", calcular_x_centrada("P PARA CONTINUAR", ancho), alto / 2 + 12, COL_GRIS_CLARO);
             }
-          }
-          else if(pantalla == 2){
+        }
+        else if(pantalla == 2){
             dibujar_inst(ancho, alto);
-          }
-          else if(pantalla == 3){
-            dibujar_texto_5x7("INGRESE NOMBRE", calcular_x_centrada("INGRESE NOMBRE", ancho), alto / 2 - 20, COL_VERDE_BRILL);
-            dibujar_texto_5x7(nombre_jugador, calcular_x_centrada(nombre_jugador, ancho), alto / 2, COL_AMARILLO);
-            dibujar_texto_5x7("ENTER PARA JUGAR", calcular_x_centrada("ENTER PARA JUGAR", ancho), alto / 2 + 20, COL_GRIS_CLARO);
-
-            if(mostrar_error_nombre){
-                dibujar_texto_5x7("CARACTER NO SOPORTADO", calcular_x_centrada("CARACTER NO SOPORTADO", ancho), alto / 2 + 32, COL_ROJO_BRILL);
-            }
-          }
+        }
+        else if(pantalla == 3){
+            dibujar_inicio_usuario(ancho, alto, nombre_jugador, mostrar_error_nombre);
+        }
+        else if(pantalla == 4) {
+            dibujar_configuracion(ancho, alto, &config, opcionMenuConfig);
+        }
           
-
         gbt_volcar_backbuffer();
         gbt_esperar(16);
     }
@@ -549,4 +538,5 @@ int main()
     gbt_temporizador_destruir(temp_movimiento_lateral);
     gbt_temporizador_destruir(temp_caida_rapida);
     return 0;
+    
 }
