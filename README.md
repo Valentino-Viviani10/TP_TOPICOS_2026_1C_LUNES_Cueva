@@ -7,8 +7,8 @@ Grupo: **CUEVA** | Integrantes: Viviani Valentino, Bestene Valentin Ezequiel, Fe
 
 ## Requisitos previos
 
-- [Code::Blocks 25.03](https://www.codeblocks.org/downloads/binaries/) 
-Elige su sistema operativo y elige la opción con compilador MinGW incluido
+- [Code::Blocks 25.03](https://www.codeblocks.org/downloads/binaries/) —
+elige su sistema operativo y elige la opción con compilador MinGW incluido
 - [Biblioteca GBT](https://gitlab.com/RodrigoMaranzana/libgbt-dist ) — descargar el release correspondiente desde el repositorio
 
 ---
@@ -26,7 +26,7 @@ Dentro encontrarás en la sección `\release` la biblioteca GBT.
 2. Ir a **File → New → Project**
 3. Seleccionar **Console application**, lenguaje **C**
 4. Elegir un nombre y directorio para el proyecto
-5. Copiar el contenido de la biblioteca GBT a la sección lib/ de su proyecto.
+5. Copiar la carpeta de la biblioteca GBT a la sección lib\ de su proyecto.
 
 ---
 
