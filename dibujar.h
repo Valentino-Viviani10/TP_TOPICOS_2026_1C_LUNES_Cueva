@@ -21,7 +21,7 @@ void dibujar_fondo(int alto, int ancho);
 
 void dibujar_seleccion_modo(const int opcionSeleccionada, const int ancho, const int alto, uint8_t colorSeleccionado);
 
-void dibujar_seleccion_alto(const int alto_tablero, const int ancho, const int alto);
+void dibujar_seleccion_ancho(const int ancho_tablero, const int ancho, const int alto);
 
 void dibujar_borde(int alto, int ancho, int iniX, int iniY);
 

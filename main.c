@@ -23,6 +23,8 @@
 #define PANTALLA_MODO 4
 #define PANTALLA_ALTO 5
 #define PANTALLA_CONFIGURACION 6
+#define PANTALLA_ESC_MENU 7
+#define PANTALLA_REANUDAR 8
 
 /*
     Apellido: Viviani, Valentino
@@ -43,7 +45,16 @@
 
 int modo_deluxe = 0;
 
-static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int **tablero, int *casillasManuales, int *juego_terminado, int *piezas_caidas, int *velocidad_caida_ms, tGBT_Temporizador **temp_juego_caida, int *lineas_eliminadas){
+static void construir_nombre_archivo(const char *nombre_jugador, int deluxe, int num_columnas, char *destino, int tam)
+{
+    if(deluxe){
+        snprintf(destino, tam, "partida_deluxe_%s_%d.bin", nombre_jugador, num_columnas);
+    } else {
+        snprintf(destino, tam, "partida_normal_%s.bin", nombre_jugador);
+    }
+}
+
+static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int **tablero, int *casillasManuales, int *juego_terminado, int *piezas_caidas, int *velocidad_caida_ms, tGBT_Temporizador **temp_juego_caida, int *lineas_eliminadas, const char *nombre_jugador_actual){
 
     juego_fijar_pieza(pieza, tablero);
     stats->piezas_usadas++;
@@ -71,7 +82,8 @@ static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguien
 
     if(!juego_puede_iniciar_pieza(pieza, tablero)){
         *juego_terminado = 1;
-        const char* archivo_guardado = modo_deluxe ? "partida_deluxe.bin" : "partida_normal.bin";
+        char archivo_guardado[40];
+                    construir_nombre_archivo(nombre_jugador_actual, modo_deluxe, columnas, archivo_guardado, sizeof(archivo_guardado));
         remove(archivo_guardado);
     }
 }
@@ -122,7 +134,7 @@ static int ajustar_velocidad(int *velocidad, const int dir) {
 
 static int caracter_soportado(eGBT_Tecla tecla){
 
-    return (tecla >= GBTK_a && tecla <= GBTK_z) || (tecla >= GBTK_0 && tecla <= GBTK_9) || tecla == GBTK_ESPACIO || tecla == GBTK_MENOS;
+    return (tecla >= GBTK_a && tecla <= GBTK_z) || (tecla >= GBTK_0 && tecla <= GBTK_9) || tecla == GBTK_MENOS;
 }
 
 static char convertir_caracter_nombre(eGBT_Tecla tecla)
@@ -265,10 +277,15 @@ int main(int argc, char *argv[])
     }
 
     tGBT_Temporizador *temp_caida_rapida = gbt_temporizador_crear(0.07);
+    tGBT_Temporizador *temp_fijacion = gbt_temporizador_crear(0.5);
+
     if (!temp_caida_rapida) {
         fprintf(stderr, "Error al crear el temporizador de movimiento abajo: %s\n", gbt_obtener_log());
         return -1;
     }
+
+
+
 
     // Inicializar tetrominos decorativos
     tTetrominoFondo tetrominos_decorativos[4];
@@ -280,7 +297,7 @@ int main(int argc, char *argv[])
     int pantalla = PANTALLA_MENU;
     int juego_terminado = 0;
     int juego_pausado = 0;
-    int alto_tablero_deluxe = 16;
+    int ancho_tablero_deluxe = 10;
 
     char nombre_jugador[16] = "";
     int largo_nombre = 0;
@@ -299,6 +316,7 @@ int main(int argc, char *argv[])
     static int sostenida_activa = 0;
     static int cooldown_lateral = 0;
     static int das_activo = 0;  // 1 = ya pasó el DAS inicial, auto-repeat activo
+    static int esperando_fijacion = 0;
 
     uint8_t colorSeleccionado = COL_AMARILLO;
 
@@ -313,24 +331,17 @@ int main(int argc, char *argv[])
         eGBT_Tecla tecla = gbt_obtener_tecla_presionada();
 
         //MENU
-        if(tecla == GBTK_ESCAPE && (pantalla == PANTALLA_JUEGO || pantalla == PANTALLA_MENU)) {
-            if(pantalla == PANTALLA_JUEGO && !juego_terminado && tablero){
-                tPartidaGuardada datos;
-                datos.puntaje = puntaje;
-                datos.piezas_caidas = piezas_caidas;
-                datos.velocidad_caida_ms = velocidad_caida_ms;
-                datos.lineas_eliminadas = lineas_eliminadas;
-                datos.pieza_activa = pieza_activa;
-                datos.pieza_siguiente = pieza_siguiente;
-                datos.stats = stats;
-                strcpy(datos.nombre_jugador, nombre_jugador);
-                juego_obtener_bolsa(datos.bolsa_tetrominos, &datos.indice_bolsa);
-                const char* archivo_guardado = modo_deluxe ? "partida_deluxe.bin" : "partida_normal.bin";
-                guardar_partida(tablero, filas, columnas, &datos, archivo_guardado);
-                printf("Partida guardada exitosamente.\n");
-            }
+        if(tecla == GBTK_ESCAPE && pantalla == PANTALLA_MENU) {
             corriendo = 0;
             printf("Saliendo del juego.\n");
+        }
+        else if(tecla == GBTK_ESCAPE && pantalla == PANTALLA_JUEGO && juego_terminado) {
+            filas = 20;
+            columnas = 10;
+            pantalla = PANTALLA_MENU;
+        }
+        else if(tecla == GBTK_ESCAPE && pantalla == PANTALLA_JUEGO && !juego_terminado) {
+            pantalla = PANTALLA_ESC_MENU;
         }
         else if (tecla == GBTK_ESCAPE && (pantalla == PANTALLA_INSTRUCCIONES || pantalla == PANTALLA_CONFIGURACION)) {
             pantalla = PANTALLA_MENU;
@@ -346,7 +357,16 @@ int main(int argc, char *argv[])
         }
         else if (tecla != GBTK_DESCONOCIDA) {
             if(pantalla == PANTALLA_JUEGO && juego_terminado && tecla == GBTK_ENTER){
-                reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida, config.velocidad_caida_ms);
+                esperando_fijacion = 0;
+                largo_nombre = 0;
+                nombre_jugador[0] = '\0';
+                filas = 22;
+                columnas = 10;
+                if(modo_deluxe){
+                    pantalla = PANTALLA_ALTO;
+                } else {
+                    pantalla = PANTALLA_NOMBRE;
+                }
             }
             if(pantalla == PANTALLA_MENU){
                 if(tecla == GBTK_ABAJO){
@@ -379,61 +399,37 @@ int main(int argc, char *argv[])
                 }
                 if(tecla == GBTK_ENTER){
                     modo_deluxe = opcionSeleccionada;
-                    const char* archivo_guardado = modo_deluxe ? "partida_deluxe.bin" : "partida_normal.bin";
-                    tPartidaGuardada datos_guardados;
-                    int f_leidas, c_leidas;
-
                     if (tablero) {
                         destruir_tablero(tablero, filas);
                         tablero = NULL;
                     }
-
-                    if (cargar_partida(&tablero, &f_leidas, &c_leidas, &datos_guardados, archivo_guardado)) {
-                        filas = f_leidas;
-                        columnas = c_leidas;
-                        puntaje = datos_guardados.puntaje;
-                        piezas_caidas = datos_guardados.piezas_caidas;
-                        velocidad_caida_ms = datos_guardados.velocidad_caida_ms;
-                        lineas_eliminadas = datos_guardados.lineas_eliminadas;
-                        pieza_activa = datos_guardados.pieza_activa;
-                        pieza_siguiente = datos_guardados.pieza_siguiente;
-                        stats = datos_guardados.stats;
-                        juego_cargar_bolsa(datos_guardados.bolsa_tetrominos, datos_guardados.indice_bolsa);
-                        strcpy(nombre_jugador, datos_guardados.nombre_jugador);
-                        largo_nombre = strlen(nombre_jugador);
-
-                        gbt_temporizador_destruir(temp_juego_caida);
-                        temp_juego_caida = gbt_temporizador_crear(velocidad_caida_ms / 1000.0);
-
-                        lado_bloque = calcular_lado_bloque_juego(alto);
-                        marco_x = (ancho / 2) - ((columnas * lado_bloque) / 2);
-                        marco_y = (alto / 2) - (((filas - 2) * lado_bloque) / 2);
-                        fin_tablero_x = marco_x + (columnas * lado_bloque);
-                        fin_tablero_y = marco_y + ((filas - 2) * lado_bloque);
-
-                        pantalla = PANTALLA_JUEGO;
-                        printf("Partida guardada cargada exitosamente.\n");
+                    if(opcionSeleccionada == 0){
+                        filas = 20;
+                        columnas = 10;
                     } else {
-                        if(opcionSeleccionada == 0){
-                            filas = 20;
-                            pantalla = PANTALLA_NOMBRE;
-                        } else {
-                            pantalla = PANTALLA_ALTO;
-                        }
+                        columnas = 10;
                     }
-                    tecla = GBTK_DESCONOCIDA;
+                    largo_nombre = 0;
+                    nombre_jugador[0] = '\0';
                     mostrar_error_nombre = 0;
+                    tecla = GBTK_DESCONOCIDA;
+                    if(opcionSeleccionada == 0){
+                        pantalla = PANTALLA_NOMBRE;
+                    } else {
+                        pantalla = PANTALLA_ALTO;
+                    }
                 }
             }
             else if(pantalla == PANTALLA_ALTO){
-                if(tecla == GBTK_IZQUIERDA && alto_tablero_deluxe > 8){
-                    alto_tablero_deluxe--;
+                if(tecla == GBTK_IZQUIERDA && ancho_tablero_deluxe > 8){
+                    ancho_tablero_deluxe--;
                 }
-                if(tecla == GBTK_DERECHA && alto_tablero_deluxe < 16){
-                    alto_tablero_deluxe++;
+                if(tecla == GBTK_DERECHA && ancho_tablero_deluxe < 16){
+                    ancho_tablero_deluxe++;
                 }
                 if(tecla == GBTK_ENTER){
-                    filas = alto_tablero_deluxe + 2;
+                    filas = 22;
+                    columnas = ancho_tablero_deluxe;
                     pantalla = PANTALLA_NOMBRE;
                     tecla = GBTK_DESCONOCIDA;
                     mostrar_error_nombre = 0;
@@ -448,9 +444,15 @@ int main(int argc, char *argv[])
                 if(!juego_pausado){
                     if(tecla == GBTK_r || tecla == GBTK_ARRIBA){
                         juego_rotar(&pieza_activa, tablero);
+                        esperando_fijacion = 0;
+                        gbt_temporizador_destruir(temp_fijacion);
+                        temp_fijacion = gbt_temporizador_crear(velocidad_caida_ms * 0.5 / 1000.0);
                     }
                     if(tecla == GBTK_q){
                         juego_rotar_izquierda(&pieza_activa, tablero);
+                        esperando_fijacion = 0;
+                        gbt_temporizador_destruir(temp_fijacion);
+                        temp_fijacion = gbt_temporizador_crear(velocidad_caida_ms * 0.5 / 1000.0);
                     }
                 }
                 //cheat
@@ -462,6 +464,35 @@ int main(int argc, char *argv[])
                 }
             }
 
+            if(pantalla == PANTALLA_ESC_MENU){
+                if(tecla == GBTK_c){
+                    pantalla = PANTALLA_JUEGO;
+                }
+                if(tecla == GBTK_s){
+                    tPartidaGuardada datos;
+                    datos.puntaje = puntaje;
+                    datos.piezas_caidas = piezas_caidas;
+                    datos.velocidad_caida_ms = velocidad_caida_ms;
+                    datos.lineas_eliminadas = lineas_eliminadas;
+                    datos.pieza_activa = pieza_activa;
+                    datos.pieza_siguiente = pieza_siguiente;
+                    datos.stats = stats;
+                    strcpy(datos.nombre_jugador, nombre_jugador);
+                    juego_obtener_bolsa(datos.bolsa_tetrominos, &datos.indice_bolsa);
+                    char archivo_guardado[40];
+                    construir_nombre_archivo(nombre_jugador, modo_deluxe, columnas, archivo_guardado, sizeof(archivo_guardado));
+                    guardar_partida(tablero, filas, columnas, &datos, archivo_guardado);
+                    printf("Partida guardada exitosamente.\n");
+                    filas = 20;
+                    columnas = 10;
+                    pantalla = PANTALLA_MENU;
+                }
+                if(tecla == GBTK_x){
+                    filas = 20;
+                    columnas = 10;
+                    pantalla = PANTALLA_MENU;
+                }
+            }
             if(pantalla == PANTALLA_NOMBRE){
 
                 if(tecla == GBTK_ENTER){
@@ -472,22 +503,32 @@ int main(int argc, char *argv[])
                     }
 
                     mostrar_error_nombre = 0;
-                    pantalla = PANTALLA_JUEGO;
 
-                    // Inicializar tablero al entrar al juego
-                    if (tablero) {
-                        destruir_tablero(tablero, filas); // En caso de que haya uno viejo
+                    // Verificar si hay partida guardada
+                    char arch_guardado[40];
+                    construir_nombre_archivo(nombre_jugador, modo_deluxe, columnas, arch_guardado, sizeof(arch_guardado));
+                    FILE* f_check = fopen(arch_guardado, "rb");
+                    if(f_check){
+                        fclose(f_check);
+                        pantalla = PANTALLA_REANUDAR;
+                    } else {
+                        pantalla = PANTALLA_JUEGO;
+
+                        if (tablero) {
+                            destruir_tablero(tablero, filas);
+                        }
+                        tablero = crear_tablero(filas, columnas, sizeof(int));
+                        if (!tablero) return -1;
+
+                        lado_bloque = calcular_lado_bloque_juego(alto);
+                        marco_x = (ancho / 2) - ((columnas * lado_bloque) / 2);
+                        marco_y = (alto / 2) - (((filas - 2) * lado_bloque) / 2);
+                        fin_tablero_x = marco_x + (columnas * lado_bloque);
+                        fin_tablero_y = marco_y + ((filas - 2) * lado_bloque);
+
+                        reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida, config.velocidad_caida_ms);
+                        esperando_fijacion = 0;
                     }
-                    tablero = crear_tablero(filas, columnas, sizeof(int));
-                    if (!tablero) return -1;
-
-                    lado_bloque = calcular_lado_bloque_juego(alto);
-                    marco_x = (ancho / 2) - ((columnas * lado_bloque) / 2);
-                    marco_y = (alto / 2) - (((filas - 2) * lado_bloque) / 2);
-                    fin_tablero_x = marco_x + (columnas * lado_bloque);
-                    fin_tablero_y = marco_y + ((filas - 2) * lado_bloque);
-
-                    reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida, config.velocidad_caida_ms);
                 }
                 else if(tecla == GBTK_RETROCESO && largo_nombre > 0){
 
@@ -504,6 +545,59 @@ int main(int argc, char *argv[])
                 }
                 else if(tecla != GBTK_DESCONOCIDA){
                     mostrar_error_nombre = 1;
+                }
+            }
+            if(pantalla == PANTALLA_REANUDAR){
+                if(tecla == GBTK_s){
+                    // Cargar partida guardada
+                    tPartidaGuardada datos_guardados;
+                    int f_leidas, c_leidas;
+                    char arch_guardado[40];
+                    construir_nombre_archivo(nombre_jugador, modo_deluxe, columnas, arch_guardado, sizeof(arch_guardado));
+                    if(cargar_partida(&tablero, &f_leidas, &c_leidas, &datos_guardados, arch_guardado)){
+                        filas = f_leidas;
+                        columnas = c_leidas;
+                        puntaje = datos_guardados.puntaje;
+                        piezas_caidas = datos_guardados.piezas_caidas;
+                        velocidad_caida_ms = datos_guardados.velocidad_caida_ms;
+                        lineas_eliminadas = datos_guardados.lineas_eliminadas;
+                        pieza_activa = datos_guardados.pieza_activa;
+                        pieza_siguiente = datos_guardados.pieza_siguiente;
+                        stats = datos_guardados.stats;
+                        juego_cargar_bolsa(datos_guardados.bolsa_tetrominos, datos_guardados.indice_bolsa);
+                        gbt_temporizador_destruir(temp_juego_caida);
+                        temp_juego_caida = gbt_temporizador_crear(velocidad_caida_ms / 1000.0);
+                        lado_bloque = calcular_lado_bloque_juego(alto);
+                        marco_x = (ancho / 2) - ((columnas * lado_bloque) / 2);
+                        marco_y = (alto / 2) - (((filas - 2) * lado_bloque) / 2);
+                        fin_tablero_x = marco_x + (columnas * lado_bloque);
+                        fin_tablero_y = marco_y + ((filas - 2) * lado_bloque);
+                        esperando_fijacion = 0;
+                        pantalla = PANTALLA_JUEGO;
+                        printf("Partida guardada cargada exitosamente.\n");
+                    }
+                }
+                if(tecla == GBTK_n){
+                    // Borrar partida guardada y arrancar nueva
+                    char arch_guardado[40];
+                    construir_nombre_archivo(nombre_jugador, modo_deluxe, columnas, arch_guardado, sizeof(arch_guardado));
+                    remove(arch_guardado);
+
+                    if (tablero) {
+                        destruir_tablero(tablero, filas);
+                    }
+                    tablero = crear_tablero(filas, columnas, sizeof(int));
+                    if (!tablero) return -1;
+
+                    lado_bloque = calcular_lado_bloque_juego(alto);
+                    marco_x = (ancho / 2) - ((columnas * lado_bloque) / 2);
+                    marco_y = (alto / 2) - (((filas - 2) * lado_bloque) / 2);
+                    fin_tablero_x = marco_x + (columnas * lado_bloque);
+                    fin_tablero_y = marco_y + ((filas - 2) * lado_bloque);
+
+                    reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida, config.velocidad_caida_ms);
+                    esperando_fijacion = 0;
+                    pantalla = PANTALLA_JUEGO;
                 }
             }
             if(pantalla == PANTALLA_CONFIGURACION) {
@@ -551,13 +645,16 @@ int main(int argc, char *argv[])
             int der = gbt_tecla_sostenida(GBTK_DERECHA);
 
             if (cooldown_lateral > 0) {
-                cooldown_lateral--;
+                    cooldown_lateral--;
             }
 
             if (izq || der) {
                 if (cooldown_lateral == 0) {
                     if (izq) juego_mover_izquierda(&pieza_activa, tablero);
                     if (der) juego_mover_derecha(&pieza_activa, tablero);
+                    esperando_fijacion = 0;
+                    gbt_temporizador_destruir(temp_fijacion);
+                    temp_fijacion = gbt_temporizador_crear(velocidad_caida_ms * 0.5 / 1000.0);
 
                     if (!das_activo) {
                         // Primera pulsación o DAS delay: ~192ms (12 frames * 16ms)
@@ -580,7 +677,7 @@ int main(int argc, char *argv[])
                 if(juego_caer(&pieza_activa, tablero)) {
                     casillasManuales++;
                 } else {
-                    fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &stats, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas);
+                    fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &stats, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas, nombre_jugador);
                 }
             } else if (gbt_tecla_sostenida(GBTK_ABAJO)) {
                 if(!sostenida_activa && gbt_temporizador_consumir(temp_caida_rapida)) {
@@ -590,16 +687,27 @@ int main(int argc, char *argv[])
                     if(juego_caer(&pieza_activa, tablero)) {
                         casillasManuales++;
                     } else {
-                        fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &stats, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas);
+                        fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &stats, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas, nombre_jugador);
                     }
                 }
             } else {
                 if(gbt_temporizador_consumir(temp_juego_caida)){
                     if(!juego_caer(&pieza_activa, tablero)){
-                        fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &stats, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas);
+                        if(!esperando_fijacion){
+                            esperando_fijacion = 1;
+                            gbt_temporizador_destruir(temp_fijacion);
+                            temp_fijacion = gbt_temporizador_crear(velocidad_caida_ms * 0.5 / 1000.0);
+                        }
+                    } else {
+                        esperando_fijacion = 0;
                     }
                 }
+                if(esperando_fijacion && gbt_temporizador_consumir(temp_fijacion)){
+                    esperando_fijacion = 0;
+                    fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &stats, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas, nombre_jugador);
+                }
             }
+
         }
 
         // Dibujar fondo y bordes
@@ -634,7 +742,7 @@ int main(int argc, char *argv[])
             }
         } else if(pantalla == PANTALLA_ALTO){
             actualizar_tetrominos_fondo(tetrominos_decorativos, alto, ancho, limiteIzquierdoTetrominos, limiteDerechoTetrominos, temp_caida_tetrominos, temp_activar_tetrominos);
-            dibujar_seleccion_alto(alto_tablero_deluxe, ancho, alto);
+            dibujar_seleccion_ancho(ancho_tablero_deluxe, ancho, alto);
             for(int t = 0; t < 4; t++){
                 if(tetrominos_decorativos[t].activo){
                     dibujar_tetromino(tetrominos_decorativos[t], 0, tetrominos_decorativos[t].rot, alto, ancho);
@@ -655,6 +763,20 @@ int main(int argc, char *argv[])
                 }
             }
           }
+        else if(pantalla == PANTALLA_ESC_MENU){
+            dibujar_juego(ancho, alto, tablero, &pieza_activa, juego_terminado, marco_x, marco_y, lado_bloque);
+            dibujar_puntuacion(&puntaje, nombre_jugador, lineas_eliminadas, piezas_caidas, velocidad_caida_ms, alto, fin_tablero_y, ancho, fin_tablero_x, &pieza_siguiente);
+            dibujar_estadisticas(&stats, alto, fin_tablero_y, marco_x);
+            dibujar_texto_5x7("C CONTINUAR",  calcular_x_centrada("C CONTINUAR",  ancho), alto / 2 - 20, COL_VERDE_BRILL);
+            dibujar_texto_5x7("S GUARDAR Y SALIR", calcular_x_centrada("S GUARDAR Y SALIR", ancho), alto / 2,      COL_AMARILLO);
+            dibujar_texto_5x7("X SALIR SIN GUARDAR", calcular_x_centrada("X SALIR SIN GUARDAR", ancho), alto / 2 + 20, COL_ROJO_BRILL);
+        }
+        else if(pantalla == PANTALLA_REANUDAR){
+            dibujar_texto_5x7("PARTIDA GUARDADA", calcular_x_centrada("PARTIDA GUARDADA", ancho), alto / 2 - 30, COL_VERDE_BRILL);
+            dibujar_texto_5x7("DESEA CONTINUARLA?", calcular_x_centrada("DESEA CONTINUARLA?", ancho), alto / 2 - 15, COL_GRIS_CLARO);
+            dibujar_texto_5x7("S CONTINUAR", calcular_x_centrada("S CONTINUAR", ancho), alto / 2 + 5, COL_AMARILLO);
+            dibujar_texto_5x7("N NUEVA PARTIDA", calcular_x_centrada("N NUEVA PARTIDA", ancho), alto / 2 + 20, COL_ROJO_BRILL);
+        }
         else if(pantalla == PANTALLA_INSTRUCCIONES){
             dibujar_inst(ancho, alto);
         }
@@ -677,6 +799,8 @@ int main(int argc, char *argv[])
     gbt_temporizador_destruir(temp_juego_caida);
     gbt_temporizador_destruir(temp_movimiento_lateral);
     gbt_temporizador_destruir(temp_caida_rapida);
+    gbt_temporizador_destruir(temp_fijacion);
+
     return 0;
 
 }

@@ -59,13 +59,13 @@ void dibujar_seleccion_modo(const int opcionSeleccionada, const int ancho, const
     dibujar_texto_5x7("DELUXE", calcular_x_centrada("DELUXE", ancho), y + 20, colorDeluxe);
 }
 
-void dibujar_seleccion_alto(const int alto_tablero, const int ancho, const int alto){
+void dibujar_seleccion_ancho(const int ancho_tablero, const int ancho, const int alto){
     int y = alto / 2;
     char buffer[20];
 
-    dibujar_texto_7x9("ALTO DEL TABLERO", calcular_x_centrada("ALTO DEL TABLERO", ancho), y - 30, COL_VERDE_BRILL);
+    dibujar_texto_7x9("ANCHO DEL TABLERO", calcular_x_centrada("ANCHO DEL TABLERO", ancho), y - 30, COL_VERDE_BRILL);
 
-    sprintf(buffer, "< %d >", alto_tablero);
+    sprintf(buffer, "< %d >", ancho_tablero);
     dibujar_texto_7x9(buffer, calcular_x_centrada(buffer, ancho), y, COL_AMARILLO);
 
     dibujar_texto_7x9("ENTER CONFIRMA", calcular_x_centrada("ENTER CONFIRMA", ancho), y + 35, COL_GRIS_CLARO);
