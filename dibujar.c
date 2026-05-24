@@ -290,8 +290,8 @@ void dibujar_puntuacion(int* puntaje, char nombre_jugador[], int lineas, int pie
     dibujar_texto_5x7(bufferPuntaje, iniPal, y + 35, COL_VERDE_BRILL);
 
     // LINEAS
-    dibujar_texto_5x7("LINEAS", iniPal, y + 53, COL_VERDE_BRILL);
-    dibujar_texto_5x7(bufferLineas, iniPal, y + 63, COL_VERDE_BRILL);
+    dibujar_texto_5x7("LINEAS", iniPal, y + 50, COL_VERDE_BRILL);
+    dibujar_texto_5x7(bufferLineas, iniPal, y + 60, COL_VERDE_BRILL);
 
     // CAIDA
     dibujar_texto_5x7("VEL-CAIDA", iniPal, y + 75, COL_VERDE_BRILL);
@@ -303,13 +303,13 @@ void dibujar_puntuacion(int* puntaje, char nombre_jugador[], int lineas, int pie
     dibujar_texto_5x7(bufferPiezas, iniPal, y + 120, COL_VERDE_BRILL);
 
     // SIGUIENTE PIEZA
-    dibujar_texto_5x7("SIGUIENTE", iniPal, y + 140, COL_AMARILLO);
-    dibujar_texto_5x7("PIEZA", iniPal, y + 150, COL_AMARILLO);
+    dibujar_texto_5x7("SIGUIENTE", iniPal, y + 135, COL_AMARILLO);
+    dibujar_texto_5x7("PIEZA", iniPal, y + 145, COL_AMARILLO);
 
     for(int fila = 0; fila < 4; fila++){
         for(int col = 0; col < 4; col++){
             if(piezas[pieza_siguiente->tipo][0][fila][col]){
-                dibujar_bloque_tablero(iniPal + 10 + col * 5, y + 163 + fila * 5, pieza_siguiente->color, 5);
+                dibujar_bloque_tablero(iniPal + 10 + col * 5, y + 158 + fila * 5, pieza_siguiente->color, 5);
             }
         }
     }
@@ -330,36 +330,36 @@ void dibujar_estadisticas(tEstadisticas* stats, int altoPantalla, int altoJuego,
 
     dibujar_texto_5x7("ESTADISTICAS", iniPal, y, COL_VERDE_BRILL);
 
-    dibujar_texto_5x7("TETROMINOS", iniPal, y + 22, COL_AMARILLO);
-    dibujar_texto_5x7("USADOS", iniPal, y + 32, COL_AMARILLO);
+    dibujar_texto_5x7("TETROMINOS", iniPal, y + 18, COL_AMARILLO);
+    dibujar_texto_5x7("USADOS", iniPal, y + 28, COL_AMARILLO);
 
     sprintf(buffer, "%03d", stats->piezas_usadas);
-    dibujar_texto_5x7(buffer, iniPal, y + 45, COL_GRIS_CLARO);
+    dibujar_texto_5x7(buffer, iniPal, y + 40, COL_GRIS_CLARO);
 
-    dibujar_texto_5x7("LINEAS ELIM", iniPal, y + 68, COL_VERDE_BRILL);
+    dibujar_texto_5x7("LINEAS ELIM", iniPal, y + 58, COL_VERDE_BRILL);
 
-    dibujar_texto_5x7("1 LINEA", iniPal, y + 88, COL_GRIS_CLARO);
+    dibujar_texto_5x7("1 LINEA", iniPal, y + 75, COL_GRIS_CLARO);
     sprintf(buffer, "%03d", stats->lineas_por_jugada[1]);
-    dibujar_texto_5x7(buffer, iniPal + 60, y + 88, COL_GRIS_CLARO);
+    dibujar_texto_5x7(buffer, iniPal + 60, y + 75, COL_GRIS_CLARO);
 
-    dibujar_texto_5x7("2 LINEAS", iniPal, y + 108, COL_GRIS_CLARO);
+    dibujar_texto_5x7("2 LINEAS", iniPal, y + 90, COL_GRIS_CLARO);
     sprintf(buffer, "%03d", stats->lineas_por_jugada[2]);
-    dibujar_texto_5x7(buffer, iniPal + 60, y + 108, COL_GRIS_CLARO);
+    dibujar_texto_5x7(buffer, iniPal + 60, y + 90, COL_GRIS_CLARO);
 
-    dibujar_texto_5x7("3 LINEAS", iniPal, y + 128, COL_GRIS_CLARO);
+    dibujar_texto_5x7("3 LINEAS", iniPal, y + 105, COL_GRIS_CLARO);
     sprintf(buffer, "%03d", stats->lineas_por_jugada[3]);
-    dibujar_texto_5x7(buffer, iniPal + 60, y + 128, COL_GRIS_CLARO);
+    dibujar_texto_5x7(buffer, iniPal + 60, y + 105, COL_GRIS_CLARO);
 
-    dibujar_texto_5x7("4 LINEAS", iniPal, y + 148, COL_GRIS_CLARO);
+    dibujar_texto_5x7("4 LINEAS", iniPal, y + 120, COL_GRIS_CLARO);
     sprintf(buffer, "%03d", stats->lineas_por_jugada[4]);
-    dibujar_texto_5x7(buffer, iniPal + 60, y + 148, COL_GRIS_CLARO);
+    dibujar_texto_5x7(buffer, iniPal + 60, y + 120, COL_GRIS_CLARO);
 
     // Pieza guardada (hold)
-    dibujar_texto_5x7("GUARDADA", iniPal, y + 170, COL_AMARILLO);
+    dibujar_texto_5x7("GUARDADA", iniPal, y + 140, COL_AMARILLO);
     if(tiene_pieza_guardada){
-        dibujar_mini_pieza(pieza_guardada->tipo, pieza_guardada->color, iniPal + 10, y + 185);
+        dibujar_mini_pieza(pieza_guardada->tipo, pieza_guardada->color, iniPal + 10, y + 152);
     } else {
-        dibujar_texto_5x7("---", iniPal, y + 185, COL_GRIS_OSC);
+        dibujar_texto_5x7("---", iniPal, y + 152, COL_GRIS_OSC);
     }
 }
 

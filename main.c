@@ -1,3 +1,20 @@
+/*
+    Apellido: Viviani, Valentino
+    DNI: 46582790
+    Usuario: Valentino-Viviani10
+    Entrega: Si
+
+    Apellido: Bestene, Valentin Ezequiel
+    DNI: 42201972
+    Usuario: valengap
+    Entrega: Si
+
+    Apellido: Fernandez, Sergio Gabriel
+    DNI: 28007021
+    Usuario: sergiogfernandez-dev
+    Entrega: Si
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,22 +43,7 @@
 #define PANTALLA_ESC_MENU 7
 #define PANTALLA_REANUDAR 8
 
-/*
-    Apellido: Viviani, Valentino
-    DNI: 46582790
-    Usuario: Valentino-Viviani10
-    Entrega: Si
 
-    Apellido: Bestene, Valentin Ezequiel
-    DNI: 42201972
-    Usuario: valengap
-    Entrega: Si
-
-    Apellido: Fernandez, Sergio Gabriel
-    DNI: 28007021
-    Usuario: sergiogfernandez-dev
-    Entrega: Si
-*/
 
 int modo_deluxe = 0;
 
