@@ -8,9 +8,9 @@
 
 int calcular_x_centrada(const char *palabra, int ancho){
     if(modo_deluxe){
-        return (ancho - calcular_ancho_texto_5x7(palabra)) / 2;
+        return (ancho - calcular_ancho_texto_7x9(palabra)) / 2;
     }
-        return (ancho - calcular_ancho_texto_5x7(palabra)) / 2;
+    return (ancho - calcular_ancho_texto_5x7(palabra)) / 2;
 }
 
 void dibujar_linea_horizontal(int x_ini, int x_fin, int y){
@@ -63,12 +63,12 @@ void dibujar_seleccion_alto(const int alto_tablero, const int ancho, const int a
     int y = alto / 2;
     char buffer[20];
 
-    dibujar_texto_5x7("ALTO DEL TABLERO", calcular_x_centrada("ALTO DEL TABLERO", ancho), y - 30, COL_VERDE_BRILL);
+    dibujar_texto_7x9("ALTO DEL TABLERO", calcular_x_centrada("ALTO DEL TABLERO", ancho), y - 30, COL_VERDE_BRILL);
 
     sprintf(buffer, "< %d >", alto_tablero);
-    dibujar_texto_5x7(buffer, calcular_x_centrada(buffer, ancho), y, COL_AMARILLO);
+    dibujar_texto_7x9(buffer, calcular_x_centrada(buffer, ancho), y, COL_AMARILLO);
 
-    dibujar_texto_5x7("ENTER CONFIRMA", calcular_x_centrada("ENTER CONFIRMA", ancho), y + 30, COL_GRIS_CLARO);
+    dibujar_texto_7x9("ENTER CONFIRMA", calcular_x_centrada("ENTER CONFIRMA", ancho), y + 35, COL_GRIS_CLARO);
 }
 
 void dibujar_fondo(int alto, int ancho){
@@ -247,14 +247,14 @@ void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int 
 
     if(juego_terminado){
         if(modo_deluxe){
-            dibujar_texto_5x7("JUEGO TERMINADO", calcular_x_centrada("JUEGO TERMINADO", ancho), alto / 2, COL_SEM_TEXTO_IMPORTANTE);
-            dibujar_texto_5x7("ENTER REINICIA", calcular_x_centrada("ENTER REINICIA", ancho), alto / 2 + 15, COL_SEM_TEXTO_SECUNDARIO);
-            dibujar_texto_5x7("ESC PARA SALIR", calcular_x_centrada("ESC PARA SALIR", ancho), alto / 2 + 30, COL_SEM_TEXTO_SECUNDARIO);
+            dibujar_texto_7x9("JUEGO TERMINADO", calcular_x_centrada("JUEGO TERMINADO", ancho), alto / 2, COL_SEM_TEXTO_IMPORTANTE);
+            dibujar_texto_7x9("ENTER REINICIA", calcular_x_centrada("ENTER REINICIA", ancho), alto / 2 + 15, COL_SEM_TEXTO_SECUNDARIO);
+            dibujar_texto_7x9("ESC PARA SALIR", calcular_x_centrada("ESC PARA SALIR", ancho), alto / 2 + 30, COL_SEM_TEXTO_SECUNDARIO);
         } else {
             dibujar_texto_5x7("JUEGO TERMINADO", calcular_x_centrada("JUEGO TERMINADO", ancho), alto / 2, COL_SEM_TEXTO_IMPORTANTE);
             dibujar_texto_5x7("ENTER REINICIA", calcular_x_centrada("ENTER REINICIA", ancho), alto / 2 + 12, COL_SEM_TEXTO_SECUNDARIO);
             dibujar_texto_5x7("ESC PARA SALIR", calcular_x_centrada("ESC PARA SALIR", ancho), alto / 2 + 24, COL_SEM_TEXTO_SECUNDARIO);
-          }
+        }
     }
 }
 
