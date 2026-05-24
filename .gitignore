@@ -27,7 +27,5 @@ Thumbs.db
 *.log
 
 # --- Otros archivos que podrían ser generados ---
-partida_guardada.bin
-partida_normal.bin
-partida_deluxe.bin
+*.bin
 config.cfg
