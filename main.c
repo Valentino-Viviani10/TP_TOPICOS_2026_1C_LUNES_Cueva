@@ -85,7 +85,7 @@ static uint8_t elegir_color_permitido(void) {
     return opciones[rand() % 2];
 }
 
-static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int *piezas_caidas, int *velocidad_caida_ms, int *lineas_eliminadas, int *casillasManuales, int *juego_terminado, tGBT_Temporizador **temp_juego_caida) {
+static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int *piezas_caidas, int *velocidad_caida_ms, int *lineas_eliminadas, int *casillasManuales, int *juego_terminado, tGBT_Temporizador **temp_juego_caida, int velocidad_base) {
 
         int fila;
         int col;
@@ -96,7 +96,7 @@ static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *
         }
         *puntaje = 0;
         *piezas_caidas = 0;
-        *velocidad_caida_ms = 1000;
+        *velocidad_caida_ms = velocidad_base;
         *lineas_eliminadas = 0;
         *casillasManuales = 0;
         *juego_terminado = 0;
@@ -106,7 +106,7 @@ static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *
         }
 
         gbt_temporizador_destruir(*temp_juego_caida);
-        *temp_juego_caida = gbt_temporizador_crear(1.0);
+        *temp_juego_caida = gbt_temporizador_crear(velocidad_base / 1000.0);
         juego_inicializar_pieza(pieza);
         juego_inicializar_pieza(pieza_siguiente);
 }
@@ -346,7 +346,7 @@ int main(int argc, char *argv[])
         }
         else if (tecla != GBTK_DESCONOCIDA) {
             if(pantalla == PANTALLA_JUEGO && juego_terminado && tecla == GBTK_ENTER){
-                reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida);
+                reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida, config.velocidad_caida_ms);
             }
             if(pantalla == PANTALLA_MENU){
                 if(tecla == GBTK_ABAJO){
@@ -487,7 +487,7 @@ int main(int argc, char *argv[])
                     fin_tablero_x = marco_x + (columnas * lado_bloque);
                     fin_tablero_y = marco_y + ((filas - 2) * lado_bloque);
 
-                    reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida);
+                    reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida, config.velocidad_caida_ms);
                 }
                 else if(tecla == GBTK_RETROCESO && largo_nombre > 0){
 
