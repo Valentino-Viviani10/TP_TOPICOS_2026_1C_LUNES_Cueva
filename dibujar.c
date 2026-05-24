@@ -6,17 +6,20 @@
 #include "tablero.h"
 #include "fuentes.h"
 
-int calcular_x_centrada(const char *palabra, int ancho) {
-    return (ancho - calcular_ancho_texto_5x7(palabra)) / 2;
+int calcular_x_centrada(const char *palabra, int ancho){
+    if(modo_deluxe){
+        return (ancho - calcular_ancho_texto_5x7(palabra)) / 2;
+    }
+        return (ancho - calcular_ancho_texto_5x7(palabra)) / 2;
 }
 
-void dibujar_linea_horizontal(int x_ini, int x_fin, int y) {
+void dibujar_linea_horizontal(int x_ini, int x_fin, int y){
     for(int x = x_ini; x <= x_fin; x++) {
         gbt_dibujar_pixel(x, y, COL_MAG_BRILL);
     }
 }
 
-void dibujar_menu(int opcionSeleccionada, int ancho, int alto, uint8_t colorSeleccionado) {
+void dibujar_menu(int opcionSeleccionada, int ancho, int alto, uint8_t colorSeleccionado){
     int y;
 
     const char *opciones[3] = {"JUGAR", "INSTRUCCIONES", "CONFIGURACION"};
@@ -44,11 +47,11 @@ void dibujar_menu(int opcionSeleccionada, int ancho, int alto, uint8_t colorSele
 
 }
 
-void dibujar_seleccion_modo(const int opcionSeleccionada, const int ancho, const int alto, uint8_t colorSeleccionado) {
+void dibujar_seleccion_modo(const int opcionSeleccionada, const int ancho, const int alto, uint8_t colorSeleccionado){
     int y = alto / 2 - 20;
-    
+
     dibujar_texto_5x7("ELEGIR MODO", calcular_x_centrada("ELEGIR MODO", ancho), y - 30, COL_VERDE_BRILL);
-    
+
     uint8_t colorNormal = (opcionSeleccionada == 0) ? colorSeleccionado : COL_GRIS_CLARO;
     uint8_t colorDeluxe = (opcionSeleccionada == 1) ? colorSeleccionado : COL_GRIS_CLARO;
 
@@ -56,19 +59,19 @@ void dibujar_seleccion_modo(const int opcionSeleccionada, const int ancho, const
     dibujar_texto_5x7("DELUXE", calcular_x_centrada("DELUXE", ancho), y + 20, colorDeluxe);
 }
 
-void dibujar_seleccion_alto(const int alto_tablero, const int ancho, const int alto) {
+void dibujar_seleccion_alto(const int alto_tablero, const int ancho, const int alto){
     int y = alto / 2;
     char buffer[20];
-    
+
     dibujar_texto_5x7("ALTO DEL TABLERO", calcular_x_centrada("ALTO DEL TABLERO", ancho), y - 30, COL_VERDE_BRILL);
-    
+
     sprintf(buffer, "< %d >", alto_tablero);
     dibujar_texto_5x7(buffer, calcular_x_centrada(buffer, ancho), y, COL_AMARILLO);
-    
+
     dibujar_texto_5x7("ENTER CONFIRMA", calcular_x_centrada("ENTER CONFIRMA", ancho), y + 30, COL_GRIS_CLARO);
 }
 
-void dibujar_fondo(int alto, int ancho) {
+void dibujar_fondo(int alto, int ancho){
     int x, y;
     for(y = 0; y < alto; y++) {
         for(x = 0; x < ancho; x++) {
@@ -77,7 +80,7 @@ void dibujar_fondo(int alto, int ancho) {
     }
 }
 
-void dibujar_borde(int alto, int ancho, int iniX, int iniY) {
+void dibujar_borde(int alto, int ancho, int iniX, int iniY){
     int x, y;
 
     for(int g = 0; g < GROSOR_BORDE; g++){
@@ -92,8 +95,7 @@ void dibujar_borde(int alto, int ancho, int iniX, int iniY) {
     }
 }
 
-void dibujar_tetromino(tTetrominoFondo tetromino, int pantalla, int rot, int alto, int ancho)
-{
+void dibujar_tetromino(tTetrominoFondo tetromino, int pantalla, int rot, int alto, int ancho){
     int pi, pj;
     int escala = TETROMINO_ESCALA;
 
@@ -121,8 +123,7 @@ void dibujar_tetromino(tTetrominoFondo tetromino, int pantalla, int rot, int alt
     }
 }
 
-int calcular_lado_bloque_juego(int alto)
-{
+int calcular_lado_bloque_juego(int alto){
     int lado_bloque;
 
     lado_bloque = alto / 24;
@@ -138,8 +139,7 @@ int calcular_lado_bloque_juego(int alto)
     return lado_bloque;
 }
 
-void dibujar_bloque_tablero(int x, int y, int color, int lado_bloque)
-{
+void dibujar_bloque_tablero(int x, int y, int color, int lado_bloque){
     int dx;
     int dy;
 
@@ -150,8 +150,7 @@ void dibujar_bloque_tablero(int x, int y, int color, int lado_bloque)
     }
 }
 
-void dibujar_marco_tablero(int marco_x, int marco_y, int lado_bloque)
-{
+void dibujar_marco_tablero(int marco_x, int marco_y, int lado_bloque){
     int x;
     int y;
     int ancho_tablero;
@@ -171,8 +170,7 @@ void dibujar_marco_tablero(int marco_x, int marco_y, int lado_bloque)
     }
 }
 
-void dibujar_tablero(int** tablero, int marco_x, int marco_y, int lado_bloque)
-{
+void dibujar_tablero(int** tablero, int marco_x, int marco_y, int lado_bloque){
     int fila;
     int col;
     int color;
@@ -193,8 +191,7 @@ void dibujar_tablero(int** tablero, int marco_x, int marco_y, int lado_bloque)
     }
 }
 
-void dibujar_pieza_activa(tPiezaActiva* pieza, int marco_x, int marco_y, int lado_bloque)
-{
+void dibujar_pieza_activa(tPiezaActiva* pieza, int marco_x, int marco_y, int lado_bloque){
     int fila;
     int col;
     int grilla_x;
@@ -220,8 +217,7 @@ void dibujar_pieza_activa(tPiezaActiva* pieza, int marco_x, int marco_y, int lad
     }
 }
 
-void dibujar_mini_pieza(int tipo, int color, int x, int y)
-{
+void dibujar_mini_pieza(int tipo, int color, int x, int y){
     int fila;
     int col;
 
@@ -241,9 +237,7 @@ void dibujar_mini_pieza(int tipo, int color, int x, int y)
     }
 }
 
-
-void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int juego_terminado, int marco_x, int marco_y, int lado_bloque)
-{
+void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int juego_terminado, int marco_x, int marco_y, int lado_bloque){
     dibujar_marco_tablero(marco_x, marco_y, lado_bloque);
     dibujar_tablero(tablero, marco_x, marco_y, lado_bloque);
 
@@ -252,11 +246,18 @@ void dibujar_juego(int ancho, int alto, int** tablero, tPiezaActiva* pieza, int 
     }
 
     if(juego_terminado){
-    dibujar_texto_5x7("JUEGO TERMINADO", calcular_x_centrada("JUEGO TERMINADO", ancho), alto / 2, COL_SEM_TEXTO_IMPORTANTE);
-    dibujar_texto_5x7("ENTER REINICIA", calcular_x_centrada("ENTER REINICIA", ancho), alto / 2 + 12, COL_SEM_TEXTO_SECUNDARIO);
-    dibujar_texto_5x7("ESC PARA SALIR", calcular_x_centrada("ESC PARA SALIR", ancho), alto / 2 + 24, COL_SEM_TEXTO_SECUNDARIO);
+        if(modo_deluxe){
+            dibujar_texto_5x7("JUEGO TERMINADO", calcular_x_centrada("JUEGO TERMINADO", ancho), alto / 2, COL_SEM_TEXTO_IMPORTANTE);
+            dibujar_texto_5x7("ENTER REINICIA", calcular_x_centrada("ENTER REINICIA", ancho), alto / 2 + 15, COL_SEM_TEXTO_SECUNDARIO);
+            dibujar_texto_5x7("ESC PARA SALIR", calcular_x_centrada("ESC PARA SALIR", ancho), alto / 2 + 30, COL_SEM_TEXTO_SECUNDARIO);
+        } else {
+            dibujar_texto_5x7("JUEGO TERMINADO", calcular_x_centrada("JUEGO TERMINADO", ancho), alto / 2, COL_SEM_TEXTO_IMPORTANTE);
+            dibujar_texto_5x7("ENTER REINICIA", calcular_x_centrada("ENTER REINICIA", ancho), alto / 2 + 12, COL_SEM_TEXTO_SECUNDARIO);
+            dibujar_texto_5x7("ESC PARA SALIR", calcular_x_centrada("ESC PARA SALIR", ancho), alto / 2 + 24, COL_SEM_TEXTO_SECUNDARIO);
+          }
     }
 }
+
 
 void dibujar_puntuacion(int* puntaje, char nombre_jugador[], int lineas, int piezas_caidas, int velocidad_caida_ms, int altoPantalla, int altoJuego, int anchoPantalla, int anchoJuego, tPiezaActiva* pieza_siguiente){
 
@@ -365,7 +366,7 @@ void dibujar_inicio_usuario(int ancho, int alto, char *nombre_jugador, int mostr
 }
 
 void dibujar_configuracion(int ancho, int alto, const Config *config, int opcionSeleccionada) {
-    
+
     static const char *nombres_paleta[] = { "CGA", "RETRO GB", "CYBERPUNK" };
     static const char *nombres_res[]    = { "CGA", "VGA" };
 

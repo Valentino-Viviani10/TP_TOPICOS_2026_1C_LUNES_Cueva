@@ -52,9 +52,9 @@ void dibujar_inst(int ancho, int alto){
 
     dibujar_linea_horizontal(x_ini, x_fin, y-4);
 
-    if (modo_deluxe) {
-        dibujar_texto_5x7("JUEGO DELUXE", calcular_x_centrada("JUEGO DELUXE", ancho), y_titulo, COL_VERDE_BRILL);
-    } else {
+    if (modo_deluxe){
+        dibujar_texto_7x9("JUEGO DELUXE", calcular_x_centrada("JUEGO DELUXE", ancho), y_titulo, COL_VERDE_BRILL);
+    } else{
         dibujar_texto_5x7("JUEGO NORMAL", calcular_x_centrada("JUEGO NORMAL", ancho), y_titulo, COL_VERDE_BRILL);
     }
 

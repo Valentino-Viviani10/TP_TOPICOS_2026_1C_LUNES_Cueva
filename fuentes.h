@@ -2,6 +2,7 @@
 #define FUENTES_H_INCLUDED
 
 #include <stdint.h>
+#include "fuentes_7x9.h"
 
 #define FUENTE_ANCHO 5
 #define FUENTE_ALTO 7

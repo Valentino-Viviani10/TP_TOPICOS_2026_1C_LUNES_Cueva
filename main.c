@@ -382,12 +382,12 @@ int main(int argc, char *argv[])
                     const char* archivo_guardado = modo_deluxe ? "partida_deluxe.bin" : "partida_normal.bin";
                     tPartidaGuardada datos_guardados;
                     int f_leidas, c_leidas;
-                    
+
                     if (tablero) {
                         destruir_tablero(tablero, filas);
                         tablero = NULL;
                     }
-                    
+
                     if (cargar_partida(&tablero, &f_leidas, &c_leidas, &datos_guardados, archivo_guardado)) {
                         filas = f_leidas;
                         columnas = c_leidas;
@@ -401,16 +401,16 @@ int main(int argc, char *argv[])
                         juego_cargar_bolsa(datos_guardados.bolsa_tetrominos, datos_guardados.indice_bolsa);
                         strcpy(nombre_jugador, datos_guardados.nombre_jugador);
                         largo_nombre = strlen(nombre_jugador);
-                        
+
                         gbt_temporizador_destruir(temp_juego_caida);
                         temp_juego_caida = gbt_temporizador_crear(velocidad_caida_ms / 1000.0);
-                        
+
                         lado_bloque = calcular_lado_bloque_juego(alto);
                         marco_x = (ancho / 2) - ((columnas * lado_bloque) / 2);
                         marco_y = (alto / 2) - (((filas - 2) * lado_bloque) / 2);
                         fin_tablero_x = marco_x + (columnas * lado_bloque);
                         fin_tablero_y = marco_y + ((filas - 2) * lado_bloque);
-                        
+
                         pantalla = PANTALLA_JUEGO;
                         printf("Partida guardada cargada exitosamente.\n");
                     } else {
@@ -509,7 +509,7 @@ int main(int argc, char *argv[])
             if(pantalla == PANTALLA_CONFIGURACION) {
                 if (tecla == GBTK_ARRIBA)
                     opcionMenuConfig = (opcionMenuConfig + 2) % 3;
-                if (tecla == GBTK_ABAJO)    
+                if (tecla == GBTK_ABAJO)
                     opcionMenuConfig = (opcionMenuConfig + 1) % 3;
 
                 if (tecla == GBTK_IZQUIERDA || tecla == GBTK_DERECHA) {
@@ -529,6 +529,16 @@ int main(int argc, char *argv[])
 
                 if (tecla == GBTK_ENTER) {
                     guardar_config(&config, "config.cfg");
+
+                    tGBT_ColorRGB *paleta_nueva;
+                    switch(config.paleta_id) {
+                        case 1:  paleta_nueva = paletaRetroGB;   break;
+                        case 2:  paleta_nueva = paletaCyberpunk; break;
+                        default: paleta_nueva = paletaCGA;       break;
+                    }
+                    gbt_aplicar_paleta(paleta_nueva, CANT_COLORES, GBT_FORMATO_888);
+                    inicializar_colores_semanticos(config.paleta_id);
+
                     printf("configuracion guardada correctamente\n");
                     pantalla = 0;
                 }
@@ -636,10 +646,15 @@ int main(int argc, char *argv[])
             dibujar_estadisticas(&stats, alto, fin_tablero_y, marco_x);
 
             if(juego_pausado && !juego_terminado){
-                dibujar_texto_5x7("PAUSA", calcular_x_centrada("PAUSA", ancho), alto / 2, COL_AMARILLO);
-                dibujar_texto_5x7("P PARA CONTINUAR", calcular_x_centrada("P PARA CONTINUAR", ancho), alto / 2 + 12, COL_GRIS_CLARO);
+                if(modo_deluxe){
+                    dibujar_texto_7x9("PAUSA", calcular_x_centrada("PAUSA", ancho), alto / 2, COL_AMARILLO);
+                    dibujar_texto_7x9("P PARA CONTINUAR", calcular_x_centrada("P PARA CONTINUAR", ancho), alto / 2 + 15, COL_GRIS_CLARO);
+                } else{
+                    dibujar_texto_5x7("PAUSA", calcular_x_centrada("PAUSA", ancho), alto / 2, COL_AMARILLO);
+                    dibujar_texto_5x7("P PARA CONTINUAR", calcular_x_centrada("P PARA CONTINUAR", ancho), alto / 2 + 12, COL_GRIS_CLARO);
+                }
             }
-        }
+          }
         else if(pantalla == PANTALLA_INSTRUCCIONES){
             dibujar_inst(ancho, alto);
         }
@@ -649,7 +664,7 @@ int main(int argc, char *argv[])
         else if(pantalla == PANTALLA_CONFIGURACION) {
             dibujar_configuracion(ancho, alto, &config, opcionMenuConfig);
         }
-          
+
         gbt_volcar_backbuffer();
         gbt_esperar(16);
     }
@@ -663,5 +678,5 @@ int main(int argc, char *argv[])
     gbt_temporizador_destruir(temp_movimiento_lateral);
     gbt_temporizador_destruir(temp_caida_rapida);
     return 0;
-    
+
 }
