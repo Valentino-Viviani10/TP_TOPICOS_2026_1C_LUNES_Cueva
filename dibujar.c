@@ -315,7 +315,7 @@ void dibujar_puntuacion(int* puntaje, char nombre_jugador[], int lineas, int pie
     }
 }
 
-void dibujar_estadisticas(tEstadisticas* stats, int altoPantalla, int altoJuego, int anchoJuego){
+void dibujar_estadisticas(tEstadisticas* stats, int altoPantalla, int altoJuego, int anchoJuego, tPiezaActiva* pieza_guardada, int tiene_pieza_guardada){
 
     int margen = 10;
     int iniX = margen;
@@ -353,6 +353,14 @@ void dibujar_estadisticas(tEstadisticas* stats, int altoPantalla, int altoJuego,
     dibujar_texto_5x7("4 LINEAS", iniPal, y + 148, COL_GRIS_CLARO);
     sprintf(buffer, "%03d", stats->lineas_por_jugada[4]);
     dibujar_texto_5x7(buffer, iniPal + 60, y + 148, COL_GRIS_CLARO);
+
+    // Pieza guardada (hold)
+    dibujar_texto_5x7("GUARDADA", iniPal, y + 170, COL_AMARILLO);
+    if(tiene_pieza_guardada){
+        dibujar_mini_pieza(pieza_guardada->tipo, pieza_guardada->color, iniPal + 10, y + 185);
+    } else {
+        dibujar_texto_5x7("---", iniPal, y + 185, COL_GRIS_OSC);
+    }
 }
 
 void dibujar_inicio_usuario(int ancho, int alto, char *nombre_jugador, int mostrar_error_nombre) {

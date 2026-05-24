@@ -30,6 +30,8 @@ typedef struct {
     tEstadisticas stats;
     int bolsa_tetrominos[11];
     int indice_bolsa;
+    tPiezaActiva pieza_guardada;
+    int tiene_pieza_guardada;
 } tPartidaGuardada;
 
 void juego_inicializar_pieza(tPiezaActiva* pieza);

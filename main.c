@@ -54,7 +54,7 @@ static void construir_nombre_archivo(const char *nombre_jugador, int deluxe, int
     }
 }
 
-static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int **tablero, int *casillasManuales, int *juego_terminado, int *piezas_caidas, int *velocidad_caida_ms, tGBT_Temporizador **temp_juego_caida, int *lineas_eliminadas, const char *nombre_jugador_actual){
+static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int **tablero, int *casillasManuales, int *juego_terminado, int *piezas_caidas, int *velocidad_caida_ms, tGBT_Temporizador **temp_juego_caida, int *lineas_eliminadas, const char *nombre_jugador_actual, int *hold_usado){
 
     juego_fijar_pieza(pieza, tablero);
     stats->piezas_usadas++;
@@ -86,6 +86,7 @@ static void fijar_y_nueva_pieza(tPiezaActiva *pieza, tPiezaActiva *pieza_siguien
                     construir_nombre_archivo(nombre_jugador_actual, modo_deluxe, columnas, archivo_guardado, sizeof(archivo_guardado));
         remove(archivo_guardado);
     }
+    *hold_usado = 0;
 }
 
 static uint8_t elegir_color_permitido(void) {
@@ -97,7 +98,7 @@ static uint8_t elegir_color_permitido(void) {
     return opciones[rand() % 2];
 }
 
-static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int *piezas_caidas, int *velocidad_caida_ms, int *lineas_eliminadas, int *casillasManuales, int *juego_terminado, tGBT_Temporizador **temp_juego_caida, int velocidad_base) {
+static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *pieza_siguiente, tEstadisticas *stats, int *puntaje, int *piezas_caidas, int *velocidad_caida_ms, int *lineas_eliminadas, int *casillasManuales, int *juego_terminado, tGBT_Temporizador **temp_juego_caida, int velocidad_base, int *tiene_pieza_guardada, int *hold_usado) {
 
         int fila;
         int col;
@@ -121,6 +122,8 @@ static void reiniciar_partida(int **tablero, tPiezaActiva *pieza, tPiezaActiva *
         *temp_juego_caida = gbt_temporizador_crear(velocidad_base / 1000.0);
         juego_inicializar_pieza(pieza);
         juego_inicializar_pieza(pieza_siguiente);
+        *tiene_pieza_guardada = 0;
+        *hold_usado = 0;
 }
 
 static int ajustar_velocidad(int *velocidad, const int dir) {
@@ -324,6 +327,9 @@ int main(int argc, char *argv[])
 
     tPiezaActiva pieza_activa;
     tPiezaActiva pieza_siguiente;
+    tPiezaActiva pieza_guardada;
+    int tiene_pieza_guardada = 0;
+    int hold_usado = 0;
 
     while(corriendo) {
 
@@ -454,6 +460,33 @@ int main(int argc, char *argv[])
                         gbt_temporizador_destruir(temp_fijacion);
                         temp_fijacion = gbt_temporizador_crear(velocidad_caida_ms * 0.5 / 1000.0);
                     }
+                    if(tecla == GBTK_e && !hold_usado){
+                        if(!tiene_pieza_guardada){
+                            pieza_guardada.tipo = pieza_activa.tipo;
+                            pieza_guardada.color = pieza_activa.color;
+                            pieza_guardada.rotacion = 0;
+                            tiene_pieza_guardada = 1;
+                            pieza_activa = pieza_siguiente;
+                            pieza_activa.x = columnas / 2 - 2;
+                            pieza_activa.y = 0;
+                            pieza_activa.rotacion = 0;
+                            juego_inicializar_pieza(&pieza_siguiente);
+                        } else {
+                            tPiezaActiva temp;
+                            temp.tipo = pieza_guardada.tipo;
+                            temp.color = pieza_guardada.color;
+                            pieza_guardada.tipo = pieza_activa.tipo;
+                            pieza_guardada.color = pieza_activa.color;
+                            pieza_guardada.rotacion = 0;
+                            pieza_activa.tipo = temp.tipo;
+                            pieza_activa.color = temp.color;
+                            pieza_activa.rotacion = 0;
+                            pieza_activa.x = columnas / 2 - 2;
+                            pieza_activa.y = 0;
+                        }
+                        hold_usado = 1;
+                        esperando_fijacion = 0;
+                    }
                 }
                 //cheat
                 if(!juego_pausado && (tecla >= GBTK_1 && tecla <= GBTK_9)){
@@ -477,6 +510,8 @@ int main(int argc, char *argv[])
                     datos.pieza_activa = pieza_activa;
                     datos.pieza_siguiente = pieza_siguiente;
                     datos.stats = stats;
+                    datos.pieza_guardada = pieza_guardada;
+                    datos.tiene_pieza_guardada = tiene_pieza_guardada;
                     strcpy(datos.nombre_jugador, nombre_jugador);
                     juego_obtener_bolsa(datos.bolsa_tetrominos, &datos.indice_bolsa);
                     char archivo_guardado[40];
@@ -526,7 +561,7 @@ int main(int argc, char *argv[])
                         fin_tablero_x = marco_x + (columnas * lado_bloque);
                         fin_tablero_y = marco_y + ((filas - 2) * lado_bloque);
 
-                        reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida, config.velocidad_caida_ms);
+                        reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida, config.velocidad_caida_ms, &tiene_pieza_guardada, &hold_usado);
                         esperando_fijacion = 0;
                     }
                 }
@@ -565,6 +600,9 @@ int main(int argc, char *argv[])
                         pieza_siguiente = datos_guardados.pieza_siguiente;
                         stats = datos_guardados.stats;
                         juego_cargar_bolsa(datos_guardados.bolsa_tetrominos, datos_guardados.indice_bolsa);
+                        pieza_guardada = datos_guardados.pieza_guardada;
+                        tiene_pieza_guardada = datos_guardados.tiene_pieza_guardada;
+                        hold_usado = 0;
                         gbt_temporizador_destruir(temp_juego_caida);
                         temp_juego_caida = gbt_temporizador_crear(velocidad_caida_ms / 1000.0);
                         lado_bloque = calcular_lado_bloque_juego(alto);
@@ -595,7 +633,7 @@ int main(int argc, char *argv[])
                     fin_tablero_x = marco_x + (columnas * lado_bloque);
                     fin_tablero_y = marco_y + ((filas - 2) * lado_bloque);
 
-                    reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida, config.velocidad_caida_ms);
+                    reiniciar_partida(tablero, &pieza_activa, &pieza_siguiente, &stats, &puntaje, &piezas_caidas, &velocidad_caida_ms, &lineas_eliminadas, &casillasManuales, &juego_terminado, &temp_juego_caida, config.velocidad_caida_ms, &tiene_pieza_guardada, &hold_usado);
                     esperando_fijacion = 0;
                     pantalla = PANTALLA_JUEGO;
                 }
@@ -677,7 +715,7 @@ int main(int argc, char *argv[])
                 if(juego_caer(&pieza_activa, tablero)) {
                     casillasManuales++;
                 } else {
-                    fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &stats, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas, nombre_jugador);
+                    fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &stats, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas, nombre_jugador, &hold_usado);
                 }
             } else if (gbt_tecla_sostenida(GBTK_ABAJO)) {
                 if(!sostenida_activa && gbt_temporizador_consumir(temp_caida_rapida)) {
@@ -687,7 +725,7 @@ int main(int argc, char *argv[])
                     if(juego_caer(&pieza_activa, tablero)) {
                         casillasManuales++;
                     } else {
-                        fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &stats, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas, nombre_jugador);
+                        fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &stats, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas, nombre_jugador, &hold_usado);
                     }
                 }
             } else {
@@ -704,7 +742,7 @@ int main(int argc, char *argv[])
                 }
                 if(esperando_fijacion && gbt_temporizador_consumir(temp_fijacion)){
                     esperando_fijacion = 0;
-                    fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &stats, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas, nombre_jugador);
+                    fijar_y_nueva_pieza(&pieza_activa, &pieza_siguiente, &stats, &puntaje, tablero, &casillasManuales, &juego_terminado, &piezas_caidas, &velocidad_caida_ms, &temp_juego_caida, &lineas_eliminadas, nombre_jugador, &hold_usado);
                 }
             }
 
@@ -751,7 +789,7 @@ int main(int argc, char *argv[])
         } else if(pantalla == PANTALLA_JUEGO){
             dibujar_juego(ancho, alto, tablero, &pieza_activa, juego_terminado, marco_x, marco_y, lado_bloque);
             dibujar_puntuacion(&puntaje, nombre_jugador, lineas_eliminadas, piezas_caidas, velocidad_caida_ms, alto, fin_tablero_y, ancho, fin_tablero_x, &pieza_siguiente);
-            dibujar_estadisticas(&stats, alto, fin_tablero_y, marco_x);
+            dibujar_estadisticas(&stats, alto, fin_tablero_y, marco_x, &pieza_guardada, tiene_pieza_guardada);
 
             if(juego_pausado && !juego_terminado){
                 if(modo_deluxe){
@@ -766,7 +804,7 @@ int main(int argc, char *argv[])
         else if(pantalla == PANTALLA_ESC_MENU){
             dibujar_juego(ancho, alto, tablero, &pieza_activa, juego_terminado, marco_x, marco_y, lado_bloque);
             dibujar_puntuacion(&puntaje, nombre_jugador, lineas_eliminadas, piezas_caidas, velocidad_caida_ms, alto, fin_tablero_y, ancho, fin_tablero_x, &pieza_siguiente);
-            dibujar_estadisticas(&stats, alto, fin_tablero_y, marco_x);
+            dibujar_estadisticas(&stats, alto, fin_tablero_y, marco_x, &pieza_guardada, tiene_pieza_guardada);
             dibujar_texto_5x7("C CONTINUAR",  calcular_x_centrada("C CONTINUAR",  ancho), alto / 2 - 20, COL_VERDE_BRILL);
             dibujar_texto_5x7("S GUARDAR Y SALIR", calcular_x_centrada("S GUARDAR Y SALIR", ancho), alto / 2,      COL_AMARILLO);
             dibujar_texto_5x7("X SALIR SIN GUARDAR", calcular_x_centrada("X SALIR SIN GUARDAR", ancho), alto / 2 + 20, COL_ROJO_BRILL);

@@ -33,7 +33,7 @@ void dibujar_inst(int ancho, int alto);
 
 void dibujar_puntuacion(int* puntaje, char nombre_jugador[], int lineas, int piezas_caidas, int velocidad_caida_ms, int altoPantalla, int altoJuego, int anchoPantalla, int anchoJuego, tPiezaActiva* pieza_siguiente);
 
-void dibujar_estadisticas(tEstadisticas* stats, int altoPantalla, int altoJuego, int anchoJuego);
+void dibujar_estadisticas(tEstadisticas* stats, int altoPantalla, int altoJuego, int anchoJuego, tPiezaActiva* pieza_guardada, int tiene_pieza_guardada);
 
 void dibujar_inicio_usuario(int ancho, int alto, char *nombre_jugador, int mostrar_error_nombre);
 

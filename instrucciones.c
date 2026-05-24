@@ -73,6 +73,7 @@ void dibujar_inst(int ancho, int alto){
     dibujar_texto_5x7("ESC SALIR", x3, y_controles + 28, COL_GRIS_CLARO);
 
     dibujar_texto_5x7("ENTER REINICIA", x1, y_controles + 42, COL_GRIS_CLARO);
+    dibujar_texto_5x7("E GUARDAR PIEZA", x2, y_controles + 42, COL_GRIS_CLARO);
 
     dibujar_linea_horizontal(x_ini, x_fin, y_controles + 55);
 
