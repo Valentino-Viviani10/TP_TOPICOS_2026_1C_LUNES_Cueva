@@ -506,7 +506,7 @@ int main(int argc, char *argv[])
                     mostrar_error_nombre = 1;
                 }
             }
-            if(pantalla == 4) {
+            if(pantalla == PANTALLA_CONFIGURACION) {
                 if (tecla == GBTK_ARRIBA)
                     opcionMenuConfig = (opcionMenuConfig + 2) % 3;
                 if (tecla == GBTK_ABAJO)    
