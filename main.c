@@ -291,9 +291,6 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-
-
-
     // Inicializar tetrominos decorativos
     tTetrominoFondo tetrominos_decorativos[4];
     inicializar_tetrominos_fondo(tetrominos_decorativos);
