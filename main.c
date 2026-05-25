@@ -344,7 +344,7 @@ int main(int argc, char *argv[])
             printf("Saliendo del juego.\n");
         }
         else if(tecla == GBTK_ESCAPE && pantalla == PANTALLA_JUEGO && juego_terminado) {
-            filas = 20;
+            filas = 22;
             columnas = 10;
             pantalla = PANTALLA_MENU;
         }
@@ -412,7 +412,7 @@ int main(int argc, char *argv[])
                         tablero = NULL;
                     }
                     if(opcionSeleccionada == 0){
-                        filas = 20;
+                        filas = 22;
                         columnas = 10;
                     } else {
                         columnas = 10;
@@ -520,12 +520,12 @@ int main(int argc, char *argv[])
                     construir_nombre_archivo(nombre_jugador, modo_deluxe, columnas, archivo_guardado, sizeof(archivo_guardado));
                     guardar_partida(tablero, filas, columnas, &datos, archivo_guardado);
                     printf("Partida guardada exitosamente.\n");
-                    filas = 20;
+                    filas = 22;
                     columnas = 10;
                     pantalla = PANTALLA_MENU;
                 }
                 if(tecla == GBTK_x){
-                    filas = 20;
+                    filas = 22;
                     columnas = 10;
                     pantalla = PANTALLA_MENU;
                 }

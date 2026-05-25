@@ -2,7 +2,7 @@
 #include "juego.h"
 #include <stdio.h>
 #include <string.h>
-int filas = 20;
+int filas = 22;
 int columnas = 10;
 
 int** crear_tablero(int filas, int columnas, size_t tamElem) {
@@ -120,10 +120,10 @@ int cargar_partida(int*** tablero_ptr, int* filas_leidas, int* columnas_leidas, 
     }
 
     fclose(f);
-    
+
     *tablero_ptr = nuevo_tablero;
     *filas_leidas = f_leidas;
     *columnas_leidas = c_leidas;
-    
+
     return 1;
 }
