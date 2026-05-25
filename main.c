@@ -370,11 +370,9 @@ int main(int argc, char *argv[])
                 nombre_jugador[0] = '\0';
                 filas = 22;
                 columnas = 10;
-                if(modo_deluxe){
-                    pantalla = PANTALLA_ALTO;
-                } else {
-                    pantalla = PANTALLA_NOMBRE;
-                }
+                pantalla = PANTALLA_MENU;
+                opcionSeleccionada = 0;
+                tecla = GBTK_DESCONOCIDA;
             }
             if(pantalla == PANTALLA_MENU){
                 if(tecla == GBTK_ABAJO){
