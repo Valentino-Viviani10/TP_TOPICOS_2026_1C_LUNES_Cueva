@@ -8,6 +8,8 @@ typedef struct {
     int escala;
 } Config;
 
+extern int escala_ui;
+
 int guardar_config(const Config *config, const char *nomArch);
 
 int cargar_config(Config *config, const char *nomArch);

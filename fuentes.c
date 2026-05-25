@@ -1,5 +1,7 @@
 #include "fuentes.h"
+#include "config.h"
 #include "GBT/gbt.h"
+
 
 static const char FUENTE_ESPACIO_MAT[7][6] = {
     "00000",
@@ -563,4 +565,17 @@ int calcular_ancho_texto_5x7(const char texto[])
     }
 
     return cantidad * FUENTE_AVANCE;
+}
+
+void dibujar_texto(const char *texto, int x, int y, uint8_t color) {
+    if(escala_ui > 1)
+        dibujar_texto_7x9(texto, x, y, color);
+    else
+        dibujar_texto_5x7(texto, x, y, color);
+}
+
+int calcular_ancho_texto(const char *texto) {
+    if(escala_ui > 1)
+        return calcular_ancho_texto_7x9(texto);
+    return calcular_ancho_texto_5x7(texto);
 }

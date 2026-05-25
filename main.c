@@ -178,6 +178,8 @@ int main(int argc, char *argv[])
     int ret = parsearResolucion(argc, argv, &ancho, &alto, &config.escala);
     if (ret == -1) return -1;  // arg inválido
 
+    escala_ui = (config.resolucion == 1) ? 2 : 1;
+
     int velocidad_caida_ms = config.velocidad_caida_ms;
     int paleta_id          = config.paleta_id;
     int escala             = config.escala;
@@ -221,7 +223,7 @@ int main(int argc, char *argv[])
 
     int menuIzquierdo = xTitulo;
     // int menuDerecho = xTitulo + (int)strlen(titulo) * 8; //
-    int menuDerecho = xTitulo + calcular_ancho_texto_5x7(titulo);
+    int menuDerecho = xTitulo + calcular_ancho_texto(titulo);
 
     if (xJugar < menuIzquierdo) {
         menuIzquierdo = xJugar;
@@ -234,16 +236,16 @@ int main(int argc, char *argv[])
         menuIzquierdo = xConfig;
     }
 
-    if (xJugar + calcular_ancho_texto_5x7(opcionJugar) > menuDerecho) {
-        menuDerecho = xJugar + calcular_ancho_texto_5x7(opcionJugar);
+    if (xJugar + calcular_ancho_texto(opcionJugar) > menuDerecho) {
+        menuDerecho = xJugar + calcular_ancho_texto(opcionJugar);
     }
 
-    if (xInstrucciones + calcular_ancho_texto_5x7(opcionInstrucciones) > menuDerecho) {
-        menuDerecho = xInstrucciones + calcular_ancho_texto_5x7(opcionInstrucciones);
+    if (xInstrucciones + calcular_ancho_texto(opcionInstrucciones) > menuDerecho) {
+        menuDerecho = xInstrucciones + calcular_ancho_texto(opcionInstrucciones);
     }
 
-    if(xConfig + calcular_ancho_texto_5x7(opcionConfig) > menuDerecho) {
-        menuDerecho = xConfig + calcular_ancho_texto_5x7(opcionConfig);
+    if(xConfig + calcular_ancho_texto(opcionConfig) > menuDerecho) {
+        menuDerecho = xConfig + calcular_ancho_texto(opcionConfig);
     }
 
     int anchoTetromino = 4 * TETROMINO_ESCALA;
@@ -798,24 +800,24 @@ int main(int argc, char *argv[])
                     dibujar_texto_7x9("PAUSA", calcular_x_centrada("PAUSA", ancho), alto / 2, COL_AMARILLO);
                     dibujar_texto_7x9("P PARA CONTINUAR", calcular_x_centrada("P PARA CONTINUAR", ancho), alto / 2 + 15, COL_GRIS_CLARO);
                 } else{
-                    dibujar_texto_5x7("PAUSA", calcular_x_centrada("PAUSA", ancho), alto / 2, COL_AMARILLO);
-                    dibujar_texto_5x7("P PARA CONTINUAR", calcular_x_centrada("P PARA CONTINUAR", ancho), alto / 2 + 12, COL_GRIS_CLARO);
+                    dibujar_texto("PAUSA", calcular_x_centrada("PAUSA", ancho), alto / 2, COL_AMARILLO);
+                    dibujar_texto("P PARA CONTINUAR", calcular_x_centrada("P PARA CONTINUAR", ancho), alto / 2 + 12, COL_GRIS_CLARO);
                 }
             }
-          }
+        }
         else if(pantalla == PANTALLA_ESC_MENU){
             dibujar_juego(ancho, alto, tablero, &pieza_activa, juego_terminado, marco_x, marco_y, lado_bloque);
             dibujar_puntuacion(&puntaje, nombre_jugador, lineas_eliminadas, piezas_caidas, velocidad_caida_ms, alto, fin_tablero_y, ancho, fin_tablero_x, &pieza_siguiente);
             dibujar_estadisticas(&stats, alto, fin_tablero_y, marco_x, &pieza_guardada, tiene_pieza_guardada);
-            dibujar_texto_5x7("C CONTINUAR",  calcular_x_centrada("C CONTINUAR",  ancho), alto / 2 - 20, COL_VERDE_BRILL);
-            dibujar_texto_5x7("S GUARDAR Y SALIR", calcular_x_centrada("S GUARDAR Y SALIR", ancho), alto / 2,      COL_AMARILLO);
-            dibujar_texto_5x7("X SALIR SIN GUARDAR", calcular_x_centrada("X SALIR SIN GUARDAR", ancho), alto / 2 + 20, COL_ROJO_BRILL);
+            dibujar_texto("C CONTINUAR",  calcular_x_centrada("C CONTINUAR",  ancho), alto / 2 - 20, COL_VERDE_BRILL);
+            dibujar_texto("S GUARDAR Y SALIR", calcular_x_centrada("S GUARDAR Y SALIR", ancho), alto / 2,      COL_AMARILLO);
+            dibujar_texto("X SALIR SIN GUARDAR", calcular_x_centrada("X SALIR SIN GUARDAR", ancho), alto / 2 + 20, COL_ROJO_BRILL);
         }
         else if(pantalla == PANTALLA_REANUDAR){
-            dibujar_texto_5x7("PARTIDA GUARDADA", calcular_x_centrada("PARTIDA GUARDADA", ancho), alto / 2 - 30, COL_VERDE_BRILL);
-            dibujar_texto_5x7("DESEA CONTINUARLA?", calcular_x_centrada("DESEA CONTINUARLA?", ancho), alto / 2 - 15, COL_GRIS_CLARO);
-            dibujar_texto_5x7("S CONTINUAR", calcular_x_centrada("S CONTINUAR", ancho), alto / 2 + 5, COL_AMARILLO);
-            dibujar_texto_5x7("N NUEVA PARTIDA", calcular_x_centrada("N NUEVA PARTIDA", ancho), alto / 2 + 20, COL_ROJO_BRILL);
+            dibujar_texto("PARTIDA GUARDADA", calcular_x_centrada("PARTIDA GUARDADA", ancho), alto / 2 - 30 * escala_ui, COL_VERDE_BRILL);
+            dibujar_texto("DESEA CONTINUARLA?", calcular_x_centrada("DESEA CONTINUARLA?", ancho), alto / 2 - 15 * escala_ui, COL_GRIS_CLARO);
+            dibujar_texto("S CONTINUAR", calcular_x_centrada("S CONTINUAR", ancho), alto / 2 + 5 * escala_ui, COL_AMARILLO);
+            dibujar_texto("N NUEVA PARTIDA", calcular_x_centrada("N NUEVA PARTIDA", ancho), alto / 2 + 20 * escala_ui, COL_ROJO_BRILL);
         }
         else if(pantalla == PANTALLA_INSTRUCCIONES){
             dibujar_inst(ancho, alto);

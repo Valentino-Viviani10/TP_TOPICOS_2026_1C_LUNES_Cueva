@@ -13,4 +13,8 @@ void dibujar_texto_5x7(const char texto[], uint16_t x, uint16_t y, uint8_t color
 
 int calcular_ancho_texto_5x7(const char texto[]);
 
+void dibujar_texto(const char *texto, int x, int y, uint8_t color);
+
+int calcular_ancho_texto(const char *texto);
+
 #endif // FUENTES_H_INCLUDED

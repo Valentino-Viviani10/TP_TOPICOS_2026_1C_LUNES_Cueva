@@ -1,5 +1,6 @@
 #include "tetrominos.h"
 #include "colores.h"
+#include "config.h"
 #include <stdio.h>
 
 static const int cantidad = 4;
@@ -183,7 +184,7 @@ void actualizar_tetrominos_fondo(tTetrominoFondo tetrominos[], const int alto, c
     if(gbt_temporizador_consumir(temp_hacer_caer)) {
         for(i = 0; i < cantidad; i++) {
             if(tetrominos[i].activo) {
-                tetrominos[i].y += 2;
+                tetrominos[i].y += 2 * escala_ui;  // Velocidad de caída
 
                 // Desactivar si sale de pantalla
                 if(tetrominos[i].y > alto) {
