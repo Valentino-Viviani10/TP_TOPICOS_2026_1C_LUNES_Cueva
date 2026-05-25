@@ -40,25 +40,21 @@ void dibujar_inst(int ancho, int alto){
     const int x_fin = ancho - OFFSET_X;
 
     int y = OFFSET_Y;
-    int aumento_titulo = 0;
-    int dis_controles = 0;
+    
+    // Distancia vertical entre renglones dependiente de la resolucion
+    int esp = (escala_ui > 1) ? 14 : 10;
 
-    if(escala_ui > 1) {
-        aumento_titulo = 6;
-        dis_controles = 15;
-    }
-        
+    int y_titulo = y + ((escala_ui > 1) ? 10 : 0);
+    int y_controles = y_titulo + ((escala_ui > 1) ? 30 : 18);
+    int y_puntaje = y_controles + 7 * esp + ((escala_ui > 1) ? 20 : 10);
+    int y_mecanicas = y_puntaje + 3 * esp + ((escala_ui > 1) ? 20 : 10);
 
-    int y_titulo = y + 2 * escala_ui + aumento_titulo;
-    int y_controles = y + 26 * escala_ui;
-    int y_puntaje = y + 86 * escala_ui;
-    int y_mecanicas = y + 144 * escala_ui;
+    // Columnas adaptables a la resolucion
+    int x1 = (escala_ui > 1) ? 50 : 25;
+    int x2 = (escala_ui > 1) ? 200 : 120;
+    int x3 = (escala_ui > 1) ? 400 : 220;
 
-    int x1 = 25;
-    int x2 = 115;
-    int x3 = 215;
-
-    dibujar_linea_horizontal(x_ini, x_fin, y - 4);
+    dibujar_linea_horizontal(x_ini, x_fin, y_titulo - 4);
 
     if (modo_deluxe) {
         dibujar_texto_7x9("JUEGO DELUXE", calcular_x_centrada("JUEGO DELUXE", ancho), y_titulo, COL_VERDE_BRILL);
@@ -66,50 +62,55 @@ void dibujar_inst(int ancho, int alto){
         dibujar_texto("JUEGO NORMAL", calcular_x_centrada("JUEGO NORMAL", ancho), y_titulo, COL_VERDE_BRILL);
     }
 
-    dibujar_linea_horizontal(x_ini, x_fin, y + 16 * escala_ui);
+    dibujar_linea_horizontal(x_ini, x_fin, y_titulo + ((escala_ui > 1) ? 16 : 12));
 
 
     // FILA 1 - CONTROLES
-    dibujar_texto("CONTROLES", x1, y_controles - dis_controles, COL_AMARILLO);
+    dibujar_texto("CONTROLES", x1, y_controles, COL_AMARILLO);
 
-    dibujar_texto("<- -> MOVER", x1, y_controles + 14 - dis_controles, COL_GRIS_CLARO);
-    dibujar_texto("ABAJO BAJAR", x2, y_controles + 14 - dis_controles, COL_GRIS_CLARO);
-    dibujar_texto("P PAUSA", x3, y_controles + 14 - dis_controles, COL_GRIS_CLARO);
+    dibujar_texto("<- -> MOVER", x1, y_controles + esp, COL_GRIS_CLARO);
+    dibujar_texto("ABAJO BAJAR", x2, y_controles + esp, COL_GRIS_CLARO);
+    dibujar_texto("P PAUSA", x3, y_controles + esp, COL_GRIS_CLARO);
 
-    dibujar_texto("R/ARR ROT DER", x1, y_controles + 28 - dis_controles, COL_GRIS_CLARO);
-    dibujar_texto("Q ROT IZQ", x2, y_controles + 28 - dis_controles, COL_GRIS_CLARO);
-    dibujar_texto("ESC SALIR", x3, y_controles + 28 - dis_controles, COL_GRIS_CLARO);
+    dibujar_texto("R/ARR ROT DER", x1, y_controles + 2*esp, COL_GRIS_CLARO);
+    dibujar_texto("Q ROT IZQ", x2, y_controles + 2*esp, COL_GRIS_CLARO);
+    dibujar_texto("ESC SALIR", x3, y_controles + 2*esp, COL_GRIS_CLARO);
 
-    dibujar_texto("ENTER REINICIA", x1, y_controles + 42 - dis_controles, COL_GRIS_CLARO);
-    dibujar_texto("E GUARDAR PIEZA", x2, y_controles + 42 - dis_controles, COL_GRIS_CLARO);
+    dibujar_texto("ENTER REINICIA", x1, y_controles + 3*esp, COL_GRIS_CLARO);
+    dibujar_texto("E GUARDAR PIEZA", x2, y_controles + 3*esp, COL_GRIS_CLARO);
 
-    dibujar_linea_horizontal(x_ini, x_fin, y_controles + 55 * escala_ui);
+    dibujar_texto("C CONTINUAR", x1, y_controles + 4*esp, COL_GRIS_CLARO);
+    dibujar_texto("N NUEVA PARTIDA", x3, y_controles + 4*esp, COL_GRIS_CLARO);
+
+    dibujar_texto("S GUARD/REANUDAR", x1, y_controles + 5*esp, COL_GRIS_CLARO);
+    dibujar_texto("X SALIR AL MENU", x3, y_controles + 5*esp, COL_GRIS_CLARO);
+
+    dibujar_texto("1-9 ELIM FILA", x1, y_controles + 6*esp, COL_GRIS_CLARO);
+
+    dibujar_linea_horizontal(x_ini, x_fin, y_controles + 6*esp + ((escala_ui > 1) ? 12 : 8));
 
 
     // FILA 2 - PUNTAJE
     dibujar_texto("PUNTAJE", x1, y_puntaje, COL_CIAN_BRILL);
 
-    dibujar_texto("1L 100", x1, y_puntaje + 14, COL_GRIS_CLARO);
-    dibujar_texto("2L 200", x2, y_puntaje + 14, COL_GRIS_CLARO);
-    dibujar_texto("3L 400", x1, y_puntaje + 28, COL_GRIS_CLARO);
-    dibujar_texto("4L 800", x2, y_puntaje + 28, COL_GRIS_CLARO);
+    dibujar_texto("1L 100", x1, y_puntaje + esp, COL_GRIS_CLARO);
+    dibujar_texto("2L 200", x2, y_puntaje + esp, COL_GRIS_CLARO);
+    dibujar_texto("3L 400", x1, y_puntaje + 2*esp, COL_GRIS_CLARO);
+    dibujar_texto("4L 800", x2, y_puntaje + 2*esp, COL_GRIS_CLARO);
 
-    dibujar_texto("MANUAL 10 PTS/CAS", x1, y_puntaje + 42, COL_GRIS_CLARO);
+    dibujar_texto("MANUAL 10 PTS/CAS", x1, y_puntaje + 3*esp, COL_GRIS_CLARO);
 
-    dibujar_linea_horizontal(x_ini, x_fin, y_puntaje + 55 * escala_ui);
+    dibujar_linea_horizontal(x_ini, x_fin, y_puntaje + 3*esp + ((escala_ui > 1) ? 12 : 8));
 
 
     // FILA 3 - MECANICAS
     dibujar_texto("MECANICAS", x1, y_mecanicas, COL_VERDE_BRILL);
 
-    dibujar_texto("CADA 10 PIEZAS", x1, y_mecanicas + 14, COL_GRIS_CLARO);
-    dibujar_texto("+3% VEL", x2 + 25, y_mecanicas + 14, COL_GRIS_CLARO);
+    dibujar_texto("CADA 10 PIEZAS", x1, y_mecanicas + esp, COL_GRIS_CLARO);
+    dibujar_texto("+3% VEL", x2, y_mecanicas + esp, COL_GRIS_CLARO);
 
     if (modo_deluxe) {
-        dibujar_texto("BOLSA DE 11", x1, y_mecanicas + 28, COL_GRIS_CLARO);
-        dibujar_texto("MOVIMIENTO 360", x2 + 25, y_mecanicas + 28, COL_GRIS_CLARO);
-    } else {
-        dibujar_texto("BOLSA DE 7", x1, y_mecanicas + 28, COL_GRIS_CLARO);
-        dibujar_texto("SIN REPETICION", x2 + 25, y_mecanicas + 28, COL_GRIS_CLARO);
+        dibujar_texto("BOLSA DE 11", x1, y_mecanicas + 2*esp, COL_GRIS_CLARO);
+        dibujar_texto("MOVIMIENTO 360", x2, y_mecanicas + 2*esp, COL_GRIS_CLARO);
     }
 }
