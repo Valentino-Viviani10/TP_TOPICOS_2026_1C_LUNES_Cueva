@@ -41,10 +41,10 @@ void dibujar_inst(int ancho, int alto){
 
     int y = OFFSET_Y;
 
-    int y_titulo = y + 2;
-    int y_controles = y + 26;
-    int y_puntaje = y + 86;
-    int y_mecanicas = y + 144;
+    int y_titulo = y;
+    int y_controles = y + 18;
+    int y_puntaje = y + 90;
+    int y_mecanicas = y + 140;
 
     int x1 = 25;
     int x2 = 115;
@@ -58,50 +58,58 @@ void dibujar_inst(int ancho, int alto){
         dibujar_texto_5x7("JUEGO NORMAL", calcular_x_centrada("JUEGO NORMAL", ancho), y_titulo, COL_VERDE_BRILL);
     }
 
-    dibujar_linea_horizontal(x_ini, x_fin, y + 16);
+    dibujar_linea_horizontal(x_ini, x_fin, y + 12);
 
 
     // FILA 1 - CONTROLES
     dibujar_texto_5x7("CONTROLES", x1, y_controles, COL_AMARILLO);
 
-    dibujar_texto_5x7("<- -> MOVER", x1, y_controles + 14, COL_GRIS_CLARO);
-    dibujar_texto_5x7("ABAJO BAJAR", x2, y_controles + 14, COL_GRIS_CLARO);
-    dibujar_texto_5x7("P PAUSA", x3, y_controles + 14, COL_GRIS_CLARO);
+    dibujar_texto_5x7("<- -> MOVER", x1, y_controles + 10, COL_GRIS_CLARO);
+    dibujar_texto_5x7("ABAJO BAJAR", x2, y_controles + 10, COL_GRIS_CLARO);
+    dibujar_texto_5x7("P PAUSA", x3, y_controles + 10, COL_GRIS_CLARO);
 
-    dibujar_texto_5x7("R/ARR ROT DER", x1, y_controles + 28, COL_GRIS_CLARO);
-    dibujar_texto_5x7("Q ROT IZQ", x2, y_controles + 28, COL_GRIS_CLARO);
-    dibujar_texto_5x7("ESC SALIR", x3, y_controles + 28, COL_GRIS_CLARO);
+    dibujar_texto_5x7("R/ARR ROT DER", x1, y_controles + 20, COL_GRIS_CLARO);
+    dibujar_texto_5x7("Q ROT IZQ", x2, y_controles + 20, COL_GRIS_CLARO);
+    dibujar_texto_5x7("ESC SALIR", x3, y_controles + 20, COL_GRIS_CLARO);
 
-    dibujar_texto_5x7("ENTER REINICIA", x1, y_controles + 42, COL_GRIS_CLARO);
-    dibujar_texto_5x7("E GUARDAR PIEZA", x2, y_controles + 42, COL_GRIS_CLARO);
+    dibujar_texto_5x7("ENTER REINICIA", x1, y_controles + 30, COL_GRIS_CLARO);
+    dibujar_texto_5x7("E GUARDAR PIEZA", x2, y_controles + 30, COL_GRIS_CLARO);
 
-    dibujar_linea_horizontal(x_ini, x_fin, y_controles + 55);
+    dibujar_texto_5x7("C CONTINUAR JUEGO", x1, y_controles + 40, COL_GRIS_CLARO);
+    dibujar_texto_5x7("N NUEVA PARTIDA", x3, y_controles + 40, COL_GRIS_CLARO);
+
+    dibujar_texto_5x7("S GUARDAR/REANUDAR", x1, y_controles + 50, COL_GRIS_CLARO);
+    dibujar_texto_5x7("X SALIR AL MENU", x3, y_controles + 50, COL_GRIS_CLARO);
+
+    dibujar_texto_5x7("1-9 ELIM FILA(CHEAT)", x1, y_controles + 60, COL_GRIS_CLARO);
+
+    dibujar_linea_horizontal(x_ini, x_fin, y_controles + 68);
 
 
     // FILA 2 - PUNTAJE
     dibujar_texto_5x7("PUNTAJE", x1, y_puntaje, COL_CIAN_BRILL);
 
-    dibujar_texto_5x7("1L 100", x1, y_puntaje + 14, COL_GRIS_CLARO);
-    dibujar_texto_5x7("2L 200", x2, y_puntaje + 14, COL_GRIS_CLARO);
-    dibujar_texto_5x7("3L 400", x1, y_puntaje + 28, COL_GRIS_CLARO);
-    dibujar_texto_5x7("4L 800", x2, y_puntaje + 28, COL_GRIS_CLARO);
+    dibujar_texto_5x7("1L 100", x1, y_puntaje + 10, COL_GRIS_CLARO);
+    dibujar_texto_5x7("2L 200", x2, y_puntaje + 10, COL_GRIS_CLARO);
+    dibujar_texto_5x7("3L 400", x1, y_puntaje + 20, COL_GRIS_CLARO);
+    dibujar_texto_5x7("4L 800", x2, y_puntaje + 20, COL_GRIS_CLARO);
 
-    dibujar_texto_5x7("MANUAL 10 PTS/CAS", x1, y_puntaje + 42, COL_GRIS_CLARO);
+    dibujar_texto_5x7("MANUAL 10 PTS/CAS", x1, y_puntaje + 30, COL_GRIS_CLARO);
 
-    dibujar_linea_horizontal(x_ini, x_fin, y_puntaje + 55);
+    dibujar_linea_horizontal(x_ini, x_fin, y_puntaje + 40);
 
 
     // FILA 3 - MECANICAS
     dibujar_texto_5x7("MECANICAS", x1, y_mecanicas, COL_VERDE_BRILL);
 
-    dibujar_texto_5x7("CADA 10 PIEZAS", x1, y_mecanicas + 14, COL_GRIS_CLARO);
-    dibujar_texto_5x7("+3% VEL", x2 + 25, y_mecanicas + 14, COL_GRIS_CLARO);
+    dibujar_texto_5x7("CADA 10 PIEZAS", x1, y_mecanicas + 10, COL_GRIS_CLARO);
+    dibujar_texto_5x7("+3% VEL", x2 + 25, y_mecanicas + 10, COL_GRIS_CLARO);
 
     if (modo_deluxe) {
-        dibujar_texto_5x7("BOLSA DE 11", x1, y_mecanicas + 28, COL_GRIS_CLARO);
-        dibujar_texto_5x7("MOVIMIENTO 360", x2 + 25, y_mecanicas + 28, COL_GRIS_CLARO);
+        dibujar_texto_5x7("BOLSA DE 11", x1, y_mecanicas + 20, COL_GRIS_CLARO);
+        dibujar_texto_5x7("MOVIMIENTO 360", x2 + 25, y_mecanicas + 20, COL_GRIS_CLARO);
     } else {
-        dibujar_texto_5x7("BOLSA DE 7", x1, y_mecanicas + 28, COL_GRIS_CLARO);
-        dibujar_texto_5x7("SIN REPETICION", x2 + 25, y_mecanicas + 28, COL_GRIS_CLARO);
+        dibujar_texto_5x7("BOLSA DE 7", x1, y_mecanicas + 20, COL_GRIS_CLARO);
+        dibujar_texto_5x7("SIN REPETICION", x2 + 25, y_mecanicas + 20, COL_GRIS_CLARO);
     }
 }
